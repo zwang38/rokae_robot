@@ -9,6 +9,7 @@ generic_hw_control_loop:
 # Settings for ros_control hardware interface
 hardware_interface:
   joints:
+    - luoshuan
     - xmate_joint_1
     - xmate_joint_2
     - xmate_joint_3

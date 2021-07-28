@@ -1,36 +1,6 @@
 
-  <!--The planning and execution components of MoveIt! configured to 
-      publish the current configuration of the robot (simulated or real) 
-      and the current state of the world as seen by the planner-->
-  <!-- <include file="$(find rokae_moveit_config)/launch/move_group.launch">
-    <arg name="publish_monitored_planning_scene" value="true" />
-  </include> -->
-  <!--The visualization component of MoveIt!-->
-  <!-- <include file="$(find rokae_moveit_config)/launch/moveit_rviz.launch"/>
-    <arg name="config" value="true"/>
-    <arg name="debug" value="false"/> -->
-
-    <!-- We do not have a robot connected, so publish fake joint states -->
-    
-  <!-- <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
-    <param name="/use_gui" value="false"/> 
-    <rosparam param="/source_list">[/rokae/joint_states]</rosparam>
-  </node> -->
 
 
-
-
-
-<!-- <launch>
-
-  <include file="$(find rokae_moveit_config)/launch/move_group.launch">
-    <arg name="publish_monitored_planning_scene" value="true" />
-  </include>
-  <include file="$(find rokae_moveit_config)/launch/moveit_rviz.launch"/>
-    <arg name="config" value="true"/>
-    <arg name="debug" value="false"/>
-
-</launch> -->
 
 <launch>
 
@@ -64,16 +34,15 @@
 
   <!-- Run Rviz and load the default config to see the state of the move_group node -->
   <include file="$(find rokae_moveit_config)/launch/moveit_rviz.launch" if="$(arg use_rviz)">
-    <!-- <arg name="rviz_config" value="$(find rokae_moveit_config)/launch/moveit.rviz"/> -->
-        <arg name="rviz_config" value="true"/>
-
+    <arg name="rviz_config" value="$(find rokae_moveit_config)/launch/moveit.rviz"/>
+        <!-- <arg name="rviz_config" value="true"/> -->
     <arg name="debug" value="$(arg debug)"/>
   </include>
 
     <!-- We do not have a robot connected, so publish fake joint states -->
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher">
     <param name="/use_gui" value="false"/> 
-    <rosparam param="/source_list">[/robot/joint_states]</rosparam>
+    <rosparam param="/source_list">[/rokae/joint_states]</rosparam>
   </node>
 
 
