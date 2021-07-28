@@ -6,6 +6,6 @@ moveit_setup_assistant_config:
   SRDF:
     relative_path: config/rokae.srdf
   CONFIG:
-    author_name: p
+    author_name: 1
     author_email: per@163.com
-    generated_timestamp: 1627471106
+    generated_timestamp: 1627475543

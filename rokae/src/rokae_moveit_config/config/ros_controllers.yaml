@@ -25,16 +25,56 @@ joint_state_controller:
   type: joint_state_controller/JointStateController
   publish_rate: 50
 controller_list:
-  - name: arm_controller
-    action_ns: follow_joint_trajectory
-    default: True
-    type: FollowJointTrajectory
-    joints:
-      - xmate_joint_1
-      - xmate_joint_2
-      - xmate_joint_3
-      - xmate_joint_4
-      - xmate_joint_5
-      - xmate_joint_6
-      - xmate_joint_7
-      - xmate_joint_8
+  []
+arm_controller:
+  type: position_controllers/JointPositionController
+  joints:
+    - xmate_joint_1
+    - xmate_joint_2
+    - xmate_joint_3
+    - xmate_joint_4
+    - xmate_joint_5
+    - xmate_joint_6
+    - xmate_joint_7
+    - xmate_joint_8
+  gains:
+    xmate_joint_1:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    xmate_joint_2:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    xmate_joint_3:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    xmate_joint_4:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    xmate_joint_5:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    xmate_joint_6:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    xmate_joint_7:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
+    xmate_joint_8:
+      p: 100
+      d: 1
+      i: 1
+      i_clamp: 1
