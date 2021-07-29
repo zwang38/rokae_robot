@@ -15,13 +15,15 @@
   <arg name="load_robot_description" default="true"/>
 
   <!-- Set execution mode for fake execution controllers -->
-  <arg name="execution_type" default="interpolate" />
+  <!-- <arg name="execution_type" default="interpolate" /> -->
 
 
-  <arg name="use_gui" default="false" />
+  <arg name="use_gui" default="true" />
   <arg name="use_rviz" default="true" />
 
-
+ <include file="$(find rokae_moveit_config)/launch/planning_context.launch">
+        <arg name="load_robot_description" value="true" />
+    </include>
 
   <!-- Given the published joint states, publish tf for the robot links -->
   <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" /> -->

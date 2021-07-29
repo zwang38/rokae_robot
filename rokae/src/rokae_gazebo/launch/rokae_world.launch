@@ -2,8 +2,8 @@
  
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
   <!-- <arg name="world_name" value="$(find rokae_gazebo)/worlds/pigot.world"/> -->
-  <arg name="paused" default="true"/>
-  <arg name="use_sim_time" default="true"/>
+  <arg name="paused" default="false"/>
+  <arg name="use_sim_time" default="false"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
@@ -30,18 +30,9 @@
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model rokae -param robot_description"/>
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
+        <!-- load the controllers -->
     <rosparam file="$(find rokae_control)/config/rokae_control.yaml" command="load"/>
-
-   <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"     respawn="false"  >
-    <param name="publish_frequency" type="double" value="30.0" />
-    </node>
-
-
-
     <!-- load the controllers -->
-
-
-
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/rokae"
     output="screen" args="joint_state_controller
                           joint1_position_controller
@@ -52,14 +43,22 @@
                           joint6_position_controller
                           joint7_position_controller
                           joint8_position_controller"/>
+   <!-- <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"     respawn="false"  >
+    <param name="publish_frequency" type="double" value="30.0" />
+    </node> -->
 
-    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
-      <remap from="/joint_states" to="/rokae/joint_states" />
-    </node>
-    
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+	respawn="false" output="screen">
+      <param name="publish_frequency" type="double" value="30.0" />
+    <remap from="/joint_states" to="/rokae/joint_states" />
+  </node>
 
-  <node name="pos_pub_node" pkg="robot_control" type="pos_pub.py" respawn="true"/>
-  <node name="teleop_control_node" pkg="robot_control" type="teleop_control.py" respawn="true"/> -->
+
+
+
+
+
 
 </launch>
 

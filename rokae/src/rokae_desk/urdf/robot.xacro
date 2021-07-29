@@ -28,12 +28,13 @@
        <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
        <material name="white"/>
     </visual>
+
     <inertial>
-      
   <mass value="5.48267"/>
   <inertia ixx="0.056" ixy="0" ixz="0" iyy="0.066" iyz="0" izz="0.035"/>
   <origin rpy="0 0 0" xyz="-0.0183 0 0.067"/> 
     </inertial>
+
     <collision>
       <geometry>
         <mesh filename="package://${nameofManipulator}_desk/meshes/collision/${nameofManipulator}_base.stl" scale="0.001 0.001 0.001"/>
@@ -80,7 +81,6 @@
      <mass value="5.96204"/>
      <inertia ixx="0.051" ixy="0" ixz="0" iyy="0.049" iyz="-0.007" izz="7.176"/>
      <origin rpy="0 0 0" xyz="0 -0.017 0.320"/>
-
      </inertial>
     
     

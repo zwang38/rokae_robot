@@ -1,81 +1,18 @@
 <launch>
- 
-<!-- 1 -->
-  <param name="camera_description" command="$(find xacro)/xacro --inorder  $(find realsense2_description)/urdf/test_d435_camera.urdf.xacro" />
-  <node name="camera_spawn" pkg="gazebo_ros" type="spawn_model" args="-urdf -param camera_description -urdf -model camera_1 -z 0 -P 0 " respawn="false" output="screen"/>
-  
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find rokae_desk)/urdf/robot_taotong.xacro"/>
-    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model rokae -param robot_description"/>
+    <!-- 将关节控制器的配置参数加载到参数服务器中 -->
+    <rosparam file="$(find rokae_gazebo)/config/arm_gazebo_joint_states.yaml" command="load"/>
 
+    <node name="joint_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+          output="screen" ns="/rokae" args="joint_state_controller" />
 
-
-<!-- 2 -->
-  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
-  <!-- <arg name="world_name" value="$(find rokae_gazebo)/worlds/pigot.world"/> -->
-  <arg name="paused" default="true"/>
-  <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="true"/>
-  <arg name="headless" default="false"/>
-  <arg name="debug" default="false"/>
-  
-
-  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <!-- <arg name="world_name" value="$(find cai_env)/worlds/factory_world.world" /> -->
-    <!-- <arg name="world_name" value="$(arg world_name)"/> -->
-    <arg name="debug" value="$(arg debug)" />
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-    <arg name="headless" value="$(arg headless)"/>
-  </include>
-
-
-<!-- 3 -->
-    <!-- Load joint controller configurations from YAML file to parameter server -->
-    <rosparam file="$(find rokae_control)/config/rokae_control.yaml" command="load"/>
-<node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" args="joint_state_controller  rokae_arm_controller" />
-   <!-- <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"     respawn="true"  > -->
-    <!-- <param name="publish_frequency" type="double" value="30.0" /> -->
-    <!-- </node> -->
-
-<!-- 4 -->
-<node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="true" output="screen" />
-    <!-- load the controllers -->
-
-
-<!-- 5 -->
-<include file="$(find rokae_moveit_config)/launch/planning_context.launch">
-  <arg name="load_robot_description" value="true"/>
-</include>
-<include file="$(find rokae_moveit_config)/launch/move_group.launch" />
-<include file="$(find rokae_moveit_config)/launch/moveit_rviz.launch" />
-
-
-
-<!-- 6 -->
-<node name="joint_state_desired_publisher" pkg="topic_tools" type="relay" args="joint_states joint_states_desired" />
-
-
-    <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/rokae"
-    output="screen" args="joint_state_controller
-                          joint1_position_controller
-                          joint2_position_controller
-                          joint3_position_controller
-                          joint4_position_controller
-                          joint5_position_controller
-                          joint6_position_controller
-                          joint7_position_controller
-                          joint8_position_controller"/> -->
-
-    <!-- <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" respawn="false" output="screen">
-      <remap from="/joint_states" to="/rokae/joint_states" />
+    <!-- 运行robot_state_publisher节点，发布tf  -->
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+        respawn="false" output="screen">
+        <remap from="/joint_states" to="/rokae/joint_states" />
     </node>
-    
-
-  <node name="pos_pub_node" pkg="robot_control" type="pos_pub.py" respawn="true"/>
-  <node name="teleop_control_node" pkg="robot_control" type="teleop_control.py" respawn="true"/> -->
 
 </launch>
 
-<!-- 发那克版本 -->
+
+
+
