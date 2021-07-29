@@ -7,5 +7,8 @@
   <arg name="execution_type" default="true" />
 
   <!-- loads ros_controllers to the param server -->
-  <rosparam file="$(find rokae_moveit_config)/config/ros_controllers.yaml"/>
+  <rosparam file="$(find rokae_moveit_config)/config/controllers.yaml"/>
 </launch>
+
+
+<!-- ros_controllers -->

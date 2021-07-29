@@ -1,4 +1,4 @@
-# controller_manager_ns: ''
+controller_manager_ns: ''
   controller_list:
     - name: rokae/arm_controller
       action_ns: follow_joint_trajectory
