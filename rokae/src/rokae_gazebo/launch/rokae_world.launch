@@ -11,7 +11,6 @@
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-
     <!-- <arg name="world_name" value="$(find cai_env)/worlds/factory_world.world" /> -->
     <!-- <arg name="world_name" value="$(arg world_name)"/> -->
     <arg name="debug" value="$(arg debug)" />
@@ -31,18 +30,10 @@
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
         <!-- load the controllers -->
-    <rosparam file="$(find rokae_control)/config/rokae_control.yaml" command="load"/>
+    <rosparam file="$(find rokae_control)/config/rokae_control_moveit.yaml" command="load"/>
     <!-- load the controllers -->
     <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/rokae"
-    output="screen" args="joint_state_controller
-                          joint1_position_controller
-                          joint2_position_controller
-                          joint3_position_controller
-                          joint4_position_controller
-                          joint5_position_controller
-                          joint6_position_controller
-                          joint7_position_controller
-                          joint8_position_controller"/>
+    output="screen" args="     arm_controller  "/>
    <!-- <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"     respawn="false"  >
     <param name="publish_frequency" type="double" value="30.0" />
     </node> -->
@@ -61,5 +52,10 @@
 
 
 </launch>
+
+
+
+
+
 
 
