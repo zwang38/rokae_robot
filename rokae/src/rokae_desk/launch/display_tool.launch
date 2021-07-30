@@ -1,7 +1,7 @@
 
 
 <launch>
-  <param name="robot_description"    command="$(find xacro)/xacro   --inorder '$(find rokae_desk)/urdf/rokae_robot_based.xacro'" />
+  <param name="robot_description"    command="$(find xacro)/xacro   --inorder '$(find rokae_desk)/urdf/robot_tool_complex.xacro'" />
 
    <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" >
     <param name="use_gui" value="TRUE"/>

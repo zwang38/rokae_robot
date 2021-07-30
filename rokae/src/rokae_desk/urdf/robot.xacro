@@ -397,7 +397,7 @@
     </collision>
   </link>
   
-  <joint name="xmate_joint_8" type="revolute">
+  <!-- <joint name="xmate_joint_8" type="revolute">
     <parent link="${nameofManipulator}_link7"/>
     <child link="${nameofManipulator}_link8"/>
    <limit effort="300" lower="-6.283" upper="6.283" velocity="10"/>
@@ -415,7 +415,7 @@
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
-  </transmission>
+  </transmission> -->
 
   <gazebo reference="${nameofManipulator}_link7">
      <material>Gazebo/Block</material>
