@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<robot  name="camera_taotong"   xmlns:xacro="http://wiki.ros.org/xacro">
+
+  <link    name="tool_base_link">
+  
+    <inertial>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
+      <mass        value="0.01453" />
+      <inertia
+        ixx="3.2231E-06"
+        ixy="2.3572E-38"
+        ixz="3.3863E-23"
+        iyy="3.2231E-06"
+        iyz="-1.1479E-38"
+        izz="6.3666E-06" />
+    </inertial>
+
+    <visual>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
+      <geometry>
+        <mesh          filename="package://rokae_desk/meshes/tool_base_link.stl" />
+      </geometry>
+      <material        name="">
+        <color          rgba="1 1 1 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
+      <geometry>
+        <mesh          filename="package://rokae_desk/meshes/tool_base_link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link    name="tool_Link">
+
+    <inertial>
+      <origin        xyz="5.20417042793042E-18 3.79470760369927E-19 -0.0550139882029437"        rpy="0 0 0" />
+      <mass        value="0.0282087806682537" />
+      <inertia
+        ixx="0.000106276464425593"
+        ixy="-8.0779356694635E-25"
+        ixz="-3.99056251828797E-21"
+        iyy="0.000106276464425593"
+        iyz="-1.18506893413465E-22"
+        izz="6.54461475755754E-06" />
+    </inertial>
+
+    <visual>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
+      <geometry>
+        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl" />
+      </geometry>
+      <material        name="">
+        <color          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
+      <geometry>
+        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl" />
+      </geometry>
+    </collision>
+
+  </link>
+
+  <joint    name="tool_taotong"    type="continuous">
+    <origin      xyz="0 0 0"      rpy="0 0 0" />
+    <parent      link="tool_base_link" />
+    <child      link="tool_Link" />
+    <axis      xyz="0 0 -1" />
+  </joint>
+
+  <link    name="zhijia_Link">
+
+    <inertial>
+      <origin        xyz="0.0187492845643489 -0.118069176191453 -0.00399999999999993"        rpy="0 0 0" />
+      <mass        value="0.00440000000000001" />
+      <inertia
+        ixx="7.35074074816945E-06"
+        ixy="9.41331288583735E-07"
+        ixz="-7.65180479833955E-22"
+        iyy="1.84461682758815E-06"
+        iyz="3.92951930950021E-21"
+        izz="9.19242424242426E-06" />
+    </inertial>
+
+    <visual>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
+      <geometry>
+        <mesh          filename="package://rokae_desk/meshes/zhijia_Link.stl" />
+      </geometry>
+      <material        name="">
+        <color          rgba="1 1 1 1" />
+      </material>
+    </visual>
+
+    <collision>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
+      <geometry>
+        <mesh          filename="package://rokae_desk/meshes/zhijia_Link.stl" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint    name="zhijia_joint"    type="fixed">
+    <origin      xyz="0 0 0"      rpy="0 0 0" />
+    <parent      link="tool_base_link" />
+    <child      link="zhijia_Link" />
+    <axis      xyz="0 0 0" />
+  </joint>
+
+</robot>
