@@ -3,7 +3,7 @@
 <robot  name="camera_taotong"   xmlns:xacro="http://wiki.ros.org/xacro">
 
   <link    name="tool_base_link">
-  
+
     <inertial>
       <origin        xyz="0 0 0"        rpy="0 0 0" />
       <mass        value="0.01453" />
@@ -33,6 +33,33 @@
       </geometry>
     </collision>
   </link>
+
+ <joint    name="tool_taotong"    type="continuous">
+    <origin      xyz="0 0 0"      rpy="0 0 0" />
+    <parent      link="tool_base_link" />
+    <child      link="tool_Link" />
+    <axis      xyz="0 0 -1" />
+  </joint>
+
+  <transmission name="tool_base_tran">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="tool_base_joint">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="motor_tool_base">
+      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      <mechanicalReduction>1</mechanicalReduction>
+    </actuator>
+  </transmission>
+
+  <gazebo reference="tool_base_link">
+     <material>Gazebo/Block</material>
+  </gazebo>
+
+
+
+
+
 
   <link    name="tool_Link">
 
@@ -67,14 +94,29 @@
 
   </link>
 
-  <joint    name="tool_taotong"    type="continuous">
-    <origin      xyz="0 0 0"      rpy="0 0 0" />
-    <parent      link="tool_base_link" />
-    <child      link="tool_Link" />
-    <axis      xyz="0 0 -1" />
-  </joint>
 
-  <link    name="zhijia_Link">
+  <gazebo reference="tool_Link">
+     <material>Gazebo/Block</material>
+  </gazebo>
+
+
+
+
+<!-- ros_control plugin -->
+<gazebo>
+  <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+    <robotNamespace>/camera_taotong</robotNamespace>
+    <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+    <legacyModeNS>true</legacyModeNS>
+  </plugin>
+</gazebo>
+
+
+
+
+
+
+  <!-- <link    name="zhijia_Link">
 
     <inertial>
       <origin        xyz="0.0187492845643489 -0.118069176191453 -0.00399999999999993"        rpy="0 0 0" />
@@ -104,13 +146,13 @@
         <mesh          filename="package://rokae_desk/meshes/zhijia_Link.stl" />
       </geometry>
     </collision>
-  </link>
+  </link> -->
 
-  <joint    name="zhijia_joint"    type="fixed">
+  <!-- <joint    name="zhijia_joint"    type="fixed">
     <origin      xyz="0 0 0"      rpy="0 0 0" />
     <parent      link="tool_base_link" />
     <child      link="zhijia_Link" />
     <axis      xyz="0 0 0" />
-  </joint>
+  </joint> -->
 
 </robot>
