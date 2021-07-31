@@ -9,7 +9,6 @@
   <xacro:property name="nameofManipulator" value = "rokae"/>
 
   <!-- Used for fixing robot to Gazebo 'base_link' -->
-  
   <!-- <link name="world"/>
     <joint name="fixed" type="fixed">
     <parent link="world"/>
@@ -17,6 +16,7 @@
   </joint>
   
   -->
+
 
 
 <!--base-->
@@ -28,13 +28,12 @@
        <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
        <material name="white"/>
     </visual>
-
     <inertial>
+      
   <mass value="5.48267"/>
   <inertia ixx="0.056" ixy="0" ixz="0" iyy="0.066" iyz="0" izz="0.035"/>
   <origin rpy="0 0 0" xyz="-0.0183 0 0.067"/> 
     </inertial>
-
     <collision>
       <geometry>
         <mesh filename="package://${nameofManipulator}_desk/meshes/collision/${nameofManipulator}_base.stl" scale="0.001 0.001 0.001"/>
@@ -54,10 +53,10 @@
 <transmission name="tran1">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_1">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor1">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -81,6 +80,7 @@
      <mass value="5.96204"/>
      <inertia ixx="0.051" ixy="0" ixz="0" iyy="0.049" iyz="-0.007" izz="7.176"/>
      <origin rpy="0 0 0" xyz="0 -0.017 0.320"/>
+
      </inertial>
     
     
@@ -103,10 +103,10 @@
    <transmission name="tran2">
      <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_2">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor2">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -148,17 +148,17 @@
     <child link="${nameofManipulator}_link3"/>
   <limit effort="300" lower="-3.0527" upper="3.0527" velocity="10"/>
     <axis xyz="0 0 1"/>
-    <origin rpy="0 0 0" xyz="0 0 0.23743878"/>_desk
+    <origin rpy="0 0 0" xyz="0 0 0.23743878"/>
   </joint>
   
   
    <transmission name="tran3">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_3">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor3">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -206,10 +206,10 @@
   <transmission name="tran4">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_4">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor4">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -254,10 +254,10 @@
   <transmission name="tran5">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_5">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor5">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -307,10 +307,10 @@
   <transmission name="tran6">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_6">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor6">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -357,10 +357,10 @@
   <transmission name="tran7">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_7">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor7">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
@@ -377,49 +377,54 @@
       <geometry>
         <mesh filename="package://${nameofManipulator}_desk/meshes/visual/${nameofManipulator}_link7.stl" scale="0.001 0.001 0.001"/>
       </geometry>
-	<origin rpy="0 0 0" xyz="0 0 0"/>
+	    <origin rpy="0 0 0" xyz="0 0 0"/>
       <material name="white"/>
     </visual>
     
     <inertial>
-      
       <mass value="1.26834"/>
       <inertia ixx="0.002" ixy="-0.000000" ixz="-0.000000" iyy="0.001" iyz="-0.000000" izz="0.337"/>
       <origin rpy="0 0 0" xyz="0 0.012 -0.052"/>
-
     </inertial>
     
     <collision>
       <geometry>
         <mesh filename="package://${nameofManipulator}_desk/meshes/collision/${nameofManipulator}_link7.stl" scale="0.001 0.001 0.001"/>
       </geometry>
-	<origin rpy="0 0 0" xyz="0 0 0"/>
+	    <origin rpy="0 0 0" xyz="0 0 0"/>
     </collision>
   </link>
   
-  <!-- <joint name="xmate_joint_8" type="revolute">
+
+<!-- 
+
+    <joint name="xmate_joint_8" type="revolute">
     <parent link="${nameofManipulator}_link7"/>
-    <child link="${nameofManipulator}_link8"/>
-   <limit effort="300" lower="-6.283" upper="6.283" velocity="10"/>
+    <child link="taotong_link8"/>
+      <limit effort="300" lower="-6.283" upper="6.283" velocity="10"/>
     <axis xyz="0 0 1"/>
     <origin rpy="0.0 0.0 0.0" xyz="0 0 0.25090877" />
-  </joint>
+    </joint>
+   -->
   
-  
-  <transmission name="tran8">
+  <!-- <transmission name="tran8">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_8">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor8">
-      <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission> -->
+  
 
   <gazebo reference="${nameofManipulator}_link7">
      <material>Gazebo/Block</material>
   </gazebo>
+
+
+
 
 
 
@@ -431,9 +436,6 @@
     <legacyModeNS>true</legacyModeNS>
   </plugin>
 </gazebo>
-
-
-
 
 
 </robot>

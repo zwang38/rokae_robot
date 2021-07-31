@@ -2,44 +2,47 @@
 
 <robot  name="camera_taotong"   xmlns:xacro="http://wiki.ros.org/xacro">
 
+<!--link 4--> 
   <link    name="tool_base_link">
-
     <inertial>
       <origin        xyz="0 0 0"        rpy="0 0 0" />
       <mass        value="0.01453" />
       <inertia
-        ixx="3.2231E-06"
-        ixy="2.3572E-38"
-        ixz="3.3863E-23"
-        iyy="3.2231E-06"
-        iyz="-1.1479E-38"
-        izz="6.3666E-06" />
+        ixx="3.22"
+        ixy="2.35"
+        ixz="3.38"
+        iyy="3.22"
+        iyz="-1.14"
+        izz="6.36" />
     </inertial>
 
     <visual>
-      <origin        xyz="0 0 0"        rpy="0 0 0" />
       <geometry>
         <mesh          filename="package://rokae_desk/meshes/tool_base_link.stl" />
       </geometry>
-      <material        name="">
-        <color          rgba="1 1 1 1" />
-      </material>
+	      <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
+      <material name="white"/>
     </visual>
 
     <collision>
-      <origin        xyz="0 0 0"        rpy="0 0 0" />
       <geometry>
         <mesh          filename="package://rokae_desk/meshes/tool_base_link.stl" />
       </geometry>
+	    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
     </collision>
-  </link>
 
- <joint    name="tool_taotong"    type="continuous">
-    <origin      xyz="0 0 0"      rpy="0 0 0" />
+  </link>
+  
+  
+   <joint    name="tool_taotong"    type="continuous">
     <parent      link="tool_base_link" />
     <child      link="tool_Link" />
     <axis      xyz="0 0 -1" />
+    <origin      xyz="0 0 0"      rpy="0 0 0" />
   </joint>
+  
+
+
 
   <transmission name="tool_base_tran">
     <type>transmission_interface/SimpleTransmission</type>
@@ -52,54 +55,47 @@
     </actuator>
   </transmission>
 
+
   <gazebo reference="tool_base_link">
-     <material>Gazebo/Block</material>
+     <material>Gazebo/Red</material>
   </gazebo>
 
 
 
-
-
-
+<!-- tool_Link -->
   <link    name="tool_Link">
-
+    <visual>
+      <geometry>
+        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl" />
+      </geometry>
+	    <origin rpy="0 0 0" xyz="0 0 0"/>
+      <material name="white"/>
+    </visual>
+    
     <inertial>
-      <origin        xyz="5.20417042793042E-18 3.79470760369927E-19 -0.0550139882029437"        rpy="0 0 0" />
       <mass        value="0.0282087806682537" />
       <inertia
-        ixx="0.000106276464425593"
-        ixy="-8.0779356694635E-25"
-        ixz="-3.99056251828797E-21"
-        iyy="0.000106276464425593"
-        iyz="-1.18506893413465E-22"
-        izz="6.54461475755754E-06" />
+        ixx="0.000106"
+        ixy="-8.0779"
+        ixz="-3.99"
+        iyy="0.000106"
+        iyz="-1.185"
+        izz="6.544" />      <origin        xyz="5.20417042793042E-18 3.79470760369927E-19 -0.0550139882029437"        rpy="0 0 0" />
     </inertial>
-
-    <visual>
-      <origin        xyz="0 0 0"        rpy="0 0 0" />
-      <geometry>
-        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl" />
-      </geometry>
-      <material        name="">
-        <color          rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
-      </material>
-    </visual>
-
+    
     <collision>
-      <origin        xyz="0 0 0"        rpy="0 0 0" />
       <geometry>
         <mesh          filename="package://rokae_desk/meshes/tool_Link.stl" />
       </geometry>
+	    <origin rpy="0 0 0" xyz="0 0 0"/>
     </collision>
-
   </link>
 
 
+
   <gazebo reference="tool_Link">
-     <material>Gazebo/Block</material>
+     <material>Gazebo/Gray</material>
   </gazebo>
-
-
 
 
 <!-- ros_control plugin -->
@@ -110,9 +106,6 @@
     <legacyModeNS>true</legacyModeNS>
   </plugin>
 </gazebo>
-
-
-
 
 
 
@@ -154,5 +147,6 @@
     <child      link="zhijia_Link" />
     <axis      xyz="0 0 0" />
   </joint> -->
+
 
 </robot>
