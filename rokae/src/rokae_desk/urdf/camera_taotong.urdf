@@ -2,6 +2,10 @@
 
 <robot  name="camera_taotong"   xmlns:xacro="http://wiki.ros.org/xacro">
 
+
+
+
+
 <!--link 4--> 
   <link    name="tool_base_link">
     <inertial>
@@ -46,7 +50,7 @@
 
   <transmission name="tool_base_tran">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="tool_base_joint">
+    <joint name="tool_taotong">
       <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor_tool_base">

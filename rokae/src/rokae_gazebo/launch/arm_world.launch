@@ -21,22 +21,33 @@
   </include>
 
 
-  <!-- <param name="camera_description" command="$(find xacro)/xacro --inorder  $(find realsense2_description)/urdf/test_d435_camera.urdf.xacro" />
+  <!-- <param name="camera_description" command="$(find xacro)/xacro inorder  $(find realsense2_description)/urdf/test_d435_camera.urdf.xacro" />
   <node name="camera_spawn" pkg="gazebo_ros" type="spawn_model" args="-urdf -param camera_description -urdf -model camera_1 -z 0 -P 0 " respawn="false" output="screen"/> -->
-
 
     <param name="robot_description" command="$(find xacro)/xacro --inorder $(find rokae_desk)/urdf/robot_tool_complex.xacro"/>
     <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model rokae -param robot_description"/>
 
     <!-- Load joint controller configurations from YAML file to parameter server -->
         <!-- load the controllers -->
-    <rosparam file="$(find rokae_control)/config/rokae_control_moveit.yaml" command="load"/>
+    <rosparam file="$(find rokae_control)/config/rokae_camera_control_moveit.yaml" command="load"/>
     <!-- load the controllers -->
-    <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/rokae"
-    output="screen" args="     arm_controller  "/>
-   <!-- <node pkg="robot_state_publisher" type="robot_state_publisher"  name="robot_state_publisher"     respawn="false"  >
-    <param name="publish_frequency" type="double" value="30.0" />
-    </node> -->
+    <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" ns="/rokae"
+    output="screen" args="     arm_controller  hand_controller "/>
+ -->
+
+<!--加载位置控制器-->
+  <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/rokae" args="arm_controller" />
+
+  <!--加载关节状态控制器-->
+  <node name="hand_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
+		output="screen" ns="/rokae" args="hand_controller" />
+
+
+
+
+
+
 
   <!-- convert joint states to TF transforms for rviz, etc -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
@@ -46,12 +57,10 @@
   </node>
 
 
-
-
-
-
-
 </launch>
+
+
+
 
 
 

@@ -47,22 +47,3 @@
 
 
 </robot>
-
-
-
-
-  <!-- <joint name="location_camera_joint" type="fixed">
-    <origin xyz="0 0.15 1.75" rpy="0 3.14 1.57"/>
-    <parent link="rokae_link7"/>
-    <child link="world_base"/>
-  </joint> -->
-
-  <!-- <sensor_d435 parent="rokae_link7" name="camera_location">
-    <origin xyz="0  -0.1 0" rpy="0 -1.57 1.57"/>
-  </sensor_d435>
-
-
-  <sensor_d435 parent="table" name="camera_global">
-    <origin xyz="0.20 0 1.75" rpy="0 1.57 0"/>
-  </sensor_d435> -->
-

@@ -357,11 +357,11 @@
   <transmission name="tran7">
     <type>transmission_interface/SimpleTransmission</type>
     <joint name="xmate_joint_7">
-<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
     </joint>
     <actuator name="motor7">
-<hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
-      <mechanicalReduction>1</mechanicalReduction>
+    <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
 
