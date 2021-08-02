@@ -7,7 +7,7 @@
   <xacro:include filename="$(find rokae_desk)/urdf/battery_pack.urdf" />
 
   <xacro:include filename="$(find rokae_desk)/urdf/camera_taotong.urdf" />
-  <xacro:include filename="$(find realsense2_description)/urdf/test_d435_camera.urdf.xacro"   />
+  <xacro:include filename="$(find realsense2_description)/urdf/tool_d435_camera.urdf.xacro"   />
 
 
   <joint name="table_ur5_joint" type="fixed">
@@ -30,8 +30,8 @@
 
   <joint name="location_camera_joint" type="fixed">
     <origin xyz="0 0.15 1.75" rpy="0 3.14 1.57"/>
-    <parent link="rokae_link7"/>
-    <child link="world_base"/>
+    <parent link="tool_base_link"/>
+    <child link="camera_base_link"/>
   </joint>
 
 

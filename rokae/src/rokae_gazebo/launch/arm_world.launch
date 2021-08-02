@@ -37,11 +37,11 @@
 
 <!--加载位置控制器-->
   <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" ns="/rokae" args="arm_controller" />
+    output="screen" ns="/rokae" args="  arm_controller  " />
 
   <!--加载关节状态控制器-->
   <node name="hand_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-		output="screen" ns="/rokae" args="hand_controller" />
+		output="screen" ns="/rokae" args="  hand_controller  " />
 
 
 
