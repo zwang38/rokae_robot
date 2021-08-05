@@ -409,7 +409,67 @@ class MoveGroupTutorial(object):
 
 
 
-# 获取无人机坐标位置
+
+  def robot_move(self ,parts_pose): 
+      # moveit_commander.roscpp_initialize(sys.argv)
+      # robot = moveit_commander.RobotCommander()
+      group = self.group
+
+      group.clear_pose_targets()
+      quat=tf.transformations.quaternion_from_euler(3.14,0,0)
+      pose_target = geometry_msgs.msg.Pose()
+      pose_target.position.x = parts_pose[0][0]
+      pose_target.position.y = parts_pose[0][1]
+      pose_target.position.z = parts_pose[0][2]
+      pose_target.orientation.x = quat[0]
+      pose_target.orientation.y = quat[1]
+      pose_target.orientation.z = quat[2]
+      pose_target.orientation.w = quat[3]
+      group.set_pose_target(pose_target)
+  
+      plan1 = group.plan()
+      group.execute(plan1, wait= True)
+  
+
+
+
+  def goal_move_line(self,parts_pose): 
+    group = self.group
+
+    step = 5.0
+    waypoints = []
+    robot_pose = geometry_msgs.msg.Pose()
+    now_pose = group.get_current_pose().pose
+    x_step_unit = (parts_pose[0][0]-now_pose.position.x)/step # target_pose - start pose / move_step
+    y_step_unit= (parts_pose[0][1]-now_pose.position.y)/step # target_pose - start pose / move_step
+    z_step_unit = (1.3-now_pose.position.z)/step # target_pose - start pose / move_step
+    robot_pose.orientation.x = now_pose.orientation.x
+    robot_pose.orientation.y = now_pose.orientation.y
+    robot_pose.orientation.z = now_pose.orientation.z
+    robot_pose.orientation.w = now_pose.orientation.w
+
+    # robot move following vector
+    for i in range(1,int(step)):
+        robot_pose.position.x = now_pose.position.x + x_step_unit*i
+        robot_pose.position.y = now_pose.position.y + y_step_unit*i
+        robot_pose.position.z = now_pose.position.z + z_step_unit*i
+        waypoints.append(copy.deepcopy(robot_pose))
+
+    # last target pose add in memory
+    robot_pose.position.x = parts_pose[0][0]
+    robot_pose.position.y = parts_pose[0][1]
+    robot_pose.position.z = -1.3
+    waypoints.append(copy.deepcopy(robot_pose))
+
+    plan, fraction = group.compute_cartesian_path(waypoints,0.01,0.0) 
+    group.execute(plan,wait=True)
+
+
+
+
+
+
+  # 获取机器人坐标位置
 def get_model_pos():
     parts_pose=[]
     get_state_service = rospy.ServiceProxy('/gazebo/get_model_state',GetModelState)
@@ -429,65 +489,24 @@ def get_model_pos():
     parts_pose.append([x,y,z,euler[0],euler[1],euler[2]]) 
     # state = (objstate.pose.position.x,objstate.pose.position.y,objstate.pose.position.z)
     # print('pos',state)
-    return parts_pose
+    return parts_pose  
 
-def robot_move(x,y,z,Y):
-    # moveit_commander.roscpp_initialize(sys.argv)
-    # robot = moveit_commander.RobotCommander()
-    
-    group1.clear_pose_targets()
-    quat=tf.transformations.quaternion_from_euler(3.14,0,Y)
-    pose_target = geometry_msgs.msg.Pose()
-    pose_target.position.x = x
-    pose_target.position.y = y
-    pose_target.position.z = z
-    pose_target.orientation.x = quat[0]
-    pose_target.orientation.y = quat[1]
-    pose_target.orientation.z = quat[2]
-    pose_target.orientation.w = quat[3]
-    group1.set_pose_target(pose_target)
-
-    plan1 = group1.plan()
-    group1.execute(plan1, wait= True)
-
-def goal_move_line(x,y,z): 
-    step = 5.0
-    waypoints = []
-    robot_pose = geometry_msgs.msg.Pose()
-    now_pose = group1.get_current_pose().pose
-    x_step_unit = (x-now_pose.position.x)/step # target_pose - start pose / move_step
-    y_step_unit= (y-now_pose.position.y)/step # target_pose - start pose / move_step
-    z_step_unit = (z-now_pose.position.z)/step # target_pose - start pose / move_step
-    robot_pose.orientation.x = now_pose.orientation.x
-    robot_pose.orientation.y = now_pose.orientation.y
-    robot_pose.orientation.z = now_pose.orientation.z
-    robot_pose.orientation.w = now_pose.orientation.w
-
-    # robot move following vector
-    for i in range(1,int(step)):
-        robot_pose.position.x = now_pose.position.x + x_step_unit*i
-        robot_pose.position.y = now_pose.position.y + y_step_unit*i
-        robot_pose.position.z = now_pose.position.z + z_step_unit*i
-        waypoints.append(copy.deepcopy(robot_pose))
-
-    # last target pose add in memory
-    robot_pose.position.x = x
-    robot_pose.position.y = y
-    robot_pose.position.z = z
-    waypoints.append(copy.deepcopy(robot_pose))
-
-    plan, fraction = group1.compute_cartesian_path(waypoints,0.01,0.0) 
-    group1.execute(plan,wait=True)
 
 
 def main():
   try:
-    parts_pose =get_model_pos()
-
 
     print ("============ Press `Enter` to begin the tutorial by setting up the moveit_commander (press ctrl-d to exit) ...")
     rospy.sleep(1)
     tutorial = MoveGroupTutorial()
+
+
+ # Parts-Arrangement-Robot   8-5号加的，，有个问题就是位置规划呢，有正反向，如何避免
+    parts_pose =get_model_pos()
+    tutorial.goal_move_line(parts_pose)
+    tutorial.robot_move(parts_pose)
+ # Parts-Arrangement-Robot
+
 
     print( "============ Press `Enter` to execute a movement using a joint state goal ...")
     raw_input()
@@ -513,26 +532,6 @@ def main():
     raw_input()
     tutorial.execute_plan(cartesian_plan)
 
-    # print "============ Press `Enter` to add a box to the planning scene ..."
-    # raw_input()
-    # tutorial.add_box()
-
-    # print "============ Press `Enter` to attach a Box to the Panda robot ..."
-    # raw_input()
-    # tutorial.attach_box()
-
-    # print "============ Press `Enter` to plan and execute a path with an attached collision object ..."
-    # raw_input()
-    # cartesian_plan, fraction = tutorial.plan_cartesian_path(scale=-1)
-    # tutorial.execute_plan(cartesian_plan)
-
-    # print "============ Press `Enter` to detach the box from the Panda robot ..."
-    # raw_input()
-    # tutorial.detach_box()
-
-    # print "============ Press `Enter` to remove the box from the planning scene ..."
-    # raw_input()
-    # tutorial.remove_box()
 
     print( "============ Python tutorial demo complete!")
   except rospy.ROSInterruptException:
