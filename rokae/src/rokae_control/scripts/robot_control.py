@@ -4,7 +4,7 @@ import rospy
 import actionlib
 from sensor_msgs.msg import JointState
  
-JOINT_NAMES = [     'xmate_joint_1', 'xmate_joint_2', 'xmate_joint_3', 'xmate_joint_4', 'xmate_joint_5', 'xmate_joint_6', 'xmate_joint_7', 'xmate_joint_8'     ]
+JOINT_NAMES = ['xmate_joint_1', 'xmate_joint_2', 'xmate_joint_3', 'xmate_joint_4', 'xmate_joint_5', 'xmate_joint_6', 'xmate_joint_7'   ]
 
 
 

@@ -5,26 +5,29 @@ from gazebo_msgs.srv import SpawnModel
 from gazebo_msgs.msg import ModelStates
 from geometry_msgs.msg import *
 from std_msgs.msg import *
-
 import moveit_commander
 import moveit_msgs.msg
+import geometry_msgs.msg
+from math import pi
+from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
 
 
-def product_spawn():
-    # This function spawn three types parts(screw1, screw2, woodbolt) in gazebo
+
+# def product_spawn():
+#     # This function spawn three types parts(screw1, screw2, woodbolt) in gazebo
     
-    rospy.wait_for_service("gazebo/spawn_urdf_model")
-    spawn_model = rospy.ServiceProxy("gazebo/spawn_urdf_model", SpawnModel)
+#     rospy.wait_for_service("gazebo/spawn_urdf_model")
+#     spawn_model = rospy.ServiceProxy("gazebo/spawn_urdf_model", SpawnModel)
 
-    rospack = rospkg.RosPack()
-    part_pkg = rospack.get_path('rokae_desk')
+#     rospack = rospkg.RosPack()
+#     part_pkg = rospack.get_path('rokae_desk')
 
-    for count in range(1): # three types products spawn in gazebo
-        with open(part_pkg+'/urdf/'+'battery_pack.urdf', "r") as battery_pack:
-                product_xml = battery_pack.read()
-                battery_pack.close()
+#     for count in range(1): # three types products spawn in gazebo
+#         with open(part_pkg+'/urdf/'+'battery_pack.urdf', "r") as battery_pack:
+#                 product_xml = battery_pack.read()
+#                 battery_pack.close()
 
         # if(count == 0):
         #     with open(part_pkg+'/urdf/'+'chair_pin.urdf', "r") as wood1:
@@ -37,37 +40,37 @@ def product_spawn():
         #         product_xml = screw2.read()
         #         screw2.close()
 
-        for num in range(0,5):
-            x_rand = random.randrange(-20,20)*0.01
-            y_rand = random.randrange(-20,20)*0.01
-            R_rand = random.randrange(-314,314)*0.01
-            P_rand = random.randrange(-314,314)*0.01
-            Y_rand = random.randrange(-314,314)*0.01
-            quat=tf.transformations.quaternion_from_euler(R_rand,P_rand,Y_rand) 
-            orient = Quaternion(quat[0],quat[1],quat[2],quat[3])
-            item_name   =   "product_{0}_{1}".format(count,num)
-            print("Spawning model:%s", item_name)
-            item_pose   =   Pose(Point(x=x_rand, y=y_rand, z=1), orient)
-            spawn_model(item_name, product_xml, "", item_pose, "world")
-            rospy.sleep(0.5)
+        # for num in range(0,5):
+        #     x_rand = random.randrange(-20,20)*0.01
+        #     y_rand = random.randrange(-20,20)*0.01
+        #     R_rand = random.randrange(-314,314)*0.01
+        #     P_rand = random.randrange(-314,314)*0.01
+        #     Y_rand = random.randrange(-314,314)*0.01
+        #     quat=tf.transformations.quaternion_from_euler(R_rand,P_rand,Y_rand) 
+        #     orient = Quaternion(quat[0],quat[1],quat[2],quat[3])
+        #     item_name   =   "product_{0}_{1}".format(count,num)
+        #     print("Spawning model:%s", item_name)
+        #     item_pose   =   Pose(Point(x=x_rand, y=y_rand, z=1), orient)
+        #     spawn_model(item_name, product_xml, "", item_pose, "world")
+        #     rospy.sleep(0.5)
 
-def part_pose_collect():
-    parts_pose=[]
-    model_pose = rospy.wait_for_message("gazebo/model_states",ModelStates)
-    for count in range(3):
-        for num in range(5):
-            product_num = model_pose.name.index("product_{0}_{1}".format(count,num))
-            x = model_pose.pose[product_num].position.x
-            y = model_pose.pose[product_num].position.y
-            z = model_pose.pose[product_num].position.z
-            X = model_pose.pose[product_num].orientation.x
-            Y = model_pose.pose[product_num].orientation.y
-            Z = model_pose.pose[product_num].orientation.z
-            W = model_pose.pose[product_num].orientation.w
-            euler=tf.transformations.euler_from_quaternion((X,Y,Z,W)) 
-            parts_pose.append([x,y,z,euler[0],euler[1],euler[2]])     
-    # print(parts_pose)
-    return parts_pose
+# def part_pose_collect():
+#     parts_pose=[]
+#     model_pose = rospy.wait_for_message("gazebo/model_states",ModelStates)
+#     for count in range(3):
+#         for num in range(5):
+#             product_num = model_pose.name.index("product_{0}_{1}".format(count,num))
+#             x = model_pose.pose[product_num].position.x
+#             y = model_pose.pose[product_num].position.y
+#             z = model_pose.pose[product_num].position.z
+#             X = model_pose.pose[product_num].orientation.x
+#             Y = model_pose.pose[product_num].orientation.y
+#             Z = model_pose.pose[product_num].orientation.z
+#             W = model_pose.pose[product_num].orientation.w
+#             euler=tf.transformations.euler_from_quaternion((X,Y,Z,W)) 
+#             parts_pose.append([x,y,z,euler[0],euler[1],euler[2]])     
+#     # print(parts_pose)
+#     return parts_pose
     
 
 def robot_move(x,y,z,Y):
@@ -234,13 +237,25 @@ def gripper_move_to_object(x1,y1,Degree):
     # rospy.sleep(1) # Finish Place
 
 
-rospy.init_node("sort_robot_program")
-# product_spawn()
-parts_pose = part_pose_collect()
 
+    # First initialize `moveit_commander`_ and a `rospy`_ node:
 moveit_commander.roscpp_initialize(sys.argv)
+rospy.init_node('robot_sorting', anonymous=True)
+# Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
+# the robot:
 robot = moveit_commander.RobotCommander()
-group_name2 = "gripper"
+# Instantiate a `PlanningSceneInterface`_ object.  This object is an interface
+# to the world surrounding the robot:
+scene = moveit_commander.PlanningSceneInterface()
+
+group_name1 = "arm"
+group1 = moveit_commander.MoveGroupCommander(group_name1)
+group1.set_planner_id("RRTConnectkConfigDefault")
+
+group1.set_named_target("Home")
+
+
+group_name2 = "hand"
 group2 = moveit_commander.MoveGroupCommander(group_name2)
 # group2.set_planner_id("RRTConnectkConfigDefault")
 # group2.set_goal_tolerance(0.1)
@@ -250,9 +265,7 @@ group2 = moveit_commander.MoveGroupCommander(group_name2)
 # group2.set_max_acceleration_scaling_factor(1.0)
 
 
-group_name1 = "arm"
-group1 = moveit_commander.MoveGroupCommander(group_name1)
-group1.set_planner_id("RRTConnectkConfigDefault")
+
 # group1.set_goal_tolerance(0.1)
 # group1.set_num_planning_attempts(10)
 # group1.set_planning_time(10.0)
@@ -316,19 +329,3 @@ for count in range(3):
         gripper_control(False)
         rospy.sleep(1)
 
-        # group1.set_named_target("Home")
-        # plan1 = group1.plan()
-        # group1.execute(plan1,wait=True)
-        # robot_move(parts_pose[num][0], parts_ pose[num][1], 1.3,parts_pose[num][5])
-        # robot_move_line(parts_pose[num][0], parts_pose[num][1], 1.3, parts_pose[num][0], parts_pose[num][1], 0.83)
-        # gripper_control(True)
-        # rospy.sleep(0.5)
-        # robot_move_line(parts_pose[num][0], parts_pose[num][1], 0.83, parts_pose[num][0], parts_pose[num][1], 1.3)
-        # robot_move_line(parts_pose[num][0], parts_pose[num][1], 1.3, basket_pose[0], basket_pose[1], 1.3)
-        # gripper_control(False)
-        # rospy.sleep(0.5)
-
-
-    
-
-    
