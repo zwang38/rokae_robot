@@ -10,10 +10,10 @@
       <inertia        ixx="2.6252"        ixy="3.5672E-05"        ixz="-0.0040349"        iyy="6.7216"        iyz="-8.9999E-08"        izz="9.3409" />
     </inertial>
     <visual>
-      <origin        xyz="0 0 0"        rpy="0 0 0" />
       <geometry>
         <mesh          filename="package://rokae_desk/meshes/battery_pack_link.stl" />
       </geometry>
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
       <material        name="">
         <color          rgba="0.79216 0.81961 0.93333 1" />
       </material>
@@ -25,7 +25,11 @@
           filename="package://rokae_desk/meshes/battery_pack_link.stl" />
       </geometry>
     </collision>
-  </link>  
+  </link>
+
+  <gazebo reference="battery_pack_link">
+    <material>Gazebo/Orange</material>
+  </gazebo>
   
   <link    name="luoshuan_Link">
     <inertial>
