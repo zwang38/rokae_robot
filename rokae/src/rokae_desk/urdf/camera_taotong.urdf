@@ -98,7 +98,7 @@
 
 
   <gazebo reference="tool_Link">
-     <material>Gazebo/Gray</material>
+     <material>Gazebo/Black</material>
   </gazebo>
 
 

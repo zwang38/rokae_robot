@@ -154,7 +154,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -425,7 +425,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -486,7 +486,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -561,7 +561,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -636,7 +636,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -711,7 +711,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -786,7 +786,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -861,7 +861,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>
@@ -936,7 +936,7 @@
           </geometry>
           <material>
             <script>
-              <name>Gazebo/Block</name>
+              <name>Gazebo/Black</name>
               <uri>file://media/materials/scripts/gazebo.material</uri>
             </script>
           </material>

@@ -55,7 +55,7 @@
     </collision>
   </link>
   <gazebo reference="battery_pack_link">
-        <material>Gazebo/Block</material>
+        <material>Gazebo/Black</material>
    </gazebo>
 
 <!-- luoshuan_Link -->
