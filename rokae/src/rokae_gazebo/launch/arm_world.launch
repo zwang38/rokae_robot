@@ -3,7 +3,7 @@
   <!-- these are the arguments you can pass this launch file, for example paused:=true -->
   <!-- <arg name="world_name" value="$(find rokae_gazebo)/worlds/pigot.world"/> -->
   <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="false"/>
+  <arg name="use_sim_time" default="true"/>
   <arg name="gui" default="true"/>
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
@@ -43,6 +43,9 @@
   <node name="hand_controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
 		output="screen" ns="/rokae" args="  hand_controller  " />
 
+  <node name="joint_state_controller_spawner" pkg="controller_manager" type="controller_manager"
+         args="spawn joint_state_controller" ns="/rokae" respawn="false" output="screen"/>
+
 
 
 
@@ -52,7 +55,7 @@
   <!-- convert joint states to TF transforms for rviz, etc -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
 	respawn="false" output="screen">
-      <param name="publish_frequency" type="double" value="30.0" />
+      <param name="publish_frequency" type="double" value="50.0" />
     <remap from="/joint_states" to="/rokae/joint_states" />
   </node>
 
