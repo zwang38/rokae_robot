@@ -9,7 +9,14 @@
   <xacro:include filename="$(find rokae_desk)/urdf/camera_taotong.urdf" />
   <xacro:include filename="$(find realsense2_description)/urdf/test_d435_camera.urdf.xacro"   />
   <xacro:include filename="$(find realsense2_description)/urdf/gloal_d435_camera.urdf.xacro"   />
+  <xacro:include filename="$(find battery_pack_describe)/urdf/weilan.urdf" />
 
+
+  <joint name="weilan_joint" type="fixed">
+    <origin xyz="0 0 0.05" rpy="0 0 0" />
+    <parent link="table"/>
+    <child link="weilan"/>
+  </joint>
 
   <joint name="table_ur5_joint" type="fixed">
     <origin xyz="-0.55 0 0.12" rpy="0 0 0" />
