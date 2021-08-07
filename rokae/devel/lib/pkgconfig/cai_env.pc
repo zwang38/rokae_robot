@@ -1,0 +1,8 @@
+prefix=/home/nuc/Desktop/rokae_robot/rokae/devel
+
+Name: cai_env
+Description: Description of cai_env
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

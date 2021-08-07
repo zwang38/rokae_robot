@@ -160,7 +160,7 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/robot_control.py
+  scripts/move_group_tutorial_rokae.py 
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
