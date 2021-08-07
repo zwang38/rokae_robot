@@ -62,7 +62,7 @@
   </transmission>
   
   <gazebo reference="${nameofManipulator}_base">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
   
   
@@ -112,7 +112,7 @@
   </transmission>
   
   <gazebo reference="${nameofManipulator}_link1">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 
@@ -164,7 +164,7 @@
   </transmission>
 
   <gazebo reference="${nameofManipulator}_link2">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 
@@ -215,7 +215,7 @@
   </transmission>
 
   <gazebo reference="${nameofManipulator}_link3">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 <!--link 4--> 
@@ -263,7 +263,7 @@
   </transmission>
 
   <gazebo reference="${nameofManipulator}_link4">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 
@@ -316,7 +316,7 @@
   </transmission>
 
   <gazebo reference="${nameofManipulator}_link5">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 
@@ -366,7 +366,7 @@
   </transmission>
 
   <gazebo reference="${nameofManipulator}_link6">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 
@@ -420,7 +420,7 @@
   
 
   <gazebo reference="${nameofManipulator}_link7">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 
