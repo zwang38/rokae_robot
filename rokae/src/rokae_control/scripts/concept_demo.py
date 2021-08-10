@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import sys, random, copy
 import rospy, tf, rospkg
-from gazebo_msgs.srv import SpawnModel
+from gazebo_msgs.srv import SpawnModel, DeleteModel
 from gazebo_msgs.msg import ModelStates
 from geometry_msgs.msg import *
 from std_msgs.msg import *
@@ -11,6 +11,55 @@ import geometry_msgs.msg
 from math import pi
 from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
+
+
+def product_spawn():
+    # This function spawn three types parts(screw1, screw2, woodbolt) in gazebo
+
+    rospy.wait_for_service("gazebo/spawn_urdf_model")
+    spawn_model = rospy.ServiceProxy("gazebo/spawn_urdf_model", SpawnModel)
+    delete_model = rospy.ServiceProxy("gazebo/delete_model", DeleteModel)
+
+    rospack = rospkg.RosPack()
+    part_pkg = rospack.get_path('cai_env')
+
+    for count in range(1):  # three types products spawn in gazebo
+
+        if (count == 0):
+            with open(part_pkg + '/urdf/' + 'block.urdf', "r") as wood1:
+                product_xml = wood1.read()
+                wood1.close()
+
+        elif (count == 1):
+            with open(part_pkg + '/urdf/' + 'screw1.urdf', "r") as screw1:
+                product_xml = screw1.read()
+                screw1.close()
+        else:
+            with open(part_pkg + '/urdf/' + 'screw2.urdf', "r") as screw2:
+                product_xml = screw2.read()
+                screw2.close()
+
+        for num in range(0, 1):
+            print(num)
+            x_rand = random.randrange(-20, 20) * 0.01
+            y_rand = random.randrange(-20, 20) * 0.01
+            R_rand = random.randrange(-314, 314) * 0.01
+            P_rand = random.randrange(-314, 314) * 0.01
+            Y_rand = random.randrange(-314, 314) * 0.01
+            if (num == 0):
+                x_rand = -0.0552
+                y_rand = 0.03854
+                # R_rand = 0
+                # P_rand = 0
+                # Y_rand = 0
+            quat = tf.transformations.quaternion_from_euler(R_rand, P_rand, Y_rand)
+            orient = Quaternion(quat[0], quat[1], quat[2], quat[3])
+            item_name = "product_{0}_{1}".format(count, num)
+            delete_model(item_name)
+            print("Spawning model:%s, %f, %f, %f", item_name, x_rand, y_rand, 1.2)
+            item_pose = Pose(Point(x=x_rand, y=y_rand, z=1.2), orient)
+            spawn_model(item_name, product_xml, "", item_pose, "world")
+            rospy.sleep(0.5)
 
 def robot_move(group, x, y, z, R, P, Y):
     # moveit_commander.roscpp_initialize(sys.argv)
@@ -34,6 +83,9 @@ def robot_move(group, x, y, z, R, P, Y):
 
 
 if __name__ == "__main__":
+    product_spawn()
+
+def skip():
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node('robot_sorting', anonymous=True)
@@ -44,14 +96,26 @@ if __name__ == "__main__":
     # to the world surrounding the robot:
     scene = moveit_commander.PlanningSceneInterface()
 
+
+
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
     group1.set_planner_id("RRTConnect")
 
+    robot_move(group1, -0.057262, 0.038543, 1.3700, 3.14, 0, 0)
+
+    rospy.sleep(5)
+
+
+    robot_move(group1, -0.047262, 0.038543, 1.2400, 3.14, 0, 0)
+    rospy.sleep(6)
+    robot_move(group1, -0.067262, 0.038543, 1.2400, 3.14, 0, 0)
+
+
     #above the bolt 1
     #robot_move(group1, -0.057262, 0.038543, 1.1700, 3.14, 0, 0)
 
-    robot_move(group1, -0.057262, 0.038543, 1.3700, 3.14, 0, 0)
+    robot_move(group1, -0.057262, 0.038543, 1.2700, 3.14, 0, 0)
 
     rospy.sleep(5)
 
