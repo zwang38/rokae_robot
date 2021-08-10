@@ -48,7 +48,7 @@
 
     
   <gazebo reference="weilan">
-     <material>Gazebo/RedTransparentOverlay</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
   
 
