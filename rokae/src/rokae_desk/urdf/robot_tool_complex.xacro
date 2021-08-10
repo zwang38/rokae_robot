@@ -4,7 +4,7 @@
 
   <xacro:include filename="$(find rokae_desk)/urdf/robot.xacro" />
   <xacro:include filename="$(find cai_env)/urdf/table.urdf.xacro" />
-  <xacro:include filename="$(find battery_pack_describe)/urdf/battery_pack.xacro" />
+  <!-- <xacro:include filename="$(find battery_pack_describe)/urdf/battery_pack.xacro" /> -->
 
   <xacro:include filename="$(find rokae_desk)/urdf/camera_taotong.urdf" />
   <xacro:include filename="$(find realsense2_description)/urdf/test_d435_camera.urdf.xacro"   />
@@ -24,11 +24,11 @@
     <child link="rokae_base"/>
   </joint>
 
-  <joint name="battery_pack_joint" type="fixed">
+  <!-- <joint name="battery_pack_joint" type="fixed">
     <origin xyz="0 0 0.12" rpy="0 0 3.14" />
     <parent link="table"/>
     <child link="battery_pack_link"/>
-  </joint>
+  </joint> -->
 
   <joint name="taotong_tool_joint" type="fixed">
     <origin xyz="0 0 0" rpy="0 3.14 0" />
