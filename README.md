@@ -5,3 +5,7 @@ arm_world.launch
 
 camera在 arm 的rviz启动方式
 rokae_camera_moveit_config    moveit_planning_execution.launch
+
+添加电池包，battery:rokae_robot/rokae/src/rokae_control/scripts
+robot_sorting.py
+
