@@ -74,7 +74,7 @@ def product_spawn():
             battery_name='horizontal_battery'
             h_battery.close()     
     elif input=='v':  
-        with open(part_pkg+'/urdf/'+'v_battery.urdf', "r") as v_battery:
+        with open(part_pkg+'/urdf/'+'v_battery.xacro', "r") as v_battery:
             product_xml = v_battery.read()
             battery_name='vertical_battery'
 
