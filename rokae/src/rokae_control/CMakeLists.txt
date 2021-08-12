@@ -165,14 +165,15 @@ include_directories(
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/keyboard_control.py 
-  scripts/position_command.py
-  scripts/motion_planning.py
-  scripts/robot_control.py
-  scripts/motionplanner1.py
-  scripts/motionplanner2.py
-  scripts/testmotion.py
-  scripts/move_group_python_interface_tutorial.py
+  # scripts/keyboard_control.py 
+  # scripts/position_command.py
+  # scripts/motion_planning.py
+  # scripts/robot_control.py
+  # scripts/motionplanner1.py
+  # scripts/motionplanner2.py
+  # scripts/testmotion.py
+  # scripts/move_group_python_interface_tutorial.py
+  scripts/robot_sorting.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
