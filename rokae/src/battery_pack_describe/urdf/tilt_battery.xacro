@@ -25,8 +25,7 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://battery_pack_describe/meshes/tilt_base_link.STL" />
+        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
       </geometry>
       <material
         name="">
@@ -39,16 +38,15 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://battery_pack_describe/meshes/tilt_base_link.STL" />
+        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
       </geometry>
     </collision>
   </link>
-
+<!-- 
 
       <gazebo reference="tilt_base_link">
     <material>Gazebo/FlatBlack</material>
-  </gazebo>
+  </gazebo> -->
 
 
   <link

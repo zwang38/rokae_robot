@@ -16,7 +16,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://battery_pack_describe/meshes/tilt_base_link.STL"/>
+        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
       </geometry>
       <material name="">
         <color rgba="0.79216 0.81961 0.93333 1"/>
@@ -25,13 +25,16 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://battery_pack_describe/meshes/tilt_base_link.STL"/>
+        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
       </geometry>
     </collision>
   </link>
-  <gazebo reference="tilt_base_link">
+
+  <!-- <gazebo reference="tilt_base_link">
     <material>Gazebo/FlatBlack</material>
-  </gazebo>
+  </gazebo> -->
+
+
   <link name="tilt_bolt_Link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.00384797059870837 -2.26255488650073E-09 1.06046859488229E-09"/>

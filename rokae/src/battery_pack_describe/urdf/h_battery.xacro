@@ -25,7 +25,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://battery_pack_describe/meshes/h_battery_base_link.STL" />
+        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
       </geometry>
       <material
         name="">
@@ -39,15 +39,15 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://battery_pack_describe/meshes/h_battery_base_link.STL" />
+        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
       </geometry>
     </collision>
   </link>
-
+<!-- 
       <gazebo reference="h_battery_base_link">
     <material>Gazebo/FlatBlack</material>
   </gazebo>
-
+ -->
 
 
   <link

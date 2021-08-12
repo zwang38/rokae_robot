@@ -16,7 +16,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://battery_pack_describe/meshes/hole_base_link.STL"/>
+        <mesh filename="package://battery_pack_describe/meshes/hole_base_link.dae"/>
       </geometry>
       <material name="">
         <color rgba="0.79216 0.81961 0.93333 1"/>
@@ -25,13 +25,13 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://battery_pack_describe/meshes/hole_base_link.STL"/>
+        <mesh filename="package://battery_pack_describe/meshes/hole_base_link.dae"/>
       </geometry>
     </collision>
   </link>
-  <gazebo reference="hole_base_link">
+  <!-- <gazebo reference="hole_base_link">
     <material>Gazebo/FlatBlack</material>
-  </gazebo>
+  </gazebo> -->
   <link name="hole_bolt_Link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.0222479735541268 -2.42669320749123E-09 1.13997719250469E-09"/>
