@@ -47,7 +47,7 @@
 
 
       <gazebo reference="v_battery_base_link">
-    <material>Gazebo/FlatBlack</material>
+    <material>Gazebo/LaserScan2nd</material>
   </gazebo>
 
 
@@ -92,8 +92,8 @@
     </collision>
   </link>
 
-      <gazebo reference="v_battery_bolt_Link">
-    <material>Gazebo/Gray</material>
+  <gazebo reference="v_battery_bolt_Link">
+    <material>PR2/White </material>
   </gazebo>
 
 

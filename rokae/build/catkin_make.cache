@@ -1,0 +1,2 @@
+battery_pack_describe:cai_env:realsense-ros-development/realsense2_camera:realsense-ros-development/realsense2_description:realsense_gazebo_plugin:rokae_camera_moveit_config:rokae_control:rokae_desk:rokae_gazebo:rokae_moveit_config
+-DCATKIN_DEVEL_PREFIX=/home/nuc/Desktop/rokae_robot/rokae/devel -DCMAKE_INSTALL_PREFIX=/home/nuc/Desktop/rokae_robot/rokae/install -G Unix Makefiles
