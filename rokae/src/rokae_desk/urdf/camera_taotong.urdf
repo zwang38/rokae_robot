@@ -70,10 +70,11 @@
   <link    name="tool_link">
     <visual>
       <geometry>
-        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl" />
+        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl"  scale="1.7 1.7 1.7"/>
+       
       </geometry>
 	    <origin rpy="0 0 0" xyz="0 0 0"/>
-      <material name="white"/>
+      <material name="white"    />
     </visual>
     
     <inertial>
@@ -98,7 +99,7 @@
 
 
   <gazebo reference="tool_Link">
-     <material>Gazebo/Black</material>
+     <material>Gazebo/GreyTransparent</material>
   </gazebo>
 
 

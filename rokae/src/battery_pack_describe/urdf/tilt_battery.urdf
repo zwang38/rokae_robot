@@ -55,7 +55,7 @@
     </collision>
   </link>
   <gazebo reference="tilt_bolt_Link">
-    <material>Gazebo/FlatBlack</material>
+    <material>Gazebo/Gray</material>
   </gazebo>
   <joint name="tilt_bolt_joint" type="continuous">
     <origin rpy="0.7854 0.7854 -1.5708" xyz="0.055323 0.03596 0.031184"/>
@@ -86,9 +86,9 @@
     </collision>
   </link>
   <gazebo reference="tilt_nut_Link">
-    <material>Gazebo/FlatBlack</material>
+    <material>Gazebo/Gray</material>
   </gazebo>
-  <joint name="tilt_nut_joint" type="fixed">
+  <joint name="tilt_nut_joint" type="continuous">
     <origin rpy="2.5261 -0.5236 -0.61548" xyz="0.055323 0.032323 0.027548"/>
     <parent link="tilt_base_link"/>
     <child link="tilt_nut_Link"/>

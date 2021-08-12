@@ -9,7 +9,6 @@
   <arg name="headless" default="false"/>
   <arg name="debug" default="false"/>
   
-
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
     <!-- <arg name="world_name" value="$(find cai_env)/worlds/factory_world.world" /> -->
@@ -21,12 +20,8 @@
     <arg name="headless" value="$(arg headless)"/>
   </include>
 
-    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find battery_pack_describe)/urdf/battery_pack.xacro"/>
-    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model battery_pack -param robot_description"/>
-
-
-
-
+    <param name="robot_description" command="$(find xacro)/xacro --inorder $(find battery_pack_describe)/urdf/v_battery.xacro"/>
+    <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model v_battery -param robot_description"/>
 
 
 </launch>

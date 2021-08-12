@@ -32,7 +32,7 @@
   <gazebo reference="h_battery_base_link">
     <material>Gazebo/FlatBlack</material>
   </gazebo>
-  <link name="h_bolt__Link">
+  <link name="h_bolt_Link">
     <inertial>
       <origin rpy="0 0 0" xyz="-0.0222479735541268 -9.0784925931009E-10 2.52273613804421E-09"/>
       <mass value="0.010043058879212"/>
@@ -41,7 +41,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://battery_pack_describe/meshes/h_bolt__Link.STL"/>
+        <mesh filename="package://battery_pack_describe/meshes/h_bolt_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.776470588235294 0.756862745098039 0.737254901960784 1"/>
@@ -50,17 +50,17 @@
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://battery_pack_describe/meshes/h_bolt__Link.STL"/>
+        <mesh filename="package://battery_pack_describe/meshes/h_bolt_Link.STL"/>
       </geometry>
     </collision>
   </link>
-  <gazebo reference="h_bolt__Link">
+  <gazebo reference="h_bolt_Link">
     <material>Gazebo/Gray</material>
   </gazebo>
   <joint name="h_bolt_joint" type="continuous">
     <origin rpy="1.9639 0 1.5708" xyz="-0.036344 -0.016452 0.03"/>
     <parent link="h_battery_base_link"/>
-    <child link="h_bolt__Link"/>
+    <child link="h_bolt_Link"/>
     <axis xyz="1 0 0"/>
   </joint>
   <link name="h_nut_Link">

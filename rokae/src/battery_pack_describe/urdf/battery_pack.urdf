@@ -30,7 +30,7 @@
     </collision>
   </link>
   <gazebo reference="battery_pack_link">
-    <material>Gazebo/Black</material>
+    <material>Gazebo/FlatBlack</material>
   </gazebo>
   <link name="bolt_vertical_Link">
     <inertial>
@@ -55,7 +55,7 @@
     </collision>
   </link>
   <gazebo reference="bolt_vertical_Link">
-    <material>Gazebo/Gray</material>
+    <material>gazebo/editor</material>
   </gazebo>
   <joint name="bolt_vertical" type="continuous">
     <origin rpy="1.8719 1.5708 0" xyz="0.057323 -0.038452 0"/>
@@ -87,7 +87,7 @@
     </collision>
   </link>
   <gazebo reference="nut_vertical_Link">
-    <material>Gazebo/Gray</material>
+    <material>gazebo/editor</material>
   </gazebo>
   <joint name="nut_vertical" type="continuous">
     <origin rpy="0 0 -0.57871" xyz="0.057323 -0.038452 0"/>
@@ -118,7 +118,7 @@
     </collision>
   </link>
   <gazebo reference="bolt_Horizontal_Link">
-    <material>Gazebo/Gray</material>
+    <material>gazebo/editor</material>
   </gazebo>
   <joint name="bolt_Horizontal" type="continuous">
     <origin rpy="1.9639 0 1.5708" xyz="-0.036344 -0.016452 -0.005"/>
@@ -149,7 +149,7 @@
     </collision>
   </link>
   <gazebo reference="nut_Horizontal_Link">
-    <material>Gazebo/Gray</material>
+    <material>gazebo/editor</material>
   </gazebo>
   <joint name="nut_Horizontal" type="continuous">
     <origin rpy="1.5708 0.39309 -3.1416" xyz="-0.036344 -0.021252 -0.005"/>
@@ -180,7 +180,7 @@
     </collision>
   </link>
   <gazebo reference="bolt_Arbitrary_Link">
-    <material>Gazebo/Gray</material>
+    <material>gazebo/editor</material>
   </gazebo>
   <joint name="bolt_Arbitrary" type="continuous">
     <origin rpy="0.7854 0.7854 -1.5708" xyz="0.055323 0.079287 0.0078564"/>
@@ -211,7 +211,7 @@
     </collision>
   </link>
   <gazebo reference="nut_Sink_Link">
-    <material>Gazebo/Gray</material>
+    <material>gazebo/editor</material>
   </gazebo>
   <joint name="nut_Sink" type="continuous">
     <origin rpy="-1.5708 0 -1.5708" xyz="0.035123 0.063548 0.025"/>
@@ -242,7 +242,7 @@
     </collision>
   </link>
   <gazebo reference="bolt_Sink_Link">
-    <material>Gazebo/Gray</material>
+    <material>gazebo/editor</material>
   </gazebo>
   <joint name="bolt_Sink" type="continuous">
     <origin rpy="2.7498 0 3.1416" xyz="0.025323 0.063548 0.025"/>

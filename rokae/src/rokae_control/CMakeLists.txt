@@ -11,6 +11,11 @@ find_package(catkin REQUIRED COMPONENTS
   controller_manager
   joint_state_controller
   robot_state_publisher
+  message_generation
+  rospy
+  roscpp
+  roslib
+  std_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -68,10 +73,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs  # Or other packages containing msgs
-# )
+generate_messages(
+ DEPENDENCIES
+  std_msgs  # Or other packages containing msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -161,6 +166,13 @@ include_directories(
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
   scripts/keyboard_control.py 
+  scripts/position_command.py
+  scripts/motion_planning.py
+  scripts/robot_control.py
+  scripts/motionplanner1.py
+  scripts/motionplanner2.py
+  scripts/testmotion.py
+  scripts/move_group_python_interface_tutorial.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
