@@ -89,13 +89,13 @@
   </link>
 
       <gazebo reference="bolt_vertical_Link">
-    <material>gazebo/editor</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
 
   <joint
     name="bolt_vertical"
-    type="continuous">
+    type="fixed">
     <origin
       xyz="0.057323 -0.038452 0"
       rpy="1.8719 1.5708 0" />
@@ -153,7 +153,7 @@
   </link>
 
   <gazebo reference="nut_vertical_Link">
-    <material>gazebo/editor</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
 
@@ -213,7 +213,7 @@
   </link>
 
   <gazebo reference="bolt_Horizontal_Link">
-    <material>gazebo/editor</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
   <joint
@@ -272,7 +272,7 @@
   </link>
 
   <gazebo reference="nut_Horizontal_Link">
-    <material>gazebo/editor</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
   <joint
@@ -330,7 +330,7 @@
   </link>
 
   <gazebo reference="bolt_Arbitrary_Link">
-    <material>gazebo/editor</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
   <joint
@@ -388,7 +388,7 @@
   </link>
 
   <gazebo reference="nut_Sink_Link">
-    <material>gazebo/editor</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
   <joint
@@ -446,7 +446,7 @@
   </link>
 
   <gazebo reference="bolt_Sink_Link">
-    <material>gazebo/editor</material>
+    <material>Gazebo/Grey</material>
   </gazebo>
 
 

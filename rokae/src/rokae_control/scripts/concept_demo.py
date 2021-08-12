@@ -13,7 +13,7 @@ from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 
 
-def product_spawn():
+def product_spawn(clear_only=False):
     # This function spawn three types parts(screw1, screw2, woodbolt) in gazebo
 
     rospy.wait_for_service("gazebo/spawn_urdf_model")
@@ -23,8 +23,16 @@ def product_spawn():
     rospack = rospkg.RosPack()
     part_pkg = rospack.get_path('cai_env')
 
-    for count in range(1):  # three types products spawn in gazebo
+    max_count = 1
+    max_num = 1
 
+    for count in range(max_count):
+        for num in range(0, max_num):
+            item_name = "product_{0}_{1}".format(count, num)
+            delete_model(item_name)
+    if clear_only:
+        return
+    for count in range(max_count):  # three types products spawn in gazebo
         if (count == 0):
             with open(part_pkg + '/urdf/' + 'block.urdf', "r") as wood1:
                 product_xml = wood1.read()
@@ -39,7 +47,7 @@ def product_spawn():
                 product_xml = screw2.read()
                 screw2.close()
 
-        for num in range(0, 1):
+        for num in range(0, max_num):
             print(num)
             x_rand = random.randrange(-20, 20) * 0.01
             y_rand = random.randrange(-20, 20) * 0.01
@@ -47,19 +55,18 @@ def product_spawn():
             P_rand = random.randrange(-314, 314) * 0.01
             Y_rand = random.randrange(-314, 314) * 0.01
             if (num == 0):
-                x_rand = -0.0552
-                y_rand = 0.03854
-                # R_rand = 0
-                # P_rand = 0
-                # Y_rand = 0
-            quat = tf.transformations.quaternion_from_euler(R_rand, P_rand, Y_rand)
+                x_rand = -0.05752
+                y_rand = 0.02354
+                R_rand = 0
+                P_rand = 0
+                Y_rand = 0
+            quat = tf.transformations.quaternion_from_euler(1.57, P_rand, Y_rand)
             orient = Quaternion(quat[0], quat[1], quat[2], quat[3])
             item_name = "product_{0}_{1}".format(count, num)
-            delete_model(item_name)
-            print("Spawning model:%s, %f, %f, %f", item_name, x_rand, y_rand, 1.2)
-            item_pose = Pose(Point(x=x_rand, y=y_rand, z=1.2), orient)
+            print("Spawning model:%s, %f, %f, %f", item_name, x_rand, y_rand, 1.235)
+            item_pose = Pose(Point(x=x_rand, y=y_rand, z=1.235), orient)
             spawn_model(item_name, product_xml, "", item_pose, "world")
-            rospy.sleep(0.5)
+            rospy.sleep(2)
 
 def robot_move(group, x, y, z, R, P, Y):
     # moveit_commander.roscpp_initialize(sys.argv)
@@ -83,9 +90,8 @@ def robot_move(group, x, y, z, R, P, Y):
 
 
 if __name__ == "__main__":
-    product_spawn()
+#    product_spawn()
 
-def skip():
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node('robot_sorting', anonymous=True)
@@ -101,24 +107,54 @@ def skip():
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
     group1.set_planner_id("RRTConnect")
+    product_spawn()
 
-    robot_move(group1, -0.057262, 0.038543, 1.3700, 3.14, 0, 0)
+#target_aimed False
+    robot_move(group1, -0.027262, 0.028543, 1.2400, 3.14, 0, 0)
+    rospy.sleep(10)
+
+    robot_move(group1, -0.040262, 0.027543, 1.1400, 3.14, 0, 0)
+    rospy.sleep(5)
+
+    robot_move(group1, -0.076262, 0.027543, 1.1400, 3.14, 0, 0)
+    rospy.sleep(5)
+
+
+    robot_move(group1, -0.057262, 0.028543, 1.2800, 3.14, 0, 0)
+    rospy.sleep(5)
+    robot_move(group1, -0.057262, 0.038543, 1.2800, 3.14, 0, 0)
+    rospy.sleep(5)
+
+#target_aimed True
+    #robot_move(group1, -0.057262, 0.038543, 1.2700, 3.14, 0, 0)
+
+
+    #clear False
+    product_spawn(True)
+    robot_move(group1, -0.057262, 0.038543, 1.2700, 3.14, 0, 0)
 
     rospy.sleep(5)
 
 
-    robot_move(group1, -0.047262, 0.038543, 1.2400, 3.14, 0, 0)
-    rospy.sleep(6)
-    robot_move(group1, -0.067262, 0.038543, 1.2400, 3.14, 0, 0)
+    # robot_move(group1, -0.057262, 0.038543, 1.3700, 3.14, 0, 0)
+    #
+    # rospy.sleep(5)
+    #
+    #
+    # robot_move(group1, -0.047262, 0.038543, 1.2400, 3.14, 0, 0)
+    # rospy.sleep(6)
+    # robot_move(group1, -0.067262, 0.038543, 1.2400, 3.14, 0, 0)
 
 
     #above the bolt 1
     #robot_move(group1, -0.057262, 0.038543, 1.1700, 3.14, 0, 0)
 
-    robot_move(group1, -0.057262, 0.038543, 1.2700, 3.14, 0, 0)
+    #socket part
 
-    rospy.sleep(5)
-
-    #socketed posistion
-    robot_move(group1, -0.057262, 0.038543, 1.140, 3.14, 0, 0)
+    # robot_move(group1, -0.057262, 0.038543, 1.2700, 3.14, 0, 0)
+    #
+    # rospy.sleep(5)
+    #
+    # #socketed posistion
+    robot_move(group1, -0.057262, 0.038543, 1.14, 3.14, 0, 0)
 
