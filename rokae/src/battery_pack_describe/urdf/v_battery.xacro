@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+<robot
+  name="v_battery">
+  <link    name="v_battery_base_link"  xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <inertial>
+      <origin
+        xyz="-0.17823 0.0014541 -0.18254"
+        rpy="0 0 0" />
+      <mass
+        value="2.1452" />
+      <inertia
+        ixx="0.04437"
+        ixy="-0.00066651"
+        ixz="-0.0054047"
+        iyy="0.089539"
+        iyz="-0.0010719"
+        izz="0.045613" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh     filename="package://battery_pack_describe/meshes/v_battery_base_link.dae" />
+
+
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.79216 0.81961 0.93333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://battery_pack_describe/meshes/v_battery_base_link.dae" />
+      </geometry>
+    </collision>
+  </link>
+
+
+      <!-- <gazebo reference="v_battery_base_link">
+    <material>Gazebo/FlatBlack</material>
+  </gazebo> -->
+
+
+
+  <link    name="v_battery_bolt_Link">
+    <inertial>
+      <origin
+        xyz="-0.00224797355412683 -2.42669320749123E-09 1.13997717515746E-09"
+        rpy="0 0 0" />
+      <mass
+        value="0.010043058879212" />
+      <inertia
+        ixx="8.16036465000949E-08"
+        ixy="-2.67875420699996E-13"
+        ixz="1.25078148224805E-13"
+        iyy="1.22914699774063E-06"
+        iyz="5.9822890763516E-14"
+        izz="1.22914675774153E-06" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link.dae" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link.dae" />
+      </geometry>
+    </collision>
+  </link>
+
+      <!-- <gazebo reference="v_battery_bolt_Link">
+    <material>Gazebo/Gray</material>
+  </gazebo>
+
+ -->
+
+
+  <joint
+    name="v_battery_bolt_joint"
+    type="continuous">
+    <origin
+      xyz="0.057323 -0.038452 0"
+      rpy="0.39309 1.5708 0" />
+    <parent
+      link="v_battery_base_link" />
+    <child
+      link="v_battery_bolt_Link" />
+    <axis
+      xyz="1 0 0" />
+  </joint>
+  <link
+    name="v_battery_nut_Link">
+    <inertial>
+      <origin
+        xyz="-8.23260362659006E-10 1.38777878078145E-17 -0.0026006024331304"
+        rpy="0 0 0" />
+      <mass
+        value="0.00265736664598247" />
+      <inertia
+        ixx="2.79753045005072E-08"
+        ixy="5.04580173657347E-23"
+        ixz="1.31793951411467E-18"
+        iyy="2.79771327058771E-08"
+        iyz="-4.83267733699208E-14"
+        izz="4.46160415460721E-08" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://battery_pack_describe/meshes/v_battery_nut_Link.dae" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://battery_pack_describe/meshes/v_battery_nut_Link.dae" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!-- <gazebo reference="v_battery_nut_Link">
+    <material>Gazebo/Gray</material>
+  </gazebo> -->
+
+
+  <joint
+    name="v_battery_nut_joint"
+    type="fixed">
+    <origin
+      xyz="0.057323 -0.038452 0"
+      rpy="0 0 2.7485" />
+    <parent
+      link="v_battery_base_link" />
+    <child
+      link="v_battery_nut_Link" />
+    <axis
+      xyz="0 0 -1" />
+  </joint>
+</robot>
