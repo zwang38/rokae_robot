@@ -167,7 +167,7 @@ include_directories(
 catkin_install_python(PROGRAMS
   # scripts/keyboard_control.py 
   # scripts/position_command.py
-  # scripts/motion_planning.py
+  scripts/motion_planning.py
   # scripts/robot_control.py
   # scripts/motionplanner1.py
   # scripts/motionplanner2.py

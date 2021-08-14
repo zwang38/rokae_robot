@@ -1,407 +1,258 @@
 #!/usr/bin/env python
+import sys, random, copy
+import rospy, tf, rospkg
+from gazebo_msgs.srv import SpawnModel
+from gazebo_msgs.msg import ModelStates
+from geometry_msgs.msg import *
+from std_msgs.msg import *
 
-from copy import deepcopy
-import math
-import numpy
-import random
-from threading import Thread, Lock
-import sys
-
-import actionlib
-import control_msgs.msg
-import geometry_msgs.msg
 import moveit_commander
 import moveit_msgs.msg
-import moveit_msgs.srv
-import rospy
-import sensor_msgs.msg
-import tf
-import trajectory_msgs.msg
-
-def convert_to_message(T):
-	t = geometry_msgs.msg.Pose()
-	position = tf.transformations.translation_from_matrix(T)
-	orientation = tf.transformations.quaternion_from_matrix(T)
-	t.position.x = position[0]
-	t.position.y = position[1]
-	t.position.z = position[2]
-	t.orientation.x = orientation[0]
-	t.orientation.y = orientation[1]
-	t.orientation.z = orientation[2]
-	t.orientation.w = orientation[3]        
-	return t
-
-def convert_from_message(msg):
-	R = tf.transformations.quaternion_matrix((msg.orientation.x,
-											  msg.orientation.y,
-											  msg.orientation.z,
-											  msg.orientation.w))
-	T = tf.transformations.translation_matrix((msg.position.x, 
-											   msg.position.y, 
-											   msg.position.z))
-	return numpy.dot(T,R)
-
-def convert_from_trans_message(msg):
-	R = tf.transformations.quaternion_matrix((msg.rotation.x,
-											  msg.rotation.y,
-											  msg.rotation.z,
-											  msg.rotation.w))
-	T = tf.transformations.translation_matrix((msg.translation.x, 
-											   msg.translation.y, 
-											   msg.translation.z))
-	return numpy.dot(T,R)
-
-class MoveArm(object):
-
-	def __init__(self):
-		print "Motion Planning Initializing..."
-		# Prepare the mutex for synchronization
-		self.mutex = Lock()
-
-		# Some info and conventions about the robot that we hard-code in here
-		# min and max joint values are not read in Python urdf, so we must hard-code them here
-		self.num_joints = 7
-		self.q_min = []
-		self.q_max = []
-		self.q_min.append(-3.14159);self.q_max.append(3.14159)
-		self.q_min.append(-3.14159);self.q_max.append(3.14159)
-		self.q_min.append(-3.14159);self.q_max.append(3.14159)
-		self.q_min.append(-3.14159);self.q_max.append(3.14159)
-		self.q_min.append(-3.14159);self.q_max.append(3.14159)
-		self.q_min.append(-3.14159);self.q_max.append(3.14159)
-		self.q_min.append(-3.14159);self.q_max.append(3.14159)
-		# How finely to sample each joint
-		self.q_sample = [0.05, 0.05, 0.05, 0.1, 0.1, 0.1, 0.1]
-        self.joint_names = ["xmate_joint_1","xmate_joint_2","xmate_joint_3","xmate_joint_4","xmate_joint_5","xmate_joint_6","xmate_joint_7"]
-
-		# Subscribes to information about what the current joint values are.
-		rospy.Subscriber("rokae/joint_states",  self.joint_states_callback)
+from moveit_commander.conversions import pose_to_list
 
 
-		# Subscribe to command for motion planning goal
-		rospy.Subscriber("/motion_planning_goal", geometry_msgs.msg.Transform,
-						 self.move_arm_cb)
+from time import sleep
+from gazebo_msgs.srv import DeleteModel
 
-		# Publish trajectory command
-		self.pub_trajectory = rospy.Publisher("/joint_trajectory", trajectory_msgs.msg.JointTrajectory, queue_size=1)        
 
-		# Initialize variables
-		self.joint_state = sensor_msgs.msg.JointState()
 
-		# Wait for moveit IK service
-		rospy.wait_for_service("compute_ik")
-		self.ik_service = rospy.ServiceProxy('compute_ik',  moveit_msgs.srv.GetPositionIK)
-		print ("IK service ready")
 
-		# Wait for validity check service
-		rospy.wait_for_service("check_state_validity")
-		self.state_valid_service = rospy.ServiceProxy('check_state_validity',  
-													  moveit_msgs.srv.GetStateValidity)
-		print( "State validity service ready")
 
-		# Initialize MoveIt
-		self.robot = moveit_commander.RobotCommander()
-		self.scene = moveit_commander.PlanningSceneInterface()
-		self.group_name = "arm"
-		self.group = moveit_commander.MoveGroupCommander(self.group_name) 
-		print "MoveIt! interface ready"
+def Delete_Part(item_name):
+    # This will be called on ROS Exit, deleting Gazebo models
+    # Do not wait for the Gazebo Delete Model service, since
+    # Gazebo should already be running. If the service is not
+    # available since Gazebo has been killed, it is fine to error out
+    try:
+        delete_model = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
 
-		# Options
-		self.subsample_trajectory = True
-		print "Initialization done."
+        resp_delete = delete_model(item_name)
+    except rospy.ServiceException as e:
+        print("Delete Model service call failed: {0}".format(e))
 
-	def get_joint_val(self, joint_state, name):
-		if name not in joint_state.name:
-			print "ERROR: joint name not found"
-			return 0
-		i = joint_state.name.index(name)
-		return joint_state.position[i]
 
-	def set_joint_val(self, joint_state, q, name):
-		if name not in joint_state.name:
-			print "ERROR: joint name not found"
-		i = joint_state.name.index(name)
-		joint_state.position[i] = q
 
-	""" Given a complete joint_state data structure, this function finds the values for 
-	our arm's set of joints in a particular order and returns a list q[] containing just 
-	those values.
-	"""
-	def q_from_joint_state(self, joint_state):
-		q = []
-		for i in range(0,self.num_joints):
-			q.append(self.get_joint_val(joint_state, self.joint_names[i]))
-		return q
 
-	""" Given a list q[] of joint values and an already populated joint_state, this 
-	function assumes that the passed in values are for a our arm's set of joints in 
-	a particular order and edits the joint_state data structure to set the values 
-	to the ones passed in.
-	"""
-	def joint_state_from_q(self, joint_state, q):
-		for i in range(0,self.num_joints):
-			self.set_joint_val(joint_state, q[i], self.joint_names[i])
 
-	""" This function will perform IK for a given transform T of the end-effector. It 
-	returns a list q[] of 7 values, which are the result positions for the 7 joints of 
-	the left arm, ordered from proximal to distal. If no IK solution is found, it 
-	returns an empy list.
-	"""
-	def IK(self, T_goal):
-		req = moveit_msgs.srv.GetPositionIKRequest()
-		req.ik_request.group_name = self.group_name
-		req.ik_request.robot_state = moveit_msgs.msg.RobotState()
-		req.ik_request.robot_state.joint_state = self.joint_state
-		req.ik_request.avoid_collisions = True
-		req.ik_request.pose_stamped = geometry_msgs.msg.PoseStamped()
-		req.ik_request.pose_stamped.header.frame_id = "world_link"
-		req.ik_request.pose_stamped.header.stamp = rospy.get_rostime()
-		req.ik_request.pose_stamped.pose = convert_to_message(T_goal)
-		req.ik_request.timeout = rospy.Duration(3.0)
-		res = self.ik_service(req)
-		q = []
-		if res.error_code.val == res.error_code.SUCCESS:
-			q = self.q_from_joint_state(res.solution.joint_state)
-		return q
 
-	""" This function checks if a set of joint angles q[] creates a valid state, or 
-	one that is free of collisions. The values in q[] are assumed to be values for 
-	the joints of the left arm, ordered from proximal to distal. 
-	"""
-	def is_state_valid(self, q):
-		req = moveit_msgs.srv.GetStateValidityRequest()
-		req.group_name = self.group_name
-		current_joint_state = deepcopy(self.joint_state)
-		current_joint_state.position = list(current_joint_state.position)
-		self.joint_state_from_q(current_joint_state, q)
-		req.robot_state = moveit_msgs.msg.RobotState()
-		req.robot_state.joint_state = current_joint_state
-		res = self.state_valid_service(req)
-		return res.valid
+def product_spawn():
+    # This function spawn three types parts(screw1, screw2, woodbolt) in gazebo
+    
+    rospy.wait_for_service("gazebo/spawn_urdf_model")
+    spawn_model = rospy.ServiceProxy("gazebo/spawn_urdf_model", SpawnModel)
 
-	get_vector = lambda self, p1, p2: numpy.subtract(p1,p2)
+    rospack = rospkg.RosPack()
 
-	def get_unit_vector(self, p1, p2):
-		v = self.get_vector(p1, p2)
-		return v / numpy.linalg.norm(v)
+    part_pkg = rospack.get_path('battery_pack_describe')
+    
+    print("please enter keyboard :  ho ,h ,v , t . the ros will load battery"  )
 
-	get_distance = lambda self, p1, p2: numpy.linalg.norm(self.get_vector(p1, p2))
+    print("{0} is hole_battery "  .format( 'ho'  ))
+    print(".........................................................." )
 
-	get_max_num_points = lambda self, p1, p2, step: max(numpy.ceil(numpy.true_divide(abs(self.get_vector(p1, p2)), step)))
-	
-	def discretize_path(self, closest_point, target_point):
-		# Determine step_size on path
-		step_size = self.q_sample
-		#
-		max_num_points = self.get_max_num_points(target_point, closest_point, step_size)
-		#
-		m = numpy.true_divide(self.get_vector(target_point, closest_point), max_num_points-1)
-		b = numpy.true_divide(numpy.subtract(numpy.multiply(closest_point, max_num_points), target_point), max_num_points-1)
-		T = [m*i+b for i in range(int(max_num_points)+1)]
-		return T
+    print("{0} is horizontal_battery " .format( 'h'  ))
+    print(".........................................................."  )
 
-	def is_collision_free_path(self, closest_point, target_point):
-		# closest ----> target
+    print("{0} is vertical_battery " .format( 'v'  ))
+    print("..........................................................")
 
-		path = self.discretize_path(closest_point, target_point)
-		
-		for row in path:
-			if self.is_state_valid(row) == False:
-				return False
-		return True
-	
-	get_random_point = lambda self: [random.uniform(self.q_min[i], self.q_max[i]) for i in range(self.num_joints)]
 
-	def get_closest_point(self, tree, q):
-		distances = [self.get_distance(q_pos, q) for i,q_pos in enumerate(d["position_in_config_space"] for d in tree)]
-		min_distance_index = distances.index(min(distances))
-		closest_point = tree[min_distance_index].get("position_in_config_space")
-		return min_distance_index, closest_point
+    print("{0} is tilt_battery ".format( 't'  ))
+    print("..........................................................")
 
-	def get_point_at_distance(self, closest_point, random_point, K):
-		vector = self.get_unit_vector(random_point, closest_point)
-		vector *= K
-		vector = numpy.add(vector, closest_point)
-		return vector
-			   
-	def motion_plan(self, q_start, q_goal, q_min, q_max):
-		# q_start: list of joint values of the robot at the starting position.
-		# This is the position in CONFIGURATION SPACE from which to start.
-		rospy.loginfo('\n\n[q_start]\t%s\n\n', q_start)
-		# q_goal: list of joint values of the robot at the goal position.
-		# This is the position in configuration space for which to plan.
-		rospy.loginfo('\n\n[q_goal]\t%s\n\n', q_goal)
-		# q_min: list of lower joint limits
-		#rospy.loginfo('\n\n[q_min]\t%s\n\n', q_min)
-		# q_max: list of upper joint limits
-		#rospy.loginfo('\n\n[q_max]\t%s\n\n', q_max)
 
-		# Create an RRT node object. This object must hold both a position in
-		# configuration space and a reference to its parent node. You can then
-		# store each new node in a list
-		rrt_object = {"position_in_config_space" : q_start, "parent_node" : -1}
-		rrt_list = []
-		rrt_list.append(rrt_object.copy())
-		rospy.loginfo('\n\n[RRT list]\n\n%s\n\n', rrt_list)
-		
-		# The main part of the algorithm is a loop, in which you expand the
-		# tree until it reaches the goal. You might also want to include some additional
-		# exit conditions (maximum number of nodes, a time-out) such that your algorithm
-		# does not run forever on a problem that might be impossible to solve.
-		maximum_nodes = 150
-		maximum_time_secs = 240
-		begin = rospy.get_rostime().secs
-		now = rospy.get_rostime().secs
+    battery_name=''
+    input=raw_input()
+    if input=='ho':
+        with open(part_pkg+'/urdf/'+'hole_battery.urdf', "r") as hole_battery:
+            product_xml = hole_battery.read()
+            battery_name='hole_battery'
+            hole_battery.close()
+    elif input=='h':  
+        with open(part_pkg+'/urdf/'+'h_battery.urdf', "r") as h_battery:
+            product_xml = h_battery.read()
+            battery_name='horizontal_battery'
+            h_battery.close()     
+    elif input=='v':  
+        with open(part_pkg+'/urdf/'+'v_battery.xacro', "r") as v_battery:
+            product_xml = v_battery.read()
+            battery_name='vertical_battery'
 
-		while (len(rrt_list) < maximum_nodes) or ((now - begin) < maximum_time_secs):
-			# Sample a random point in configuration space within the joint limits.
-			# You can use the random.random() function provided by Python. Remember that
-			# a "point" in configuration space must specify a value for each robot joint,
-			# and is thus 7-dimensional (in the case of this robot)!
-			random_point = self.get_random_point()
-			rospy.loginfo('\n\n[q random]\t%s\n\n', random_point)
+            v_battery.close()   
+    elif input=='t':  
+        with open(part_pkg+'/urdf/'+'tilt_battery.urdf', "r") as tilt_battery:
+            product_xml = tilt_battery.read()
+            battery_name='tilt_battery'
+            tilt_battery.close()   
 
-			# Find the node already in your tree that is closest to this random point.
-			min_distance_index, closest_point = self.get_closest_point(rrt_list, random_point)
 
-			# Find the point that lies a predefined distance (e.g. 0.5) from this existing
-			# node in the direction of the random point.
-			target_point = self.get_point_at_distance(closest_point, random_point, 0.5)
-			
-			# Check if the path from the closest node to this point is collision free.
-			# To do so you must discretize the path and check the resulting points along
-			# the path. You can use the is_state_valid method to do so. The MoveArm class
-			# has a member q_sample - a list that defines the minimum discretization for
-			# each joint. You must make sure that you sample finely enough that this minimum
-			# is respected for each joint.
+    quat=tf.transformations.quaternion_from_euler(0,0,3.14) 
+    orient = Quaternion(quat[0],quat[1],quat[2],quat[3])
+    item_name   =   "{0}_product".format(battery_name)
+    print("Spawning model:%s", item_name)
+    item_pose   =   Pose(Point(x=0, y=0, z=0.12), orient)
+    spawn_model(item_name, product_xml, "", item_pose, "table")
+    rospy.sleep(0.5)
+    return item_name
 
-			if self.is_collision_free_path(closest_point, target_point) == True:
-				# If the path is collision free, add a new node with at the position of the
-				# point and with the closest node as a parent.
 
-				rrt_object.update({"position_in_config_space" : target_point})
-				# parent_node = min_distance_index
-				rrt_object.update({"parent_node": min_distance_index})
-				rrt_list.append(rrt_object.copy())
 
-				# Check if the path from this new node to the goal is collision free.
-				# If so, add the goal as a node with the new node as a parent. The tree
-				# is complete and the loop can be exited.
-				
-				if self.is_collision_free_path(target_point, q_goal) == True:
-					parent_node = len(rrt_list)-1
-					rrt_object.update({"parent_node" : parent_node})
-					rrt_object.update({"position_in_config_space" : q_goal})
-					rrt_list.append(rrt_object.copy())
-					rospy.loginfo('\n\n> goal node reached\n\n')
-					break
-				else:
-					rospy.loginfo('\n\n[2] invalid state\n\n')
-			else:
-				rospy.loginfo('\n\n[1] invalid state\n\n')
+def part_pose_collect():
+    parts_pose=[]
+    model_pose = rospy.wait_for_message("gazebo/model_states",ModelStates)
+    product_num = model_pose.name.index('vertical_battery_product')
+    x = model_pose.pose[product_num].position.x
+    y = model_pose.pose[product_num].position.y
+    z = model_pose.pose[product_num].position.z
+    X = model_pose.pose[product_num].orientation.x
+    Y = model_pose.pose[product_num].orientation.y
+    Z = model_pose.pose[product_num].orientation.z
+    W = model_pose.pose[product_num].orientation.w
+    euler=tf.transformations.euler_from_quaternion((X,Y,Z,W)) 
+    parts_pose.append([x,y,z,euler[0],euler[1],euler[2]])     
+    return parts_pose
 
-			rospy.loginfo('\n\n[RRT list]\n\n%s\n\n', rrt_list)
+def robot_move(group, x, y, z, R, P, Y):
+    # moveit_commander.roscpp_initialize(sys.argv)
+    # robot = moveit_commander.RobotCommander()
 
-			rospy.loginfo('\n\n[len(RRT list)]\t%s\n\n', len(rrt_list))
-			now = rospy.get_rostime().secs
-			#rospy.loginfo('\n\n[time]\t%s\n\n', now-begin)
-		
-		# Trace the tree back from the goal to the root and for each
-		# node insert the position in configuration space to a list of
-		# joints values (q_list).
-		
-		rospy.loginfo('\n\n[RRT list]\n\n%s\n\n', rrt_list)
+    group.clear_pose_targets()
+    quat = tf.transformations.quaternion_from_euler(R, P, Y)
+    pose_target = geometry_msgs.msg.Pose()
+    pose_target.position.x = x
+    pose_target.position.y = y
+    pose_target.position.z = z
+    pose_target.orientation.x = quat[0]
+    pose_target.orientation.y = quat[1]
+    pose_target.orientation.z = quat[2]
+    pose_target.orientation.w = quat[3]
+    group.set_pose_target(pose_target)
 
-		q_list = [q_goal]
-		parent_node = rrt_list[-1].get("parent_node")
+    plan = group.plan()
+    group.execute(plan, wait=True)
+    print(("test %f,%f,%f,%f,%f,%f")%(x,y,z,R,P,Y))
 
-		while True:
 
-			q_list.insert(0, rrt_list[parent_node].get("position_in_config_space"))
 
-			if parent_node <= 0:
-				break
-			else:
-				parent_node = rrt_list[parent_node].get("parent_node")
-		
-		# As we have been following the branches of the tree the path
-		# computed this way can be very coarse and more complicated
-		# than necessary. Therefore, you must check this list of joint
-		# values for shortcuts. Similarly to what you were doing when
-		# constructing the tree, you can check if the path between any
-		# two points in this list is collision free. You can delete any
-		# points between two points connected by a collision free path.
+def robot_move_line(x1,y1,z1,x2,y2,z2):
+    
+    step = 5.0
+    x_step_unit = (x2-x1)/step # target_pose - start pose / move_step
+    y_step_unit= (y2-y1)/step # target_pose - start pose / move_step
+    z_step_unit = (z2-z1)/step # target_pose - start pose / move_step
 
-		q_list_copy = []
-		q_list_copy.append(q_list[0])
+    waypoints = []
+    robot_pose = geometry_msgs.msg.Pose()
+    now_pose = group1.get_current_pose().pose
 
-		for i in range(len(q_list)-2):
+    # robot move following vector
+    for i in range(1,int(step)):
+        now_pose.position.x = x1 + x_step_unit*i
+        now_pose.position.y = y1 + y_step_unit*i
+        now_pose.position.z = z1 + z_step_unit*i
+        waypoints.append(copy.deepcopy(now_pose))
 
-			if self.is_collision_free_path(q_list[i], q_list[i+2]) == False:
-				q_list_copy.append(q_list[i])
+    # last target pose add in memory
+    robot_pose.position.x = x2
+    robot_pose.position.y = y2
+    robot_pose.position.z = z2
+    robot_pose.orientation.x = now_pose.orientation.x
+    robot_pose.orientation.y = now_pose.orientation.y
+    robot_pose.orientation.z = now_pose.orientation.z
+    robot_pose.orientation.w = now_pose.orientation.w
+    waypoints.append(copy.deepcopy(robot_pose))
 
-		q_list_copy.append(q_list[-1])
-		q_list = q_list_copy
+    plan, fraction = group1.compute_cartesian_path(waypoints,0.01,0.0) 
+    group1.execute(plan,wait=True)
 
-		# Return the resulting trimmed path
-		rospy.loginfo('\n\n[q list]\n\n%s\n\n', q_list)
-		return q_list
 
-	def create_trajectory(self, q_list, v_list, a_list, t):
-		joint_trajectory = trajectory_msgs.msg.JointTrajectory()
-		for i in range(0, len(q_list)):
-			point = trajectory_msgs.msg.JointTrajectoryPoint()
-			point.positions = list(q_list[i])
-			point.velocities = list(v_list[i])
-			point.accelerations = list(a_list[i])
-			point.time_from_start = rospy.Duration(t[i])
-			joint_trajectory.points.append(point)
-		joint_trajectory.joint_names = self.joint_names
-		return joint_trajectory
 
-	def create_trajectory(self, q_list):
-		joint_trajectory = trajectory_msgs.msg.JointTrajectory()
-		for i in range(0, len(q_list)):
-			point = trajectory_msgs.msg.JointTrajectoryPoint()
-			point.positions = list(q_list[i])
-			joint_trajectory.points.append(point)
-		joint_trajectory.joint_names = self.joint_names
-		return joint_trajectory
+def goal_move_line(x,y,z): 
+    step = 5.0
+    waypoints = []
+    robot_pose = geometry_msgs.msg.Pose()
+    now_pose = group1.get_current_pose().pose
+    x_step_unit = (x-now_pose.position.x)/step # target_pose - start pose / move_step
+    y_step_unit= (y-now_pose.position.y)/step # target_pose - start pose / move_step
+    z_step_unit = (z-now_pose.position.z)/step # target_pose - start pose / move_step
+    robot_pose.orientation.x = now_pose.orientation.x
+    robot_pose.orientation.y = now_pose.orientation.y
+    robot_pose.orientation.z = now_pose.orientation.z
+    robot_pose.orientation.w = now_pose.orientation.w
 
-	def project_plan(self, q_start, q_goal, q_min, q_max):
-		q_list = self.motion_plan(q_start, q_goal, q_min, q_max)
-		joint_trajectory = self.create_trajectory(q_list)
-		return joint_trajectory
+    # robot move following vector
+    for i in range(1,int(step)):
+        robot_pose.position.x = now_pose.position.x + x_step_unit*i
+        robot_pose.position.y = now_pose.position.y + y_step_unit*i
+        robot_pose.position.z = now_pose.position.z + z_step_unit*i
+        waypoints.append(copy.deepcopy(robot_pose))
 
-	def move_arm_cb(self, msg):
-		T = convert_from_trans_message(msg)
-		self.mutex.acquire()
-		q_start = self.q_from_joint_state(self.joint_state)
-		print "Solving IK"
-		q_goal = self.IK(T)
-		if len(q_goal)==0:
-			print "IK failed, aborting"
-			self.mutex.release()
-			return
-		print "IK solved, planning"
-		trajectory = self.project_plan(numpy.array(q_start), q_goal, self.q_min, self.q_max)
-		if not trajectory.points:
-			print "Motion plan failed, aborting"
-		else:
-			print "Trajectory received with " + str(len(trajectory.points)) + " points"
-			self.execute(trajectory)
-		self.mutex.release()
-		
-	def joint_states_callback(self, joint_state):
-		self.mutex.acquire()
-		self.joint_state = joint_state
-		self.mutex.release()
+    # last target pose add in memory
+    robot_pose.position.x = x
+    robot_pose.position.y = y
+    robot_pose.position.z = z
+    waypoints.append(copy.deepcopy(robot_pose))
 
-	def execute(self, joint_trajectory):
-		self.pub_trajectory.publish(joint_trajectory)
+    plan, fraction = group1.compute_cartesian_path(waypoints,0.01,0.0) 
+    group1.execute(plan,wait=True)
 
-if __name__ == '__main__':
-	moveit_commander.roscpp_initialize(sys.argv)
-	rospy.init_node('move_arm', anonymous=True)
-	ma = MoveArm()
-	rospy.spin()
+
+
+
+
+
+if __name__ == "__main__":
+       
+    # First initialize `moveit_commander`_ and a `rospy`_ node:
+    moveit_commander.roscpp_initialize(sys.argv)
+    rospy.init_node('motion_planning', anonymous=True)
+    # Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
+    # the robot:
+    robot = moveit_commander.RobotCommander()
+    # Instantiate a `PlanningSceneInterface`_ object.  This object is an interface
+    # to the world surrounding the robot:
+    scene = moveit_commander.PlanningSceneInterface()
+
+
+    print('add product,please input add')
+    
+    input_delete=raw_input()
+    
+    if input_delete=='add':
+        load_battery_model=      product_spawn()
+        print('load_battery_model',load_battery_model)
+
+
+
+
+
+    
+    group_name1 = "arm"
+    group1 = moveit_commander.MoveGroupCommander(group_name1)
+    group1.set_planner_id("RRTConnectkConfigDefault")
+    display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',moveit_msgs.msg.DisplayTrajectory,queue_size=20)
+    scene = moveit_commander.PlanningSceneInterface()
+    group1.set_named_target('home')
+    rospy.sleep(2)
+
+    # print('remove_battery_model,please input delete')
+    
+    # input_delete=raw_input()
+    
+    # if input_delete=='delete':
+    #     Delete_Part(load_battery_model)
+    
+    parts_pose=part_pose_collect()
+    print(parts_pose)
+    
+    for model_num in range(len(parts_pose)):
+        robot_move(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, 3.14, 0, 0)
+        rospy.sleep(5)
+        # 下探
+        robot_move_line(parts_pose[model_num][0], parts_pose[model_num][1], 1.5, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
+        # 推物体
+        robot_move_line(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0]+2, parts_pose[model_num][1]+2, 1.3)  
+        # 回来，  好像有点问题，回不来的感觉
+        # robot_move_line(parts_pose[model_num][0]+2, parts_pose[model_num][1]+2, 1.3 ,parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
+        # 回来，加套接
+        robot_move_line(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
