@@ -44,7 +44,7 @@
 
 
   <joint name="scene_camera_joint" type="fixed">
-    <origin xyz="0 0 1.75" rpy="0 1.57 1.57"/>
+    <origin xyz="0 0 1.55" rpy="0 1.57 1.57"/>
     <parent link="table"/>
     <child link="gloal_world_base"/>
   </joint>
