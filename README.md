@@ -11,7 +11,7 @@ robot_sorting.py
 
 
 添加电池包并套接，battery:rokae_robot/rokae/src/rokae_control/scripts
-motion_planning.py   添加电池包时，输入字符“add”，过后按照提出 输入其它字符
+motion_planning.py   添加电池包时，输入字符“add”，过后按照提出 输入其它字符。若是不加载电池，空一行后回车就可以啦
 
 深度相机，我的问题是 py2  不支持touch.
 src/rokae_control/scripts/bolt_position_detector.py
