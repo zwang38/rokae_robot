@@ -1,55 +1,117 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-# tf2_ros_example.py: example showing how to use tf2_ros API
-# Author: Ravi Joshi
-# Date: 2018/12/6
 
 # import modules
-import rospy
 import tf2_ros
 import tf2_geometry_msgs
 from geometry_msgs.msg import Point, PointStamped
 
 
-def transform_point(transformation, point_wrt_source):
-    point_wrt_target = \
-        tf2_geometry_msgs.do_transform_point(PointStamped(point=point_wrt_source),
-            transformation).point
-    return [point_wrt_target.x, point_wrt_target.y, point_wrt_target.z]
+import traceback
+import rospy
+import tf
+import message_filters
+from image_geometry import PinholeCameraModel
+from sensor_msgs.msg import Image
+
+from sensor_msgs.msg import CameraInfo
 
 
-def get_transformation(source_frame, target_frame,
-                       tf_cache_duration=2.0):
-    tf_buffer = tf2_ros.Buffer(rospy.Duration(tf_cache_duration))
-    tf2_ros.TransformListener(tf_buffer)
-
-    # get the tf at first available time
-    try:
-        transformation = tf_buffer.lookup_transform(target_frame,
-                source_frame, rospy.Time(0), rospy.Duration(0.1))
-    except (tf2_ros.LookupException, tf2_ros.ConnectivityException,
-            tf2_ros.ExtrapolationException):
-        rospy.logerr('Unable to find the transformation from %s to %s'
-                     % source_frame, target_frame)
-    return transformation
+from cv_bridge import CvBridge
 
 
-def main():
-    # initialize ros node
-    rospy.init_node('tf2_ros_example', anonymous=True)
+#import cv2
 
-    # define source and target frame
-    source_frame = 'table'
-    target_frame = 'rokae_link7'
+def cam_info_cb(msg):
+  global cam_model
+  print('got cam model')
 
-    # define a source point
-    point_wrt_source = Point(0.1, 0.2,1.3)
+  cam_model = PinholeCameraModel()
+  cam_model.fromCameraInfo(msg)
+  cam_sub.unregister()
 
-    transformation = get_transformation(source_frame, target_frame)
-    point_wrt_target = transform_point(transformation, point_wrt_source)
-    print point_wrt_target
+def transform_point(src_frame, tgt_frame, pose_pt, ts):
+  '''
+  transform pose of given point from 'src_frame' to 'tgt_frame'
+  '''
+
+  ps_src = PointStamped()
+  try:
+
+    tf_listener.waitForTransform(tgt_frame, src_frame, ts, rospy.Duration(0.2))
+
+    ps_src.header.frame_id = src_frame
+    ps_src.header.stamp = ts
+    ps_src.point = pose_pt
+
+    ps_tgt = tf_listener.transformPoint(tgt_frame, ps_src)
+
+    return ps_tgt.point
+  except:
+    traceback.print_exc()
+    rospy.signal_shutdown('')
+
+
+
+def bolt_callback(rgb_msg, depth_msg):
+    print("bolt_callback")
+    #rgb_img =  bridge.imgmsg_to_cv2(depth_msg, '16UC1')
+    #depth_img = bridge.imgmsg_to_cv2(rgb_msg, 'bgr8')
+
+    # use canny detect bolt
+    #....
+    #end detect
+
+    x = 10
+    y = 10
+    w = 10
+    h = 10
+
+    c_x = x + int(w/2)
+    c_y = y + int(h/2)
+    d = 1.8#depth_img[c_y][c_x]/1000.0  # in meters
+
+    coord_x = (c_x - cam_model.cx())*d*(1.0/cam_model.fx())
+    coord_y = (c_y - cam_model.cy())*d*(1.0/cam_model.fy())
+
+    pt = Point()
+    pt.x = coord_x
+    pt.y = coord_y
+    pt.z = d
+
+    source_frame = 'camera_depth_frame'#'image'
+    target_frame = 'world' #'world'
+
+    ts = rospy.Time.now()
+    pt_world = transform_point(source_frame, target_frame, pt, ts)
+
+    print(("%f, %f, %f")%(pt_world.x, pt_world.y, pt_world.z))
+
 
 
 if __name__ == '__main__':
-    main()
+
+  rospy.init_node('bolt_pose')
+
+  rgb_topic = rospy.get_param('~rgb_topic', '/camera/color/image_raw')
+  depth_topic = rospy.get_param('~depth_topic', '/camera/depth/image_raw')
+  cam_info_topic = rospy.get_param('~cam_info_topic', '/camera/depth/camera_info')
+  local_run = rospy.get_param('~local', False)
+  hz = rospy.get_param('~hz', 1)
+
+
+  print('subscribe to {} for rgb image:'.format(rgb_topic))
+  rgb_sub = message_filters.Subscriber(rgb_topic, Image)
+  print('subscribe to {} for depth image:'.format(depth_topic))
+  depth_sub = message_filters.Subscriber(depth_topic, Image)
+  bolt_rgb_depth_sub = message_filters.ApproximateTimeSynchronizer([depth_sub, rgb_sub],30,0.2)
+  bolt_rgb_depth_sub.registerCallback(bolt_callback)
+
+  print('subscribe to {} for camera info'.format(cam_info_topic))
+  cam_sub = rospy.Subscriber(cam_info_topic, CameraInfo, cam_info_cb)
+
+  tf_listener = tf.TransformListener()
+  bridge = CvBridge()
+
+  rospy.spin()
