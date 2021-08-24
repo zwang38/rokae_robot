@@ -212,6 +212,29 @@ def robot_move_insert(x1,y1,z1,x2,y2,z2):
     robot_move_line(x1,y1,z1,x2,y2,z2)
 
 
+def robot_position(x,y):
+    moveit_commander.roscpp_initialize(sys.argv)
+    # rospy.init_node('motion_planning', anonymous=True)
+    # Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
+    # the robot:
+    robot = moveit_commander.RobotCommander()
+    # Instantiate a `PlanningSceneInterface`_ object.  This object is an interface
+    # to the world surrounding the robot:
+    scene = moveit_commander.PlanningSceneInterface()
+
+    group_name1 = "arm"
+    group1 = moveit_commander.MoveGroupCommander(group_name1)
+    group1.set_planner_id("RRTConnectkConfigDefault")
+    display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',moveit_msgs.msg.DisplayTrajectory,queue_size=20)
+    scene = moveit_commander.PlanningSceneInterface()
+    # group1.set_named_target('home')
+    rospy.sleep(2)
+
+    # print('ray[0]0',ray[0])
+
+    # 机器人移动到某个位置
+    robot_move_location(group1,x,y,1.5, 3.14, 0, 0)
+    rospy.sleep(5)
 
 
 
@@ -221,6 +244,10 @@ if __name__ == "__main__":
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node('motion_planning', anonymous=True)
+
+    # robot_position(0.38 , 0.27)
+
+
     # Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
     # the robot:
     robot = moveit_commander.RobotCommander()
@@ -238,10 +265,6 @@ if __name__ == "__main__":
         print('load_battery_model',load_battery_model)
 
 
-
-
-
-    
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
     group1.set_planner_id("RRTConnectkConfigDefault")
@@ -260,14 +283,14 @@ if __name__ == "__main__":
     parts_pose=part_pose_collect()
     print(parts_pose)
 
-    x,y=bolt_position_detector.detection_position()
-    print( "x={0},y={1}" .format(x,y))
+    # x,y=bolt_position_detector.detection_position()
+    # print( "x={0},y={1}" .format(x,y))
 
 
     for model_num in range(len(parts_pose)):
 
         # 机器人移动到某个位置
-        robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, 3.14, 0, 0)
+        robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
         rospy.sleep(5)
         # 下探
         robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.5, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
