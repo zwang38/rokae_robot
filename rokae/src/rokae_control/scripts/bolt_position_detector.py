@@ -4,13 +4,18 @@
 import os
 import cv2
 import numpy as np
-
-
+# import testmotion
+# src/rokae_control/scripts/testmotion.py
 
 def  detection_position():
 
     testID='/home/nuc/Desktop/rokae_robot/rokae/src/battery_pack_describe/bolt.jpg'
+    # testID='/home/nuc/Desktop/rokae_robot/rokae/src/gloal_image_file/camera_image.jpeg'
 
+     
+     
+     
+     
     smarties = cv2.imread(testID)
     gray_img= cv2.cvtColor(smarties,cv2.COLOR_BGR2GRAY)
     #进行中值滤波
@@ -35,16 +40,20 @@ def  detection_position():
     # cv2.waitKey()
     # cv2.destroyAllWindows()
 
-
-    return x_position,y_position
-
+    return x_position,y_position,smarties.shape[0],smarties.shape[1]
 
 
 
+if __name__ == "__main__":
+    x,y,w,h=detection_position()
+    # testmotion.robot_position(0.38 , 0.27)
+    print('xq',int(x))
+    print('yq',int(y))
+    print('w',int(w))
+    print('h',int(h))
 
 
-
-
+    
 
 
 

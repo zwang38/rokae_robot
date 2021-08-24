@@ -7,7 +7,7 @@ import matplotlib as plt
 # import imutils
 import os
 import sys
-sys.path.remove('/usr/bin/python') 
+# sys.path.remove('/usr/bin/python') 
 sys.path.append('/usr/bin/python3') 
 image_path='/home/nuc/Desktop/rokae_robot/rokae/src/gloal_image_file/camera_image.jpeg'
 #   You can see how the program works by using included test.jpg files
@@ -50,7 +50,7 @@ def cal_pos(image_path):
     
     contours = cv2.findContours(im,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     unscale = 1.0 / scale
-    contours = sorted(contours, key = cv2.contourArea)[:]
+    contours = sorted(contours, key=cv2.contourArea)[:]
     c=0
     rect_c = 0
     if contours != None:
