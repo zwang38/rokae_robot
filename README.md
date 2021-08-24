@@ -22,3 +22,8 @@ src/rokae_control/scripts/testmotion.py
 
 机器人运动规划数据样例集合，
 https://python.hotexamples.com/zh/examples/moveit_commander/PlanningSceneInterface/-/python-planningsceneinterface-class-examples.html
+
+
+
+RGBD图像转tf, 暂时需要在图像上点击一下，暂时图像检测位置点接口没有添加。src/rokae_control/scripts/bolt_position_detector.py 是螺栓的检测。src/rokae_control/scripts/battery_position.py是电池包位置的检测，里面的面积cv2.contourArea(contour) 即可改变检测范围
+rgbd_imgpoint_to_tf.py
