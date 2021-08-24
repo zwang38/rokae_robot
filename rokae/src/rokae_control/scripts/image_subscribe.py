@@ -73,6 +73,7 @@ def image_callback(msg):
     else:
         # Save your OpenCV2 image as a jpeg 
         cv2.imwrite('src/gloal_image_file/camera_image.jpeg', cv2_img)
+        return cv2_img
 
 def main():
     rospy.init_node('image_listener')
