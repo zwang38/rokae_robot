@@ -9,7 +9,7 @@ import numpy as np
 
 def  detection_position():
 
-    testID='/home/nuc/Desktop/rokae_robot/rokae/src/battery_pack_describe/bolt.jpg'
+    testID='src/battery_pack_describe/bolt.jpg'
     # testID='/home/nuc/Desktop/rokae_robot/rokae/src/gloal_image_file/camera_image.jpeg'
 
      

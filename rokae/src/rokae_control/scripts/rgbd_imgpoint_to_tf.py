@@ -15,7 +15,7 @@ from visualization_msgs.msg import Marker
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image, CameraInfo
 from tf import TransformListener, transformations
-
+import testmotion
 # from  bolt_position_detector
 
 
@@ -165,6 +165,7 @@ class Camera():
 
             print('distance (crowflies) from camera to point: {:.2f}m'.format(depth_distance))
             ray, self.pose = self.process_ray((x, y), depth_distance)
+            testmotion.robot_position(ray[0],  ray[1] )
 
             
 if __name__ == '__main__':
@@ -174,7 +175,7 @@ if __name__ == '__main__':
         while not rospy.is_shutdown():
             #camera = Camera('usb_cam', '/kinect2/qhd/image_color', '/kinect2/qhd/camera_info')
             #NEW
-            camera = Camera('gloal', '/gloal_camera/color/image_color', '/gloal_camera/depth/camera_info', 'gloal_camera/color/camera_info')
+            camera = Camera('gloal_camera', '/gloal_camera/color/image_raw', '/gloal_camera/depth/image_raw', '/gloal_camera/color/camera_info')
             rospy.spin()
 
     except rospy.ROSInterruptException:
