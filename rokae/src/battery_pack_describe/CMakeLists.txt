@@ -7,16 +7,16 @@ project(battery_pack_describe)
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
-
 find_package(catkin REQUIRED COMPONENTS
   controller_manager
   joint_state_controller
   robot_state_publisher
   roscpp
   rospy
-  
   std_msgs
+
 )
+
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
 
@@ -109,33 +109,9 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES battery_pack_describe
-#  CATKIN_DEPENDS rospy
+#  CATKIN_DEPENDS roscpp rospy
 #  DEPENDS system_lib
 )
-
-
-
-# add_executable(battery_pack_describe  src/hexagon.cpp)
-# add_executable(battery_pack_describe  src/line.cpp)
-# add_executable(battery_pack_describe  src/main.cpp)
-
-
-## Specify libraries to link a library or executable target against
-# target_link_libraries(battery_pack_describe
-# ${catkin_LIBRARIES}
-# )
-
-
-
-
-
-
-
-
-
-
-
-
 
 ###########
 ## Build ##
@@ -173,8 +149,8 @@ include_directories(
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-# ## Specify libraries to link a library or executable target against
-#  target_link_libraries(battery_pack_describe
+## Specify libraries to link a library or executable target against
+# target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
 
