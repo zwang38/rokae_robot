@@ -59,6 +59,8 @@ class Camera():
     def  detection_position(self,image):
     
         gray_img= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+
+        cv2.imshow('gray_img',gray_img)
         #进行中值滤波
         img = cv2.medianBlur(gray_img,5)
         circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=35,minRadius=0,maxRadius=0)
@@ -67,7 +69,7 @@ class Camera():
         
         x_position=0
         y_position=0
-        
+        print('image is ok ...')
         for i in circles[0,:]:
             #画出来圆的边界
             cv2.circle(image,(i[0],i[1]),i[2],(0,0,255),2)
@@ -75,7 +77,7 @@ class Camera():
             cv2.circle(image,(i[0],i[1]),2,(0,255,255),3)
             x_position=i[0]
             y_position=i[1]
-    
+        print('image is no ok ...')
         print( "x={0},y={1}" .format(x_position, y_position))
         # cv2.imshow("Circle",smarties)
         # cv2.waitKey()
@@ -98,6 +100,9 @@ class Camera():
         # depth_display = kinect_utils.normalize_depth_to_uint8(depth_32FC1.copy())
         # 
         # depth_32FC1[depth_32FC1 < 0.1] = np.finfo(np.float32).max
+       
+       
+        rospy.sleep(15)
 
         cv2.imshow("Image window", img)
         # cv2.imshow("depth", depth_display)
@@ -207,7 +212,12 @@ class Camera():
 
             print('distance (crowflies) from camera to point: {:.2f}m'.format(depth_distance))
             ray, self.pose = self.process_ray((x, y), depth_distance)
-            testmotion.robot_position(ray[0],  ray[1] )
+            print( 'image x', x )
+            print( 'image y', y )
+            print( 'ray x',ray[0] )
+            print( 'ray y', ray[1] )
+
+            testmotion.robot_position(ray[0],  ray[1]  ,depth_distance/1000+0.2)
 
             
 if __name__ == '__main__':
@@ -216,8 +226,18 @@ if __name__ == '__main__':
     
         while not rospy.is_shutdown():
             #camera = Camera('usb_cam', '/kinect2/qhd/image_color', '/kinect2/qhd/camera_info')
-            #NEW
-            camera = Camera('gloal_camera', '/gloal_camera/color/image_raw', '/gloal_camera/depth/image_raw', '/gloal_camera/color/camera_info')
+            print('arm camera or gloal camera, if arm please input arm,enter "enter" ')
+            input_delete=raw_input()
+    
+            if input_delete=='arm':
+                 # arm_camera
+                camera = Camera('camera', '/camera/color/image_raw', '/camera/depth/image_raw', '/camera/color/camera_info')
+            else :
+                # gloal camera 
+                camera = Camera('gloal_camera', '/gloal_camera/color/image_raw', '/gloal_camera/depth/image_raw', '/gloal_camera/color/camera_info')
+          
+
+
             rospy.spin()
 
     except rospy.ROSInterruptException:

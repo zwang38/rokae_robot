@@ -212,7 +212,7 @@ def robot_move_insert(x1,y1,z1,x2,y2,z2):
     robot_move_line(x1,y1,z1,x2,y2,z2)
 
 
-def robot_position(x,y):
+def robot_position(x,y ,d):
     moveit_commander.roscpp_initialize(sys.argv)
     # rospy.init_node('motion_planning', anonymous=True)
     # Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
@@ -233,7 +233,7 @@ def robot_position(x,y):
     # print('ray[0]0',ray[0])
 
     # 机器人移动到某个位置
-    robot_move_location(group1,x,y,1.5, 3.14, 0, 0)
+    robot_move_location(group1,x,y,d, 3.14, 0, 0)
     rospy.sleep(5)
 
 

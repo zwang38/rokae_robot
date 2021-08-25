@@ -23,6 +23,9 @@ from cv_bridge import CvBridge
 import bolt_position_detector
 import cv2
 
+import testmotion
+
+
 
 
 def cam_info_cb(msg):
@@ -56,16 +59,26 @@ def transform_point(src_frame, tgt_frame, pose_pt, ts):
 
 
 
+# def bolt_callback(self, rgb_msg, depth_msg, camera_info_msg):
+#     self.camera_model.fromCameraInfo(camera_info_msg)
+#     img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
+#     depth_32FC1 = self.bridge.imgmsg_to_cv2(depth_msg, '32FC1')
+#     self.latest_depth_32FC1 = depth_32FC1.copy()
+
 def bolt_callback(rgb_msg, depth_msg):
     print("bolt_callback")
-    #rgb_img =  bridge.imgmsg_to_cv2(depth_msg, '16UC1')
-    #depth_img = bridge.imgmsg_to_cv2(rgb_msg, 'bgr8')
+
+    rgb_img =  bridge.imgmsg_to_cv2(rgb_msg,'16UC1')
+
+    cv2.imshow("Image window", rgb_img)
+
+    depth_img = bridge.imgmsg_to_cv2(depth_msg,'rgb8')
 
     # use canny detect bolt
     #....
     #end detect
 
-    x,y,w,h=bolt_position_detector.detection_position()
+    x,y,w,h=bolt_position_detector.detection_position(rgb_img)
 
     # x = 10
     # y = 10
@@ -91,13 +104,11 @@ def bolt_callback(rgb_msg, depth_msg):
     pt_world = transform_point(source_frame, target_frame, pt, ts)
 
     print(("%f, %f, %f")%(pt_world.x, pt_world.y, pt_world.z))
+    testmotion.robot_position(0.8, 0.9)
 
 
 
 if __name__ == '__main__':
-
-  x,y,w,h=bolt_position_detector.detection_position()
-
 
 
 
@@ -105,7 +116,7 @@ if __name__ == '__main__':
 
   rgb_topic = rospy.get_param('~rgb_topic', '/camera/color/image_raw')
   depth_topic = rospy.get_param('~depth_topic', '/camera/depth/image_raw')
-  cam_info_topic = rospy.get_param('~cam_info_topic', '/camera/depth/camera_info')
+  cam_info_topic = rospy.get_param('~cam_info_topic', '/camera/color/camera_info')
   local_run = rospy.get_param('~local', False)
   hz = rospy.get_param('~hz', 1)
 
