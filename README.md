@@ -19,6 +19,8 @@ src/rokae_control/scripts/bolt_position_detector.py
 src/rokae_control/scripts/testmotion.py
 
 
+无法查找功能包路径的解决办法，catkin_make ； source devel/setup.bash
+https://blog.csdn.net/weizhangyjs/article/details/80521021
 
 机器人运动规划数据样例集合，
 https://python.hotexamples.com/zh/examples/moveit_commander/PlanningSceneInterface/-/python-planningsceneinterface-class-examples.html
