@@ -9,7 +9,7 @@
 import tf2_ros
 import tf2_geometry_msgs
 from geometry_msgs.msg import Point, PointStamped
-
+import numpy as np
 
 import traceback
 import rospy
@@ -72,7 +72,7 @@ def bolt_callback(rgb_msg, depth_msg):
 
     try:
       #RGB图像
-      rgb_img =  bridge.imgmsg_to_cv2(rgb_msg, 'rgba8' )
+      rgb_img =  bridge.imgmsg_to_cv2(rgb_msg, 'bgr8' )
       #深度图像
       depth_img = bridge.imgmsg_to_cv2(depth_msg,  '16UC1')
       cv2.imwrite(rgb_img_path, rgb_img)
@@ -81,22 +81,25 @@ def bolt_callback(rgb_msg, depth_msg):
     except CvBridgeError as e:
       print(e)
     
-    # cv2.imshow("Image rgb_img", rgb_img)
-    # cv2.imshow("Image depth_img", depth_img)
-
-    # cv2.waitKey(3)
 
     # use canny detect bolt
-    x,y,w,h=bolt_position_detector.detection_position(depth_img_path)
+    x,y,w,h=bolt_position_detector.detection_position(rgb_img_path)
 
-    # x = 10
-    # y = 10
-    # w = 10
-    # h = 10
+    # clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
+    # latest_depth_32FC1=depth_img.copy()
+    # #Small ROI around clicked point grows larger if no depth value found
+    # for bbox_width in range(20, int(latest_depth_32FC1.shape[0]/3), 5):
+    #     tl_x = clamp(x-bbox_width/2, 0, latest_depth_32FC1.shape[0])
+    #     br_x = clamp(x+bbox_width/2, 0, latest_depth_32FC1.shape[0])
+    #     tl_y = clamp(y-bbox_width/2, 0, latest_depth_32FC1.shape[1])
+    #     br_y = clamp(y+bbox_width/2, 0, latest_depth_32FC1.shape[1])
+    #     print((x, y), (tl_x, tl_y, br_x, br_y))
+    #     roi = latest_depth_32FC1[tl_y:br_y, tl_x:br_x]
+    #     depth_distance = np.median(roi)
 
     c_x = x + int(w/2)
     c_y = y + int(h/2)
-    d = 1.8#depth_img[c_y][c_x]/1000.0  # in meters
+    d = depth_img[c_y][c_x]/1000.0  # in meters
 
     coord_x = (c_x - cam_model.cx())*d*(1.0/cam_model.fx())
     coord_y = (c_y - cam_model.cy())*d*(1.0/cam_model.fy())

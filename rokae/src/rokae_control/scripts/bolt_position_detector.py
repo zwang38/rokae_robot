@@ -7,43 +7,45 @@ import numpy as np
 # import testmotion
 # src/rokae_control/scripts/testmotion.py
 
-testID='src/rokae_control/images/rgb_img.png'
+testID='src/rokae_control/images/rgb_img.jpg'
 
 
 
 def  detection_position(image_path):
 
+    x_position=0
+    y_position=0
+
     # testID='src/battery_pack_describe/bolt.jpg'
     # testID='/home/nuc/Desktop/rokae_robot/rokae/src/gloal_image_file/camera_image.jpeg'
 
     smarties = cv2.imread(image_path)
-    cv2.imshow("smarties",smarties)
+    # cv2.imshow("smarties",smarties)
+    # cv2.waitKey()
 
     gray_img= cv2.cvtColor(smarties,cv2.COLOR_BGR2GRAY)
     #进行中值滤波
     img = cv2.medianBlur(gray_img,5)
     circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=35,minRadius=0,maxRadius=0)
-    #对数据进行四舍五入变为整数
-    circles = np.uint16(np.around(circles))
+    if circles is None:
+        return x_position,y_position,smarties.shape[0],smarties.shape[1]
+    else :
+        #对数据进行四舍五入变为整数
+        circles = np.uint16(np.around(circles))
+        for i in circles[0,:]:
+            #画出来圆的边界
+            cv2.circle(smarties,(i[0],i[1]),i[2],(0,0,255),2)
+            #画出来圆心
+            cv2.circle(smarties,(i[0],i[1]),2,(0,255,255),3)
+            x_position=i[0]
+            y_position=i[1]
     
-    x_position=0
-    y_position=0
+        print( "x={0},y={1}" .format(x_position, y_position))
+        cv2.imshow("Circle",smarties)
+        cv2.waitKey()
+        # cv2.destroyAllWindows()
+        return x_position,y_position,smarties.shape[0],smarties.shape[1]
     
-    for i in circles[0,:]:
-        #画出来圆的边界
-        cv2.circle(smarties,(i[0],i[1]),i[2],(0,0,255),2)
-        #画出来圆心
-        cv2.circle(smarties,(i[0],i[1]),2,(0,255,255),3)
-        x_position=i[0]
-        y_position=i[1]
-
-    print( "x={0},y={1}" .format(x_position, y_position))
-    cv2.imshow("Circle",smarties)
-    cv2.waitKey()
-    # cv2.destroyAllWindows()
-
-    return x_position,y_position,smarties.shape[0],smarties.shape[1]
-
 
 
 if __name__ == "__main__":

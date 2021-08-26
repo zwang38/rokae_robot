@@ -224,7 +224,7 @@ def robot_position(x,y ,d):
 
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
-    group1.set_planner_id("RRT*")
+    group1.set_planner_id("RRTConnectkConfigDefault")
     display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',moveit_msgs.msg.DisplayTrajectory,queue_size=20)
     scene = moveit_commander.PlanningSceneInterface()
     # group1.set_named_target('home')

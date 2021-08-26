@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#-*- coding: UTF-8 -*-
 import os
 import tf
 import sys
@@ -17,7 +18,9 @@ from sensor_msgs.msg import Image, CameraInfo
 from tf import TransformListener, transformations
 import testmotion
 # from  bolt_position_detector
-
+import templateMatching
+# from PIL import Image,ImageDraw
+# import numpy as np 
 
 class Camera():
     def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic,  arm_camera):
@@ -58,23 +61,24 @@ class Camera():
 
 
     def  detection_position(self,image):
-        try:
-            
-            gray_img= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-            cv2.imshow('gray_img',gray_img)
-            cv2.waitKey(1)
+        x_position=0
+        y_position=0
+        gray_img= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        # cv2.imshow('gray_img',gray_img)
+        # cv2.waitKey()
 
-            #进行中值滤波
-            img = cv2.medianBlur(gray_img,5)
-            circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=35,minRadius=0,maxRadius=0)
+        img = cv2.medianBlur(gray_img,5)
+        circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=35,minRadius=0,maxRadius=0)
+        if circles is None:
+            return img.shape[0]/2,img.shape[1]/2
+        else :
 
-            #对数据进行四舍五入变为整数
             circles = np.uint16(np.around(circles))
             
-            x_position=0
-            y_position=0
+    
             # print('image is ok ...')
             for i in circles[0,:]:
+                print ('这是第{0}个圆心'.format(i+1))
                 #画出来圆的边界
                 cv2.circle(image,(i[0],i[1]),i[2],(0,0,255),2)
                 #画出来圆心
@@ -83,20 +87,20 @@ class Camera():
                 y_position=i[1]
             # print('image is no ok ...')
             print( "圆心 x={0},y={1}" .format(x_position, y_position))
-            cv2.imshow("Circle",image)
+            cv2.imwrite('src/rokae_control/images/rgb_img.jpg', image)
+
+            # cv2.imshow("Circle",image)
             # cv2.waitKey()
             # cv2.destroyAllWindows()
             return x_position,y_position
-        except rospy.ROSInterruptException:
-            print("Shutting down")
-            cv2.destroyAllWindows()
+
 
     def cal_pos(self,img_clr):
         try:
             img = cv2.cvtColor(img_clr,cv2.COLOR_BGR2GRAY)
             # resize image
-            cv2.imshow('gray_img',img)
-            cv2.waitKey(1)
+            # cv2.imshow('gray_img',img)
+            # cv2.waitKey(1)
 
             print(img.shape)
             scale = 800.0 / img.shape[1]
@@ -161,22 +165,78 @@ class Camera():
             print("Shutting down")
             cv2.destroyAllWindows()
 
+    def templateMatching(self,img_path):
+
+        template_path='src/battery_pack_describe/bolt.jpg'
+
+        small_image = Image.open(template_path)
+        big_image =Image.open(img_path)
+    
+        big_image_rgb = big_image
+        small_image = small_image.convert('L')
+    
+        big_image = big_image.convert('L')
+        
+        big = np.array(big_image)
+        small = np.array(small_image)
+        
+        rand_point = []
+        for i in range(50):
+            rand_point.append((np.random.randint(0,small.shape[0]-1) ,np.random.randint(0,small.shape[1]-1)))
+        
+        R = np.zeros([big.shape[0]-small.shape[0],big.shape[1]-small.shape[1]])
+        
+        sMean = np.mean(small)
+        for i in range(R.shape[0]):
+            for j in range(R.shape[1]):
+                loss = 0 
+                mean = np.mean(big[i:i+small.shape[0],j:j+small.shape[1]]) 
+                for n in range(len(rand_point)):
+                    point = rand_point[n]
+        
+                    loss += np.abs( big[i+point[0],j+point[1]] - mean - small[point[0],point[1]] + sMean)
+                    if loss >= 150 or n==len(rand_point)-1: 
+                        R[i,j] = nself
+                        break 
+        index = np.unravel_index(R.argmax(), R.shape)
+         
+        xy = [(index[1],index[0]),(index[1]+small.shape[1],index[0]+small.shape[0])]
+        print('index[1]',index[1])
+        print('index[0]',index[0])
+        print('c[1]',index[1]+small.shape[1]/2)
+        print('c[0]',index[0]+small.shape[0]/2)
+    
+    
+        big_image = big_image_rgb
+        draw = ImageDraw.Draw(big_image)
+        # draw.rectangle(xy,outline='red',width=1)
+        draw.rectangle(xy, fill ="#ffff33", outline ="red")
+        big_image.show()
+        # big_image.save("output.jpg")
+        return index[1]+small.shape[1]/2,index[0]+small.shape[0]/2
 
 
 
     def callback(self, rgb_msg, depth_msg, camera_info_msg):
         try:
+            rgb_img_path='src/rokae_control/images/rgb_img.jpg'
 
             self.camera_model.fromCameraInfo(camera_info_msg)
             img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
             depth_32FC1 = self.bridge.imgmsg_to_cv2(depth_msg, '32FC1')
             self.latest_depth_32FC1 = depth_32FC1.copy()
- 
 
             rospy.loginfo('receiving image')
-            cv2.imshow("Image window", img)
-            cv2.waitKey(1)
-            # cv2.imshow("depth", depth_display)
+            cv2.imwrite(rgb_img_path, img)
+            #模板匹配
+
+            # x_templateMatching,y_templateMatching=templateMatching.main( rgb_img_path )
+            x_circle,y_circle=self.detection_position(img)
+            x=x_circle
+            y=y_circle
+
+            # cv2.imshow("img", img)
+            # cv2.waitKey()
 
 
             # if  self.arm_camera   :
@@ -187,7 +247,7 @@ class Camera():
    
             # x,y= self.cal_pos(img)
 
-            self.mouse_callback(img)
+            self.mouse_callback(x,y,img)
             # cv2.setMouseCallback("Image window", self.mouse_callback(img))
             # cv2.waitKey(1)
     
@@ -269,13 +329,14 @@ class Camera():
 
     # def mouse_callback(self, event, x, y, flags, param):
 
-    def mouse_callback(self,img):
+    def mouse_callback(self,x,y,img):
         # if event == cv2.EVENT_LBUTTONDOWN:
 
         try:
             # bolt_position_detector.detection_position(img)
-            x,y=self.detection_position(img)
-
+            # x,y=self.detection_position(img)
+            #模板匹配
+            # x,y=templateMatching.main(img)
 
             # clamp a number to be within a specified range
             clamp = lambda n, minn, maxn: max(min(maxn, n), minn)
@@ -300,17 +361,18 @@ class Camera():
             print( 'ray x',ray[0] )
             print( 'ray y', ray[1] )
 
-            # testmotion.robot_position(ray[0],  ray[1]  ,depth_distance/1000+0.2)
-            testmotion.robot_position(0.4,0,1.5)
+            testmotion.robot_position(ray[0],  ray[1]  ,depth_distance/1000+0.1)
+            # testmotion.robot_position(0.4,0,1.5)
         except rospy.ROSInterruptException:
             print("Shutting down")
             cv2.destroyAllWindows()
             
 if __name__ == '__main__':
+    testmotion.robot_position(0.4,0,1.2)
+
     try:
-        rospy.init_node('depth_from_object', anonymous=True)
+        rospy.init_node('depth_from_object')
         
-        # testmotion.robot_position(0.4,0,1.2)
 
         while not rospy.is_shutdown():
             #camera = Camera('usb_cam', '/kinect2/qhd/image_color', '/kinect2/qhd/camera_info')
