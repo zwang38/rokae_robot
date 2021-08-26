@@ -67,18 +67,27 @@ def transform_point(src_frame, tgt_frame, pose_pt, ts):
 
 def bolt_callback(rgb_msg, depth_msg):
     print("bolt_callback")
+    rgb_img_path='src/rokae_control/images/rgb_img.jpg'
+    depth_img_path='src/rokae_control/images/depth_img.jpg'
 
-    rgb_img =  bridge.imgmsg_to_cv2(rgb_msg,'16UC1')
+    try:
+      #RGB图像
+      rgb_img =  bridge.imgmsg_to_cv2(rgb_msg, 'rgba8' )
+      #深度图像
+      depth_img = bridge.imgmsg_to_cv2(depth_msg,  '16UC1')
+      cv2.imwrite(rgb_img_path, rgb_img)
+      cv2.imwrite(depth_img_path, depth_img) 
+      rospy.sleep(5)
+    except CvBridgeError as e:
+      print(e)
+    
+    # cv2.imshow("Image rgb_img", rgb_img)
+    # cv2.imshow("Image depth_img", depth_img)
 
-    cv2.imshow("Image window", rgb_img)
-
-    depth_img = bridge.imgmsg_to_cv2(depth_msg,'rgb8')
+    # cv2.waitKey(3)
 
     # use canny detect bolt
-    #....
-    #end detect
-
-    x,y,w,h=bolt_position_detector.detection_position(rgb_img)
+    x,y,w,h=bolt_position_detector.detection_position(depth_img_path)
 
     # x = 10
     # y = 10
@@ -110,28 +119,47 @@ def bolt_callback(rgb_msg, depth_msg):
 
 if __name__ == '__main__':
 
+  rospy.init_node('bolt_pose' ,anonymous=True)
+
+  # 移动机械臂到电池上方，我的电脑老是似乎不会动
+  # testmotion.robot_position(0.4,0,1.2)
+
+  bridge = CvBridge()
+  # rgb_topic = rospy.get_param('~rgb_topic', '/gloal_camera/color/image_raw')
+  # depth_topic = rospy.get_param('~depth_topic', '/gloal_camera/depth/image_raw')
+  # cam_info_topic = rospy.get_param('~cam_info_topic', '/gloal_camera/color/camera_info')
 
 
-  rospy.init_node('bolt_pose')
+  # rate = rospy.Rate(1)
+  # rate.sleep()
 
+  # 相机消息订阅，
   rgb_topic = rospy.get_param('~rgb_topic', '/camera/color/image_raw')
   depth_topic = rospy.get_param('~depth_topic', '/camera/depth/image_raw')
   cam_info_topic = rospy.get_param('~cam_info_topic', '/camera/color/camera_info')
+
+
   local_run = rospy.get_param('~local', False)
   hz = rospy.get_param('~hz', 1)
 
-
+  q=25
+  rgb_sub = message_filters.Subscriber(rgb_topic, Image , queue_size=q)
   print('subscribe to {} for rgb image:'.format(rgb_topic))
-  rgb_sub = message_filters.Subscriber(rgb_topic, Image)
+
+  depth_sub = message_filters.Subscriber(depth_topic, Image, queue_size=q)
   print('subscribe to {} for depth image:'.format(depth_topic))
-  depth_sub = message_filters.Subscriber(depth_topic, Image)
-  bolt_rgb_depth_sub = message_filters.ApproximateTimeSynchronizer([depth_sub, rgb_sub],30,0.2)
+
+  bolt_rgb_depth_sub = message_filters.ApproximateTimeSynchronizer([rgb_sub,depth_sub],queue_size=30, slop=0.5)
+
+  cam_sub = rospy.Subscriber(cam_info_topic, CameraInfo, cam_info_cb, queue_size=q)
+  print('subscribe to {} for camera info'.format(cam_info_topic))
+  
+
+  # 休眠5秒，完成消息订阅
+  # rospy.sleep(5)
   bolt_rgb_depth_sub.registerCallback(bolt_callback)
 
-  print('subscribe to {} for camera info'.format(cam_info_topic))
-  cam_sub = rospy.Subscriber(cam_info_topic, CameraInfo, cam_info_cb)
-
   tf_listener = tf.TransformListener()
-  bridge = CvBridge()
+
 
   rospy.spin()

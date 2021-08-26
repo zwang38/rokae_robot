@@ -20,12 +20,13 @@ import testmotion
 
 
 class Camera():
-    def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic):
+    def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic,  arm_camera):
 
         self.camera_name = camera_name
         self.rgb_topic = rgb_topic
         self.depth_topic = depth_topic
         self.camera_info_topic = camera_info_topic
+        self.arm_camera=arm_camera
 
         self.pose = None
 
@@ -50,73 +51,154 @@ class Camera():
         self.sub_depth = message_filters.Subscriber(depth_topic, Image, queue_size=q)
         self.sub_camera_info = message_filters.Subscriber(camera_info_topic, CameraInfo, queue_size=q)
         # self.tss = message_filters.ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth, self.sub_camera_info], queue_size=15, slop=0.4)
-        self.tss = message_filters.ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth, self.sub_camera_info], queue_size=30, slop=0.5)
+        self.tss = message_filters.ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth, self.sub_camera_info], queue_size=30, slop=0.2)
         #self.tss = message_filters.TimeSynchronizer([sub_rgb], 10)
 
         self.tss.registerCallback(self.callback)
 
 
     def  detection_position(self,image):
-    
-        gray_img= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+        try:
+            
+            gray_img= cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+            cv2.imshow('gray_img',gray_img)
+            cv2.waitKey(1)
 
-        cv2.imshow('gray_img',gray_img)
-        #进行中值滤波
-        img = cv2.medianBlur(gray_img,5)
-        circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=35,minRadius=0,maxRadius=0)
-        #对数据进行四舍五入变为整数
-        circles = np.uint16(np.around(circles))
-        
-        x_position=0
-        y_position=0
-        print('image is ok ...')
-        for i in circles[0,:]:
-            #画出来圆的边界
-            cv2.circle(image,(i[0],i[1]),i[2],(0,0,255),2)
-            #画出来圆心
-            cv2.circle(image,(i[0],i[1]),2,(0,255,255),3)
-            x_position=i[0]
-            y_position=i[1]
-        print('image is no ok ...')
-        print( "x={0},y={1}" .format(x_position, y_position))
-        # cv2.imshow("Circle",smarties)
-        # cv2.waitKey()
-        # cv2.destroyAllWindows()
-    
-        return x_position,y_position
+            #进行中值滤波
+            img = cv2.medianBlur(gray_img,5)
+            circles = cv2.HoughCircles(img,cv2.HOUGH_GRADIENT,1,20,param1=50,param2=35,minRadius=0,maxRadius=0)
 
+            #对数据进行四舍五入变为整数
+            circles = np.uint16(np.around(circles))
+            
+            x_position=0
+            y_position=0
+            # print('image is ok ...')
+            for i in circles[0,:]:
+                #画出来圆的边界
+                cv2.circle(image,(i[0],i[1]),i[2],(0,0,255),2)
+                #画出来圆心
+                cv2.circle(image,(i[0],i[1]),2,(0,255,255),3)
+                x_position=i[0]
+                y_position=i[1]
+            # print('image is no ok ...')
+            print( "圆心 x={0},y={1}" .format(x_position, y_position))
+            cv2.imshow("Circle",image)
+            # cv2.waitKey()
+            # cv2.destroyAllWindows()
+            return x_position,y_position
+        except rospy.ROSInterruptException:
+            print("Shutting down")
+            cv2.destroyAllWindows()
 
+    def cal_pos(self,img_clr):
+        try:
+            img = cv2.cvtColor(img_clr,cv2.COLOR_BGR2GRAY)
+            # resize image
+            cv2.imshow('gray_img',img)
+            cv2.waitKey(1)
+
+            print(img.shape)
+            scale = 800.0 / img.shape[1]
+            resized = cv2.resize(img, (int(img.shape[1] * scale), int(img.shape[0] * scale)))
+            img_clr = cv2.resize(img, (int(img_clr.shape[1] * scale), int(img_clr.shape[0] * scale)))
+            
+            # Threshold
+            kernel = np.ones((1, 3), np.uint8)
+            im = cv2.morphologyEx(resized, cv2.MORPH_BLACKHAT, kernel, anchor=(1, 0))
+            thresh, im = cv2.threshold(resized, 140, 255, cv2.THRESH_BINARY)
+            
+            # dilation and erosion
+            kernel = np.ones((1, 3), np.uint8)
+            im = cv2.morphologyEx(im, cv2.MORPH_DILATE, kernel, anchor=(2, 0), iterations=2) 
+            im = cv2.morphologyEx(im, cv2.MORPH_CLOSE, kernel, anchor=(2, 0), iterations=2)  
+            
+            # Remove elements that are too small to fit/excess noise removal
+            kernel = np.ones((3, 3), np.uint8)
+            im = cv2.morphologyEx(im, cv2.MORPH_OPEN, kernel, iterations=1)
+            
+            # contour detection
+            # # im2, contours, hierarchy = cv2.findContours(im,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            # cnts = cv2.findContours(im.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            # cnts = imutils.grab_contours(cnts)
+            
+            contours = cv2.findContours(im,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+            unscale = 1.0 / scale
+            try:
+                contours = sorted(contours, key=cv2.contourArea)[:]
+                c=0
+                rect_c = 0
+                if contours != None:
+                    for contour in contours:
+                        c = c+1
+                        peri = cv2.arcLength(contour, True)
+                        approx = cv2.approxPolyDP(contour, 0.04 * peri, True)
+                        # segment based on area
+                        print(str(c)+ " Contour area: ", cv2.contourArea(contour))
+                        if (cv2.contourArea(contour) >=  401135  or cv2.contourArea(contour) <= 20825 ):
+                            rect_c = rect_c+1
+                            print("Missed : "+str(rect_c)+" Area of missed: "+ str(cv2.contourArea(contour)))
+                            continue
+                        #draw rect of smallest possible size for contour    
+                        rect = cv2.minAreaRect(contour)
+                        #print("Detected Contour area: ", cv2.minAreaRect(contour))
+                        #rect = ((int(rect[0][0] * unscale), int(rect[0][1] * unscale)),(int(rect[1][0] * unscale), int(rect[1][1] * unscale)),rect[2])
+                        box = cv2.boxPoints(rect)
+                        box = np.int0(box)
+                        cv2.drawContours(img_clr,[box],0,(0,0,255),thickness=2)
+                
+                        (x,y),radius = cv2.minEnclosingCircle(contour)
+                
+                        print('x',int(x))
+                        print('y',int(y))
+                        print('radius',int(radius))
+                
+                return int(x),int(y)
+            except rospy.ROSInterruptException:
+                print("Shutting down")
+                cv2.destroyAllWindows()
+        except rospy.ROSInterruptException:
+            print("Shutting down")
+            cv2.destroyAllWindows()
 
 
 
 
     def callback(self, rgb_msg, depth_msg, camera_info_msg):
-        self.camera_model.fromCameraInfo(camera_info_msg)
-        img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
-        depth_32FC1 = self.bridge.imgmsg_to_cv2(depth_msg, '32FC1')
-        self.latest_depth_32FC1 = depth_32FC1.copy()
+        try:
 
-        # res = kinect_utils.filter_depth_noise(depth_32FC1)
-        # depth_display = kinect_utils.normalize_depth_to_uint8(depth_32FC1.copy())
-        # 
-        # depth_32FC1[depth_32FC1 < 0.1] = np.finfo(np.float32).max
-       
-       
-        rospy.sleep(15)
+            self.camera_model.fromCameraInfo(camera_info_msg)
+            img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
+            depth_32FC1 = self.bridge.imgmsg_to_cv2(depth_msg, '32FC1')
+            self.latest_depth_32FC1 = depth_32FC1.copy()
+ 
 
-        cv2.imshow("Image window", img)
-        # cv2.imshow("depth", depth_display)
-        
-        x,y=self.detection_position(img)
+            rospy.loginfo('receiving image')
+            cv2.imshow("Image window", img)
+            cv2.waitKey(1)
+            # cv2.imshow("depth", depth_display)
 
-        self.mouse_callback(x,y)
-        # cv2.setMouseCallback("Image window", self.mouse_callback(img))
 
-        cv2.waitKey(1)
+            # if  self.arm_camera   :
+            #     x,y=self.detection_position(img)
+            # else:
+            #     x,y= self.cal_pos(img)
 
-        if self.pose:
-            self.br.sendTransform(self.pose,(0,0,0,1),rospy.Time.now(),"clicked_object",self.camera_model.tfFrame())
-            self.marker_pub.publish(self.generate_marker(rospy.Time(0), self.get_tf_frame(), self.pose))
+   
+            # x,y= self.cal_pos(img)
+
+            self.mouse_callback(img)
+            # cv2.setMouseCallback("Image window", self.mouse_callback(img))
+            # cv2.waitKey(1)
+    
+            if self.pose:
+                self.br.sendTransform(self.pose,(0,0,0,1),rospy.Time.now(),"clicked_object",self.camera_model.tfFrame())
+                self.marker_pub.publish(self.generate_marker(rospy.Time(0), self.get_tf_frame(), self.pose))
+        except rospy.ROSInterruptException:
+            print("Shutting down")
+            cv2.destroyAllWindows()
+
+
 
     def get_current_raw_image(self):
         return self.bridge.imgmsg_to_cv2(self.latest_img_msg, "bgr8")
@@ -187,11 +269,12 @@ class Camera():
 
     # def mouse_callback(self, event, x, y, flags, param):
 
-    def mouse_callback(self, x, y):
+    def mouse_callback(self,img):
         # if event == cv2.EVENT_LBUTTONDOWN:
 
-
+        try:
             # bolt_position_detector.detection_position(img)
+            x,y=self.detection_position(img)
 
 
             # clamp a number to be within a specified range
@@ -210,33 +293,42 @@ class Camera():
                 if not np.isnan(depth_distance):
                     break
 
-            print('distance (crowflies) from camera to point: {:.2f}m'.format(depth_distance))
+            print('distance (crowflies) from camera to point: {:.2f}mm'.format(depth_distance))
             ray, self.pose = self.process_ray((x, y), depth_distance)
             print( 'image x', x )
             print( 'image y', y )
             print( 'ray x',ray[0] )
             print( 'ray y', ray[1] )
 
-            testmotion.robot_position(ray[0],  ray[1]  ,depth_distance/1000+0.2)
-
+            # testmotion.robot_position(ray[0],  ray[1]  ,depth_distance/1000+0.2)
+            testmotion.robot_position(0.4,0,1.5)
+        except rospy.ROSInterruptException:
+            print("Shutting down")
+            cv2.destroyAllWindows()
             
 if __name__ == '__main__':
     try:
         rospy.init_node('depth_from_object', anonymous=True)
-    
+        
+        # testmotion.robot_position(0.4,0,1.2)
+
         while not rospy.is_shutdown():
             #camera = Camera('usb_cam', '/kinect2/qhd/image_color', '/kinect2/qhd/camera_info')
-            print('arm camera or gloal camera, if arm please input arm,enter "enter" ')
-            input_delete=raw_input()
+            # print('arm camera or gloal camera, if arm please input arm,enter "enter" ')
+            # input_delete=raw_input()
     
-            if input_delete=='arm':
+            # if input_delete=='arm':
+            #     arm_camera=True
                  # arm_camera
-                camera = Camera('camera', '/camera/color/image_raw', '/camera/depth/image_raw', '/camera/color/camera_info')
-            else :
-                # gloal camera 
-                camera = Camera('gloal_camera', '/gloal_camera/color/image_raw', '/gloal_camera/depth/image_raw', '/gloal_camera/color/camera_info')
-          
-
+            arm_camera=True
+            camera = Camera('camera', '/camera/color/image_raw', '/camera/depth/image_raw', '/camera/color/camera_info',arm_camera)
+            # else :
+            #     # gloal camera 
+            #     arm_camera=False
+            #     camera = Camera('gloal_camera', '/gloal_camera/color/image_raw', '/gloal_camera/depth/image_raw', '/gloal_camera/color/camera_info',arm_camera)
+            
+            
+            # camera = Camera('gloal_camera', '/gloal_camera/color/image_raw', '/gloal_camera/depth/image_raw', '/gloal_camera/color/camera_info',arm_camera)
 
             rospy.spin()
 

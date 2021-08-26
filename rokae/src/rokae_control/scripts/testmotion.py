@@ -224,7 +224,7 @@ def robot_position(x,y ,d):
 
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
-    group1.set_planner_id("RRTConnectkConfigDefault")
+    group1.set_planner_id("RRT*")
     display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',moveit_msgs.msg.DisplayTrajectory,queue_size=20)
     scene = moveit_commander.PlanningSceneInterface()
     # group1.set_named_target('home')
@@ -233,7 +233,7 @@ def robot_position(x,y ,d):
     # print('ray[0]0',ray[0])
 
     # 机器人移动到某个位置
-    robot_move_location(group1,x,y,d, 3.14, 0, 0)
+    robot_move_location(group1,x,y,d, -3.14, 0, 0)
     rospy.sleep(5)
 
 
