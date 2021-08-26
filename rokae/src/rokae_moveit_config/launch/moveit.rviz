@@ -76,11 +76,11 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          battery_pack_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
+          # battery_pack_link:
+          #   Alpha: 1
+          #   Show Axes: false
+          #   Show Trail: false
+          #   Value: true
           bolt_Arbitrary_Link:
             Alpha: 1
             Show Axes: false
@@ -96,11 +96,11 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          bolt_vertical_Link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
+          # bolt_vertical_Link:
+          #   Alpha: 1
+          #   Show Axes: false
+          #   Show Trail: false
+          #   Value: true
           camera_bottom_screw_frame:
             Alpha: 1
             Show Axes: false
@@ -323,11 +323,11 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          battery_pack_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
+          # battery_pack_link:
+          #   Alpha: 1
+          #   Show Axes: false
+          #   Show Trail: false
+          #   Value: true
           bolt_Arbitrary_Link:
             Alpha: 1
             Show Axes: false
@@ -343,11 +343,11 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          bolt_vertical_Link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
+          # bolt_vertical_Link:
+          #   Alpha: 1
+          #   Show Axes: false
+          #   Show Trail: false
+          #   Value: true
           camera_bottom_screw_frame:
             Alpha: 1
             Show Axes: false
