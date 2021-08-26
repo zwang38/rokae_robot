@@ -230,10 +230,10 @@ class Camera():
             cv2.imwrite(rgb_img_path, img)
             #模板匹配
 
-            # x_templateMatching,y_templateMatching=templateMatching.main( rgb_img_path )
+            x_templateMatching,y_templateMatching=templateMatching.main( rgb_img_path )
             x_circle,y_circle=self.detection_position(img)
-            x=x_circle
-            y=y_circle
+            x=x_templateMatching
+            y=y_templateMatching
 
             # cv2.imshow("img", img)
             # cv2.waitKey()
@@ -361,14 +361,14 @@ class Camera():
             print( 'ray x',ray[0] )
             print( 'ray y', ray[1] )
 
-            testmotion.robot_position(ray[0],  ray[1]  ,depth_distance/1000+0.1)
+            testmotion.robot_position(ray[0],  ray[1]  ,depth_distance/1000 +0.8)
             # testmotion.robot_position(0.4,0,1.5)
         except rospy.ROSInterruptException:
             print("Shutting down")
             cv2.destroyAllWindows()
             
 if __name__ == '__main__':
-    testmotion.robot_position(0.4,0,1.2)
+    testmotion.robot_position(0,0,1.5)
 
     try:
         rospy.init_node('depth_from_object')
