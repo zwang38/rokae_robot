@@ -5,7 +5,7 @@ from gazebo_msgs.srv import SpawnModel
 from gazebo_msgs.msg import ModelStates
 from geometry_msgs.msg import *
 from std_msgs.msg import *
-from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
+# from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
 from sensor_msgs.msg import Image
 from yolov3_pytorch_ros.msg import BoundingBox, BoundingBoxes
 
@@ -274,8 +274,8 @@ parts_pose = part_pose_collect()
 
 moveit_commander.roscpp_initialize(sys.argv)
 robot = moveit_commander.RobotCommander()
-group_name2 = "gripper"
-group2 = moveit_commander.MoveGroupCommander(group_name2)
+# group_name2 = "gripper"
+# group2 = moveit_commander.MoveGroupCommander(group_name2)
 
 group_name1 = "arm"
 group1 = moveit_commander.MoveGroupCommander(group_name1)

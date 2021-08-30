@@ -1,4 +1,5 @@
-# 导入相应的库
+#!/usr/bin/env python3
+ # # 导入相应的库
 from PIL import Image,ImageDraw
 import numpy as np 
 # 读取图像

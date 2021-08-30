@@ -82,9 +82,9 @@ class MoveArm(object):
         self.init_marker()
 
         # Connect to trajectory execution action
-        self.trajectory_client = actionlib.SimpleActionClient('/rokae/arm_controller/follow_joint_trajectory/status',                                                          control_msgs.msg.FollowJointTrajectoryAction)
-        self.trajectory_client.wait_for_server()
-        print( "Joint trajectory client connected")
+        # self.trajectory_client = actionlib.SimpleActionClient('/rokae/arm_controller/status',                                      control_msgs.msg.FollowJointTrajectoryAction)
+        # self.trajectory_client.wait_for_server()
+        # print( "Joint trajectory client connected")
 
         # Wait for moveit IK service
         rospy.wait_for_service("compute_ik")
@@ -95,12 +95,11 @@ class MoveArm(object):
         rospy.wait_for_service("check_state_validity")
         self.state_valid_service = rospy.ServiceProxy('check_state_validity',  
                                                       moveit_msgs.srv.GetStateValidity)
-        print ("State validity service ready"
-)
+        print ("State validity service ready")
         # Initialize MoveIt
         self.robot = moveit_commander.RobotCommander()
         self.scene = moveit_commander.PlanningSceneInterface()
-        self.group = moveit_commander.MoveGroupCommander("left_arm") 
+        self.group = moveit_commander.MoveGroupCommander("arm") 
         print ("MoveIt! interface ready")
 
         # How finely to sample each joint
