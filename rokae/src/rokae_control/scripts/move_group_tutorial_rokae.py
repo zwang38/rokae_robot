@@ -416,7 +416,7 @@ class MoveGroupTutorial(object):
       group = self.group
 
       group.clear_pose_targets()
-      quat=tf.transformations.quaternion_from_euler(3.14,0,0)
+      quat=tf.transformations.quaternion_from_euler(-3.14,0,0)
       pose_target = geometry_msgs.msg.Pose()
       pose_target.position.x = parts_pose[0][0]
       pose_target.position.y = parts_pose[0][1]
@@ -474,7 +474,7 @@ def get_model_pos():
     parts_pose=[]
     get_state_service = rospy.ServiceProxy('/gazebo/get_model_state',GetModelState)
     model = GetModelStateRequest()
-    model.model_name = 'luoshuan'
+    model.model_name = 'rokae'
     objstate = get_state_service(model)
 
     x =objstate.pose.position.x

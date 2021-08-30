@@ -65,13 +65,13 @@ def product_spawn():
     battery_name=''
     input=raw_input()
     if input=='ho':
-        with open(part_pkg+'/urdf/'+'hole_battery.urdf', "r") as hole_battery:
+        with open(part_pkg+'/urdf/'+'hole_battery.xacro', "r") as hole_battery:
             product_xml = hole_battery.read()
             battery_name='hole_battery'
             hole_battery.close()
 			
     elif input=='h':  
-        with open(part_pkg+'/urdf/'+'h_battery.urdf', "r") as h_battery:
+        with open(part_pkg+'/urdf/'+'h_battery.xacro', "r") as h_battery:
             product_xml = h_battery.read()
             battery_name='horizontal_battery'
             h_battery.close()     
@@ -83,7 +83,7 @@ def product_spawn():
             v_battery.close()   
 
     elif input=='t':  
-        with open(part_pkg+'/urdf/'+'tilt_battery.urdf', "r") as tilt_battery:
+        with open(part_pkg+'/urdf/'+'tilt_battery.xacro', "r") as tilt_battery:
             product_xml = tilt_battery.read()
             battery_name='tilt_battery'
             tilt_battery.close()   
@@ -224,7 +224,7 @@ def robot_position(x,y ,d):
 
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
-    group1.set_planner_id("RRT*")
+    group1.set_planner_id("RRTConnectkConfigDefault")
     display_trajectory_publisher = rospy.Publisher('/move_group/display_planned_path',moveit_msgs.msg.DisplayTrajectory,queue_size=20)
     scene = moveit_commander.PlanningSceneInterface()
     # group1.set_named_target('home')
@@ -235,6 +235,17 @@ def robot_position(x,y ,d):
     # 机器人移动到某个位置
     robot_move_location(group1,x,y,d, -3.14, 0, 0)
     rospy.sleep(5)
+
+
+
+def load_battery():
+
+    print('加载电池包,please input add；若是不加载电池包直接回车')
+    input_delete=raw_input()
+    
+    if input_delete=='add':
+        load_battery_model=product_spawn()
+        print('load_battery_model',load_battery_model)
 
 
 
@@ -255,14 +266,15 @@ if __name__ == "__main__":
     # to the world surrounding the robot:
     scene = moveit_commander.PlanningSceneInterface()
 
-
-    print('add product,please input add')
+    # 加载电池
+    load_battery()
+    # print('add product,please input add')
     
-    input_delete=raw_input()
+    # input_delete=raw_input()
     
-    if input_delete=='add':
-        load_battery_model=      product_spawn()
-        print('load_battery_model',load_battery_model)
+    # if input_delete=='add':
+    #     load_battery_model=      product_spawn()
+    #     print('load_battery_model',load_battery_model)
 
 
     group_name1 = "arm"
@@ -290,6 +302,9 @@ if __name__ == "__main__":
     for model_num in range(len(parts_pose)):
 
         # 机器人移动到某个位置
+        print('parts_pose[model_num][0]',parts_pose[model_num][0])
+        print('parts_pose[model_num][1]',parts_pose[model_num][1])
+        
         robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
         rospy.sleep(5)
         # 下探

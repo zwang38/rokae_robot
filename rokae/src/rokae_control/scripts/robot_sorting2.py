@@ -5,7 +5,7 @@ from gazebo_msgs.srv import SpawnModel
 from gazebo_msgs.msg import ModelStates
 from geometry_msgs.msg import *
 from std_msgs.msg import *
-from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
+# from gazebo_ros_link_attachKer.srv import Attach, AttachRequest, AttachResponse
 
 import moveit_commander
 import moveit_msgs.msg
@@ -197,7 +197,7 @@ def gripper_move_to_object(x1,y1,Degree):
     
     robot_pose.orientation.w = now_pose.orientation.w
     waypoints.append(copy.deepcopy(robot_pose)) # above Object
-    quat=tf.transformations.quaternion_from_euler(3.14,0,Degree)
+    quat=tf.transformations.quaternion_from_euler(-3.14,0,Degree)
     robot_pose.orientation.x = quat[0]
     robot_pose.orientation.y = quat[1]
     robot_pose.orientation.z = quat[2]
@@ -237,8 +237,7 @@ parts_pose = part_pose_collect()
 
 moveit_commander.roscpp_initialize(sys.argv)
 robot = moveit_commander.RobotCommander()
-group_name2 = "gripper"
-group2 = moveit_commander.MoveGroupCommander(group_name2)
+
 
 group_name1 = "arm"
 group1 = moveit_commander.MoveGroupCommander(group_name1)
@@ -266,7 +265,7 @@ box_pose.pose.position.z = 0.95
 scene.add_box("box3", box_pose, size=(0.05, 0.4, 0.2))
 rospy.sleep(2)
 
-group1.set_named_target("Home")
+group1.set_named_target("home")
 plan1 = group1.plan()
 group1.execute(plan1,wait=True)
 
@@ -290,13 +289,13 @@ for count in range(3):
         
         goal_move_line(parts_pose[model_num][0],parts_pose[model_num][1],1.3)
         robot_move_line(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 0.88)
-        gripper_control(True)
-        attach_link('robot','wrist_3_link',"product_{0}_{1}".format(count,num),"link")
+        # gripper_control(True)
+        # attach_link('robot','wrist_3_link',"product_{0}_{1}".format(count,num),"link")
         rospy.sleep(1)
         robot_move_line(parts_pose[model_num][0], parts_pose[model_num][1], 0.88, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
         robot_move_line(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, basket_pose[0], basket_pose[1], 1.3)
-        detach_link('robot','wrist_3_link',"product_{0}_{1}".format(count,num),"link")
-        gripper_control(False)
+        # detach_link('robot','wrikst_3_link',"product_{0}_{1}".format(count,num),"link")
+        # gripper_control(False)
         
         rospy.sleep(1)
         model_num += 1
