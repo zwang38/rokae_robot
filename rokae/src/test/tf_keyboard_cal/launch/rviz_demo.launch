@@ -1,6 +1,0 @@
-<launch>
-
-  <!-- start rviz -->
-  <node name="$(anon rviz)" pkg="rviz" type="rviz" args="-d $(find tf_keyboard_cal)/launch/rviz_demo.rviz"/>
-
-</launch>
