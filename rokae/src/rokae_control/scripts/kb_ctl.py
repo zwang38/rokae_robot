@@ -5,6 +5,12 @@ import select, termios, tty
 import rospy
 import moveit_commander
 import tf
+from cv_bridge import CvBridge, CvBridgeError
+from sensor_msgs.msg import Image, CameraInfo
+import message_filters
+import cv2
+import image_geometry
+import os
 
 usage = """
 Control the position of an end effector
@@ -17,11 +23,70 @@ e/r : raw -/+
 d/f : pitch -/+
 c/v : yaw  -/+
 s   : setting x y z R P Y
+w   : capture image
 <space> : print current pose
 <CTRL-C>: quit
 """
 
-def getKey():
+
+class Camera():
+    def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic):
+
+        self.camera_name = camera_name
+        self.rgb_topic = rgb_topic
+        self.depth_topic = depth_topic
+        self.camera_info_topic = camera_info_topic
+
+        self.pose = None
+
+
+        self.br = tf.TransformBroadcaster()
+
+        # Have we recieved camera_info and image yet?
+        self.ready_ = False
+
+        self.bridge = CvBridge()
+
+        self.camera_model = image_geometry.PinholeCameraModel()
+        print(
+            'Camera {} initialised, {}, , {}'.format(self.camera_name, rgb_topic, depth_topic, camera_info_topic))
+        print('')
+
+        q = 1
+        self.sub_rgb = message_filters.Subscriber(rgb_topic, Image, queue_size=q)
+        self.sub_depth = message_filters.Subscriber(depth_topic, Image, queue_size=q)
+        self.sub_camera_info = message_filters.Subscriber(camera_info_topic, CameraInfo, queue_size=q)
+        # self.tss = message_filters.ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth, self.sub_camera_info], queue_size=15, slop=0.4)
+        self.tss = message_filters.ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth, self.sub_camera_info],
+                                                               queue_size=30, slop=0.2)
+        # self.tss = message_filters.TimeSynchronizer([sub_rgb], 10)
+
+        self.tss.registerCallback(self.callback)
+        self.capture = False
+        directory = './images'
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+    def callback(self, rgb_msg, depth_msg, camera_info_msg):
+        if not self.capture:
+            return
+        rgb_img_path = './images/rgb_img_%s.jpg'
+        depth_img_path = './images/depth_img_%s.png'
+
+        self.camera_model.fromCameraInfo(camera_info_msg)
+        img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
+        depth_img = self.bridge.imgmsg_to_cv2(depth_msg, '16UC1')
+        print('receiving image')
+        time_str = rospy.get_time()
+        cv2.imwrite(rgb_img_path%(time_str), img)
+        cv2.imwrite(depth_img_path%(time_str), depth_img)
+        self.capture = False
+
+    def set_capture(self):
+        self.capture = True
+
+
+def get_key():
     tty.setraw(sys.stdin.fileno())
     rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
     if rlist:
@@ -79,8 +144,11 @@ if __name__=="__main__":
     print usage
     ee_pose = group.get_current_pose(effector).pose
     print_pose(ee_pose)
+    camera = Camera('camera', '/camera/color/image_raw', '/camera/depth/image_raw',
+                    '/camera/color/camera_info')
+
     while(1):
-            key = getKey()
+            key = get_key()
             #if key in moveBindings.keys():
             q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
             rpy = tf.transformations.euler_from_quaternion(q)
@@ -212,7 +280,8 @@ if __name__=="__main__":
                     if not set_arm_pose(group, ee_pose, effector):
                         ee_pose = group.get_current_pose(effector).pose
                     print_pose(ee_pose)
-
+            elif key == 'w':
+                camera.set_capture()
             elif (key == '\x03'):
                 break
 
