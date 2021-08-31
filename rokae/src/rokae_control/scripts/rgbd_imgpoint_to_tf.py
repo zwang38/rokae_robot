@@ -49,7 +49,7 @@ class Camera():
         rospy.loginfo('Camera {} initialised, {}, , {}'.format(self.camera_name, rgb_topic, depth_topic, camera_info_topic))
         print('')
 
-        q=25
+        q=1
         self.sub_rgb = message_filters.Subscriber(rgb_topic, Image, queue_size=q)
         self.sub_depth = message_filters.Subscriber(depth_topic, Image, queue_size=q)
         self.sub_camera_info = message_filters.Subscriber(camera_info_topic, CameraInfo, queue_size=q)
