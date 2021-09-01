@@ -99,7 +99,7 @@
 
 
   <gazebo reference="tool_Link">
-     <material>Gazebo/GreyTransparent</material>
+     <material>Gazebo/BlackTransparent</material>
   </gazebo>
 
 
