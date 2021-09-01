@@ -1,8 +1,0 @@
-prefix=/home/nuc/Desktop/rokae_robot/rokae/install
-
-Name: battery_pack_describe
-Description: Description of battery_pack_describe
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 

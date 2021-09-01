@@ -1,8 +1,0 @@
-prefix=/home/nuc/Desktop/rokae_robot/rokae/install
-
-Name: rokae_gazebo
-Description: Description of rokae_gazebo
-Version: 0.0.0
-Cflags: 
-Libs: -L${prefix}/lib 
-Requires: 
