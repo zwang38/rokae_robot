@@ -24,8 +24,8 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
+        <mesh     filename="package://battery_pack_describe/meshes/v_battery_base_link.dae" />
+
       </geometry>
       <material
         name="">
@@ -38,8 +38,7 @@
         xyz="0 0 0"
         rpy="0 0 0" />
       <geometry>
-        <mesh
-        <mesh filename="package://battery_pack_describe/meshes/v_battery_base_link.dae"/>
+        <mesh     filename="package://battery_pack_describe/meshes/v_battery_base_link.dae" />
       </geometry>
     </collision>
   </link>

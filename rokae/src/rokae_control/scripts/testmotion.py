@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 import sys, random, copy
 import rospy, tf, rospkg
@@ -15,7 +15,6 @@ from moveit_commander.conversions import pose_to_list
 from time import sleep
 from gazebo_msgs.srv import DeleteModel
 import  bolt_position_detector 
-
 
 
 
@@ -100,10 +99,10 @@ def product_spawn():
 
 
 
-def part_pose_collect():
+def part_pose_collect(battery_pack_describe_name):
     parts_pose=[]
     model_pose = rospy.wait_for_message("gazebo/model_states",ModelStates)
-    product_num = model_pose.name.index('vertical_battery_product')
+    product_num = model_pose.name.index(battery_pack_describe_name)
     x = model_pose.pose[product_num].position.x
     y = model_pose.pose[product_num].position.y
     z = model_pose.pose[product_num].position.z
@@ -246,12 +245,13 @@ def load_battery():
     if input_delete=='add':
         load_battery_model=product_spawn()
         print('load_battery_model',load_battery_model)
+    return load_battery_model
 
 
 
 
 if __name__ == "__main__":
-       
+
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
     rospy.init_node('motion_planning', anonymous=True)
@@ -267,7 +267,7 @@ if __name__ == "__main__":
     scene = moveit_commander.PlanningSceneInterface()
 
     # 加载电池
-    load_battery()
+    battery_pack_describe_name=load_battery()
     # print('add product,please input add')
     
     # input_delete=raw_input()
@@ -292,7 +292,7 @@ if __name__ == "__main__":
     # if input_delete=='delete':
     #     Delete_Part(load_battery_model)
     
-    parts_pose=part_pose_collect()
+    parts_pose=part_pose_collect(battery_pack_describe_name)
     print(parts_pose)
 
     # x,y=bolt_position_detector.detection_position()

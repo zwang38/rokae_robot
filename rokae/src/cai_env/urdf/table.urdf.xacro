@@ -33,7 +33,7 @@
         rpy="1.5707963267949 0 0" />
       <geometry>
         <mesh
-          filename="package://cai_env/meshes/desk_blender.dae" />
+          filename="package://cai_env/meshes/table_blend.dae" />
       </geometry>
 
     </visual>
@@ -43,14 +43,13 @@
         rpy="1.5707963267949 0 0" />
       <geometry>
         <mesh
-          filename="package://cai_env/meshes/desk_blender.dae" />
+          filename="package://cai_env/meshes/table_blend.dae" />
       </geometry>
     </collision>
 
- 
-      <!-- <gazebo reference="table">
-        <material>Gazebo/Green </material>
-      </gazebo>  -->
+    <gazebo reference="table">
+      <material>Gazebo/Green </material>
+    </gazebo> 
 
   </link>
   
