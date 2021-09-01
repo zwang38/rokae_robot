@@ -180,7 +180,7 @@ catkin_install_python(PROGRAMS
   scripts/rgbd_imagepoint_to_robot_move.py
   scripts/rgbd_imgpoint_to_tf.py
   scripts/templateMatching.py
-  src/keyboard_py.py
+
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
