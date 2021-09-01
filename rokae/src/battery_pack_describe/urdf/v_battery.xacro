@@ -46,9 +46,17 @@
   </link>
 
 
-      <!-- <gazebo reference="v_battery_base_link">
-    <material>Gazebo/FlatBlack</material>
-  </gazebo> -->
+  <gazebo reference="v_battery_base_link">
+    <mu1>10.0</mu1>
+	    <mu2>10.0</mu2>
+	    <kp>1000000.0</kp>
+	    <kd>100.0</kd>
+	    <minDepth>0.001</minDepth>
+	    <maxVel>1.0</maxVel>
+    <!-- <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1> -->
+  </gazebo> 
 
 
 
@@ -93,8 +101,19 @@
   </link>
 
   <gazebo reference="v_battery_bolt_Link">
-    <material>Gazebo/Gray</material>
-  </gazebo>
+    <mu1>100.0</mu1>
+	    <mu2>100.0</mu2>
+	    <kp>1000000.0</kp>
+	    <kd>100.0</kd>
+	    <minDepth>0.001</minDepth>
+	    <maxVel>1.0</maxVel>
+
+    <!-- <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1> -->
+    <material>Gazebo/Black</material>
+</gazebo>
+
 
 
 
@@ -153,9 +172,16 @@
     </collision>
   </link>
 
-  <!-- <gazebo reference="v_battery_nut_Link">
-    <material>Gazebo/Gray</material>
-  </gazebo> -->
+  <gazebo reference="v_battery_nut_Link">
+    <mu1>0.1</mu1>
+    <mu2>0.1</mu2>
+    <kp>1</kp>
+    <kd>10.0</kd>
+    <minDepth>0.001</minDepth>
+    <maxVel>0.1</maxVel>
+    <fdir1>1 0 0</fdir1>
+    <material>Gazebo/FlatBlack</material>
+  </gazebo>
 
 
   <joint
