@@ -7,7 +7,8 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
-filename='/home/nuc/Desktop/rokae_robot/rokae/src/battery_pack_describe/bolt.jpg'
+#filename='/home/robot/zwang38/rokae_robot/rokae/src/battery_pack_describe/bolt.jpg'
+filename='./images/rgb_img_768.698.jpg'
 
 
 img = cv2.imread(filename)
@@ -22,10 +23,11 @@ kernel = np.ones((5,5),np.uint8)
 erosion = cv2.erode(th2,kernel,iterations=1)
 dilation = cv2.dilate(erosion,kernel,iterations=1)
 
-imgray=cv2.Canny(erosion,30,100, apertureSize=5)  #apertureSize参数默认其实就是3
+imgray=cv2.Canny(erosion,3,100, apertureSize=5)  #the default value of apertureSize is 3
+cv2.imshow('imggray', imgray)
 
 circles = cv2.HoughCircles(imgray,cv2.HOUGH_GRADIENT,1,20,
-                            param1=50,param2=30,minRadius=20,maxRadius=50)
+                            param1=50,param2=30,minRadius=10,maxRadius=30)
 
 circles = np.uint16(np.around(circles))
 for i in circles[0,:]:

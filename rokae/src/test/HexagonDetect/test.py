@@ -49,20 +49,43 @@ def procImage(img, shape):
     
 
     img = np.uint8(img * 255)
-    contours, hierarchy = cv2.findContours(img,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+    output_img, contours, hierarchy = cv2.findContours(img,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
     centerpoints = []
     hexes = []
+    circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 20,
+                               param1=50, param2=30, minRadius=0, maxRadius=50)
+    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+    print(len(contours))
     for cont in contours:
         rect = cv2.boundingRect(cont)
         # only process larger areas with at least 5 points in the contour
-        if len(cont) > 80 and rect[2] > 40 and rect[3] > 40:
-            match = cv2.matchShapes(cont, hex, cv2.CONTOURS_MATCH_I2, 0.0)
+        print(len(cont), rect[2], rect[3])
+        if len(cont) > 10 and rect[2] > 10 and rect[3] > 10:
+            match = cv2.matchShapes(cont, hex, 2, 0.0)
+            print(match)
+            # cv2.drawContours(img, cont, -1, (0, 255, 0), 2)
+            # cv2.imshow("contours", img)
+            # cv2.waitKey()
             if match < 0.02:
                 cx = rect[0] + (rect[2] * .5)
                 cy = rect[1] + (rect[3] *.5)
                 centerpoints = (cx, cy)
                 hexes.append(cont)
-    img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+
+    if not circles is None:
+        circles = np.uint16(np.around(circles))
+        for i in circles[0, :]:
+            # draw the outer circle
+            cv2.circle(img, (i[0], i[1]), i[2], (255, 255, 0), 2)
+            # draw the center of the circle
+            cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
+            cv2.imshow("contours", img)
+            cv2.waitKey()
+        print(len(circles[0, :]))
+    else:
+        print("none circle detected")
+
     img = cv2.drawContours(img, hexes, -1, (0, 255, 0), 4)
     ctr = np.array(centerpoints).reshape((-1, 1, 2)).astype(np.int32)
     img = cv2.drawContours(img, ctr, -1, (0, 255, 0), 20)
@@ -74,7 +97,7 @@ def procImage(img, shape):
 if __name__ == '__main__':
 
     hex = make_hex_shape()
-    testID='/home/nuc/Desktop/rokae_robot/rokae/src/battery_pack_describe/bolt.jpg'
+    testID='./images/rgb_img_7193.66.jpg'
     img = cv2.imread(testID)
     img = img / 255.0
     img = img[0:360, 0:1280]
