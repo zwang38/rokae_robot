@@ -258,7 +258,7 @@ def robot_move_circle(x_temp, y_temp,z_temp):
     robot_pose = geometry_msgs.msg.Pose()
     now_pose = group1.get_current_pose().pose
     # robot move following vector
-    for i in range(360/delta_angle):
+    for i in range(360/delta_angle  +1):
         init_angle=+delta_angle* i
 
         tamp_angle=scale_angle * init_angle/delta_angle
@@ -267,8 +267,8 @@ def robot_move_circle(x_temp, y_temp,z_temp):
         y_transform=radius*math.sin(tamp_angle)
         
 
-        print('x_transform{0},{1}'.format(x_transform,init_angle))
-        print('y_transform{0},{1}'.format(y_transform,init_angle))
+        # print('x_transform{0},{1},{2}'.format(x_transform,init_angle,i))
+        # print('y_transform{0},{1},{2}'.format(y_transform,init_angle,i))
 
         x_transform_distance=x_transform+x_temp
         y_transform_distance=y_transform+y_temp
@@ -283,8 +283,8 @@ def robot_move_rectangle(x_temp, y_temp,z_temp):
 
     tranform_angle=[90,270,0,180]
 
-    delta_angle=30
-    scale_angle=delta_angle*3.14/180
+    # delta_angle=30
+    # scale_angle=delta_angle*3.14/180
     radius=0.05
 
     robot_pose = geometry_msgs.msg.Pose()
@@ -293,14 +293,14 @@ def robot_move_rectangle(x_temp, y_temp,z_temp):
     # robot move following vector
     for i in range(len(tranform_angle)):
 
-        tamp_angle=scale_angle * tranform_angle[i]/delta_angle
+        tamp_angle=3.14 * tranform_angle[i]/180
 
         x_transform=radius*math.cos(tamp_angle)
         y_transform=radius*math.sin(tamp_angle)
         
 
-        print('x_transform{0}'.format(x_transform))
-        print('y_transform{0}'.format(y_transform))
+        # print('x_transform{0}，当前角度{1}'.format(x_transform ,tamp_angle))
+        # print('y_transform{0}，当前角度{1}'.format(y_transform,tamp_angle))
 
         x_transform_distance=x_transform+x_temp
         y_transform_distance=y_transform+y_temp
@@ -379,7 +379,7 @@ if __name__ == "__main__":
         robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
         rospy.sleep(5)
 
-        
+
         robot_move_circle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
 
         robot_move_rectangle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
