@@ -59,7 +59,6 @@
   </gazebo> 
 
 
-
   <link    name="v_battery_bolt_Link">
     <inertial>
       <origin
@@ -81,10 +80,9 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link.dae" />
+          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link_metal.dae" />
       </geometry>
-      <material
-        name="">
+      <material  name="">
         <color
           rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
       </material>
@@ -95,7 +93,7 @@
         rpy="0 0 0" />
       <geometry>
         <mesh
-          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link.dae" />
+          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link_metal.dae" />
       </geometry>
     </collision>
   </link>

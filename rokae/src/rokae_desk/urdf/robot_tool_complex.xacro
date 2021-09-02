@@ -6,7 +6,7 @@
   <xacro:include filename="$(find cai_env)/urdf/table.urdf.xacro" />
   <!-- <xacro:include filename="$(find battery_pack_describe)/urdf/battery_pack.xacro" /> -->
 
-  <xacro:include filename="$(find rokae_desk)/urdf/camera_taotong.urdf" />
+  <xacro:include filename="$(find rokae_desk)/urdf/camera_taotong.xacro" />
   <xacro:include filename="$(find realsense2_description)/urdf/test_d435_camera.urdf.xacro"   />
   <xacro:include filename="$(find realsense2_description)/urdf/gloal_d435_camera.urdf.xacro"   />
   <xacro:include filename="$(find battery_pack_describe)/urdf/weilan.urdf" />
