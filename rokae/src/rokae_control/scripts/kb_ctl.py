@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-
+# -*- coding: utf-8 -*-  
 import sys
 import select, termios, tty
 import rospy
@@ -15,6 +15,7 @@ import os
 usage = """
 Control the position of an end effector
 ---------------------------
+a/q : left/right in tilt 
 j/l : left/right
 i/k : forward/backward
 p/; : up/downw
@@ -151,6 +152,9 @@ if __name__=="__main__":
     y_delta=0.01
 
     while(1):
+            
+            delta_distance_tilt=0.01
+        
             key = get_key()
             #if key in moveBindings.keys():
             q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
@@ -158,6 +162,34 @@ if __name__=="__main__":
             if key == ' ' :
                 ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
+            elif key== 'a':
+                print '-xy,倾斜面的移动,会带动x,y的移动，采取45度倾斜角进行计算'
+                x_tilt=1 /1.41*delta_distance_tilt
+                y_tilt=1/1.41*delta_distance_tilt
+                # z_tilt=1/delta_distance_tilt
+
+                ee_pose.position.x -=x_tilt
+                ee_pose.position.y -= y_tilt
+
+                set_arm_pose(group, ee_pose, effector)
+                if not set_arm_pose(group, ee_pose, effector):
+                    ee_pose = group.get_current_pose(effector).pose
+                print_pose(ee_pose)
+
+            elif key== 'q':
+                print '+xy,倾斜面的移动,会带动x,y的移动，采取45度倾斜角进行计算'
+                x_tilt=1 /1.41*delta_distance_tilt
+                y_tilt=1/1.41*delta_distance_tilt
+                # z_tilt=1/delta_distance_tilt
+                ee_pose.position.x +=x_tilt
+                ee_pose.position.y += y_tilt
+
+                set_arm_pose(group, ee_pose, effector)
+                if not set_arm_pose(group, ee_pose, effector):
+                    ee_pose = group.get_current_pose(effector).pose
+                print_pose(ee_pose)
+
+
             elif key== 'c':
                 print 'Y-'
                 q = tf.transformations.quaternion_from_euler(rpy[0], rpy[1], rpy[2]-0.2)
