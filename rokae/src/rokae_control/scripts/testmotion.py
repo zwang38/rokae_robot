@@ -293,8 +293,8 @@ def robot_move_rectangle(x_temp, y_temp,z_temp):
     # robot move following vector
     for i in range(len(tranform_angle)):
 
-        tamp_angle=math.pi * tranform_angle[i]/180
-
+        tamp_angle=float(math.pi * tranform_angle[i])/float(180.0)
+    
         x_transform=radius*math.cos(tamp_angle)
         y_transform=radius*math.sin(tamp_angle)
         
