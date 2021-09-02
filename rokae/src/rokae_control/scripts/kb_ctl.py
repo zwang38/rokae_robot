@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-  
+import math
 import sys
 import select, termios, tty
 import rospy
@@ -15,6 +16,7 @@ import os
 usage = """
 Control the position of an end effector
 ---------------------------
+t   : robot transform to tilt
 a/q : left/right in tilt 
 j/l : left/right
 i/k : forward/backward
@@ -162,6 +164,24 @@ if __name__=="__main__":
             if key == ' ' :
                 ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
+
+
+            elif key== 't':
+                print 'location 45度到倾斜角'
+                q = tf.transformations.quaternion_from_euler( -math.pi+math.pi/4, 0, 0)
+                ee_pose.position.x=-0.03
+                ee_pose.position.y=-0.03
+                ee_pose.position.z=1.10
+
+                ee_pose.orientation.x = q[0]
+                ee_pose.orientation.y = q[1]
+                ee_pose.orientation.z = q[2]
+                ee_pose.orientation.w = q[3]
+                if not set_arm_pose(group, ee_pose, effector):
+                    ee_pose = group.get_current_pose(effector).pose
+                print_pose(ee_pose)
+
+
             elif key== 'a':
                 print '-zy,倾斜面的移动,会带动y,z的移动，采取45度倾斜角进行计算'
                 z_tilt=1 /1.41*delta_distance_tilt
