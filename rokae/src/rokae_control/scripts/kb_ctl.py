@@ -165,13 +165,13 @@ if __name__=="__main__":
                 ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
 
-
             elif key== 't':
                 print 'location 45度到倾斜角'
-                q = tf.transformations.quaternion_from_euler( -math.pi+math.pi/4, 0, 0)
-                ee_pose.position.x=-0.03
-                ee_pose.position.y=-0.03
-                ee_pose.position.z=1.10
+                tf_angle=-math.pi+math.pi/4
+                q = tf.transformations.quaternion_from_euler(tf_angle, 0.001130,-0.000277)
+                ee_pose.position.x=-0.080070
+                ee_pose.position.y=-0.154564
+                ee_pose.position.z=1.135476
 
                 ee_pose.orientation.x = q[0]
                 ee_pose.orientation.y = q[1]
