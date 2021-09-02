@@ -11,7 +11,7 @@ import moveit_commander
 import moveit_msgs.msg
 from moveit_commander.conversions import pose_to_list
 
-
+import math
 from time import sleep
 from gazebo_msgs.srv import DeleteModel
 import  bolt_position_detector 
@@ -245,8 +245,47 @@ def load_battery():
     if input_delete=='add':
         load_battery_model=product_spawn()
         print('load_battery_model',load_battery_model)
-    return load_battery_model
+        return load_battery_model
+    else :
+        return 'vertical_battery_product'
 
+
+       
+
+def robot_move_rectangle(x_temp, y_temp,z_temp):
+
+    tranform_angle=[90,270,0,180]
+
+    delta_angle=30
+    scale_angle=delta_angle*3.14/180
+    radius=0.05
+
+    robot_pose = geometry_msgs.msg.Pose()
+    now_pose = group1.get_current_pose().pose
+
+    # robot move following vector
+    for i in range(len(tranform_angle)):
+
+        tamp_angle=scale_angle * tranform_angle[i]/delta_angle
+
+        x_transform=radius*math.cos(tamp_angle)
+        y_transform=radius*math.sin(tamp_angle)
+        
+
+        print('x_transform{0}'.format(x_transform))
+        print('y_transform{0}'.format(y_transform))
+
+        x_transform_distance=x_transform+x_temp
+        y_transform_distance=y_transform+y_temp
+
+
+
+        robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_transform_distance,y_transform_distance,now_pose.position.z)
+
+        if i is 1:
+            robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_temp,y_temp,z_temp)
+
+    robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_temp,y_temp,z_temp)
 
 
 
@@ -276,6 +315,11 @@ if __name__ == "__main__":
     #     load_battery_model=      product_spawn()
     #     print('load_battery_model',load_battery_model)
 
+
+
+    #加载障碍物
+    # import concept_demo
+    # concept_demo.product_spawn()
 
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
@@ -307,6 +351,9 @@ if __name__ == "__main__":
         
         robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
         rospy.sleep(5)
+
+        robot_move_rectangle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
+
         # 下探
         robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.5, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
         # 推
