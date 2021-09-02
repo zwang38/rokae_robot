@@ -163,12 +163,12 @@ if __name__=="__main__":
                 ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'a':
-                print '-xy,倾斜面的移动,会带动x,y的移动，采取45度倾斜角进行计算'
-                x_tilt=1 /1.41*delta_distance_tilt
+                print '-zy,倾斜面的移动,会带动y,z的移动，采取45度倾斜角进行计算'
+                z_tilt=1 /1.41*delta_distance_tilt
                 y_tilt=1/1.41*delta_distance_tilt
                 # z_tilt=1/delta_distance_tilt
 
-                ee_pose.position.x -=x_tilt
+                ee_pose.position.z -=z_tilt
                 ee_pose.position.y -= y_tilt
 
                 set_arm_pose(group, ee_pose, effector)
@@ -177,13 +177,12 @@ if __name__=="__main__":
                 print_pose(ee_pose)
 
             elif key== 'q':
-                print '+xy,倾斜面的移动,会带动x,y的移动，采取45度倾斜角进行计算'
-                x_tilt=1 /1.41*delta_distance_tilt
+                print '+zy,倾斜面的移动,会带动y,z的移动，采取45度倾斜角进行计算'
+                z_tilt=1 /1.41*delta_distance_tilt
                 y_tilt=1/1.41*delta_distance_tilt
                 # z_tilt=1/delta_distance_tilt
-                ee_pose.position.x +=x_tilt
+                ee_pose.position.z +=z_tilt
                 ee_pose.position.y += y_tilt
-
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
