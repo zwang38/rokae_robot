@@ -99,8 +99,10 @@ if __name__ == '__main__':
     hex = make_hex_shape()
     testID='./images/rgb_img_7193.66.jpg'
     img = cv2.imread(testID)
+    img = cv2.resize(img, (img.shape[1]*4, img.shape[0]*4))
+    cv2.imshow('original', img)
     img = img / 255.0
-    img = img[0:360, 0:1280]
+    img = img[0:960*2, 0:1280*2]
     img,centerpoints = procImage(img, hex)
     cv2.imshow("contours", img)
     print( 'centerpoints',  centerpoints)

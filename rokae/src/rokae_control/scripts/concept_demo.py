@@ -107,7 +107,7 @@ if __name__ == "__main__":
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
     group1.set_planner_id("RRTConnect")
-    product_spawn()
+    #product_spawn()
 
 #target_aimed False
     robot_move(group1, -0.027262, 0.028543, 1.2400, 3.14, 0, 0)
@@ -130,7 +130,7 @@ if __name__ == "__main__":
 
 
     #clear False
-    product_spawn(True)
+    #product_spawn(True)
     robot_move(group1, -0.057262, 0.038543, 1.2700, 3.14, 0, 0)
 
     rospy.sleep(5)
