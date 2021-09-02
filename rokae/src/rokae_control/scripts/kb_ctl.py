@@ -17,7 +17,7 @@ Control the position of an end effector
 ---------------------------
 j/l : left/right
 i/k : forward/backward
-p/; : up/down
+p/; : up/downw
 x   : reset all joints on arms to zero
 e/r : raw -/+
 d/f : pitch -/+
@@ -146,6 +146,9 @@ if __name__=="__main__":
     print_pose(ee_pose)
     camera = Camera('camera', '/camera/color/image_raw', '/camera/depth/image_raw',
                     '/camera/color/camera_info')
+    z_delta=0.01
+    x_delta=0.01
+    y_delta=0.01
 
     while(1):
             key = get_key()
@@ -218,40 +221,40 @@ if __name__=="__main__":
                 print_pose(ee_pose)
             elif key== 'p':
                 print 'z+'
-                ee_pose.position.z += 0.05
+                ee_pose.position.z += z_delta
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== ';':
                 print 'z-'
-                ee_pose.position.z -= 0.05
+                ee_pose.position.z -= z_delta
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'l':
                 print 'y-'
-                ee_pose.position.y -= 0.05
+                ee_pose.position.y -=y_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'j':
                 print 'y+'
-                ee_pose.position.y += 0.05
+                ee_pose.position.y += y_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'i':
                 print 'x+'
-                ee_pose.position.x += 0.05
+                ee_pose.position.x +=x_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'k':
                 print 'x-'
-                ee_pose.position.x -= 0.05
+                ee_pose.position.x -=x_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose

@@ -23,8 +23,8 @@ def product_spawn(clear_only=False):
     rospack = rospkg.RosPack()
     part_pkg = rospack.get_path('cai_env')
 
-    max_count = 1
-    max_num = 1
+    max_count = 3
+    max_num = 3
 
     for count in range(max_count):
         for num in range(0, max_num):
