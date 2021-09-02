@@ -253,7 +253,7 @@ def load_battery():
 def robot_move_circle(x_temp, y_temp,z_temp):
     init_angle=0
     delta_angle=30
-    scale_angle=delta_angle*3.14/180
+    scale_angle=delta_angle*math.pi/180
     radius=0.05
     robot_pose = geometry_msgs.msg.Pose()
     now_pose = group1.get_current_pose().pose
@@ -293,7 +293,7 @@ def robot_move_rectangle(x_temp, y_temp,z_temp):
     # robot move following vector
     for i in range(len(tranform_angle)):
 
-        tamp_angle=3.14 * tranform_angle[i]/180
+        tamp_angle=math.pi * tranform_angle[i]/180
 
         x_transform=radius*math.cos(tamp_angle)
         y_transform=radius*math.sin(tamp_angle)
