@@ -250,7 +250,34 @@ def load_battery():
         return 'vertical_battery_product'
 
 
-       
+def robot_move_circle(x_temp, y_temp,z_temp):
+    init_angle=0
+    delta_angle=30
+    scale_angle=delta_angle*3.14/180
+    radius=0.05
+    robot_pose = geometry_msgs.msg.Pose()
+    now_pose = group1.get_current_pose().pose
+    # robot move following vector
+    for i in range(360/delta_angle):
+        init_angle=+delta_angle* i
+
+        tamp_angle=scale_angle * init_angle/delta_angle
+
+        x_transform=radius*math.cos(tamp_angle)
+        y_transform=radius*math.sin(tamp_angle)
+        
+
+        print('x_transform{0},{1}'.format(x_transform,init_angle))
+        print('y_transform{0},{1}'.format(y_transform,init_angle))
+
+        x_transform_distance=x_transform+x_temp
+        y_transform_distance=y_transform+y_temp
+
+        robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_transform_distance,y_transform_distance,now_pose.position.z)
+
+    robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_temp,y_temp,z_temp)
+
+
 
 def robot_move_rectangle(x_temp, y_temp,z_temp):
 
@@ -351,6 +378,9 @@ if __name__ == "__main__":
         
         robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
         rospy.sleep(5)
+
+        
+        robot_move_circle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
 
         robot_move_rectangle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
 
