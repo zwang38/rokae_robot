@@ -80,7 +80,7 @@ def procImage(img, shape):
             cv2.circle(img, (i[0], i[1]), i[2], (255, 255, 0), 2)
             # draw the center of the circle
             cv2.circle(img, (i[0], i[1]), 2, (0, 0, 255), 3)
-            cv2.imshow("contours", img)
+            cv2.imshow("circle", img)
             cv2.waitKey()
         print(len(circles[0, :]))
     else:
@@ -97,12 +97,16 @@ def procImage(img, shape):
 if __name__ == '__main__':
 
     hex = make_hex_shape()
-    testID='./images/rgb_img_7193.66.jpg'
+#    testID='./images/rgb_img_7193.66.jpg'
+#     testID='./images/rgb_img_237.776.jpg'
+#     testID = './images/rgb_img_414.307.jpg'
+    testID = './images/rgb_img_4524.973.jpg'
     img = cv2.imread(testID)
-    img = cv2.resize(img, (img.shape[1]*4, img.shape[0]*4))
+    scale = 4
+    img = cv2.resize(img, (img.shape[1]*scale, img.shape[0]*scale))
     cv2.imshow('original', img)
     img = img / 255.0
-    img = img[0:960*2, 0:1280*2]
+    img = img[0:480*scale, 0:640*scale]
     img,centerpoints = procImage(img, hex)
     cv2.imshow("contours", img)
     print( 'centerpoints',  centerpoints)
