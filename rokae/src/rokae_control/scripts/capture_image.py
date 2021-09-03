@@ -33,10 +33,10 @@ import os
 
 
 def load_obstacle():
-    
+
     print('加载障碍物,please input load；若是不加载请直接回车')
     input_delete=raw_input()
-    
+
     if input_delete=='add':
         concept_demo.product_spawn()
 
@@ -182,7 +182,7 @@ def set_move_vertical_capture(ee_pose):
     ee_pose.orientation.y = q[1]
     ee_pose.orientation.z = q[2]
     ee_pose.orientation.w = q[3]
-    
+
     # set_arm_pose(group, ee_pose, effector)
 
     if  set_arm_pose(group, ee_pose, effector):
@@ -194,35 +194,38 @@ def set_move_vertical_capture(ee_pose):
 
 
 def set_move_tilt_capture(ee_pose):
-    
+
     print( 'location 45度到倾斜角，采集图像')
     tf_angle=-math.pi+math.pi/4
 
-
     delta_rpy_random=random.randint(-314,314)
     delta_rpy_random=float(delta_rpy_random)/float(100.0)
-    
+
     q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
     rpy = tf.transformations.euler_from_quaternion(q)
 
-    x_delta=random.randint(-5,5)
+
+    # randint中的数值为极限值
+    x_delta=random.randint(-110,25)
     x_delta_random=float(x_delta)/float(1000.0)
 
-    y_delta=random.randint(-5,15)
+    y_delta=random.randint(-430,-250)
     y_delta_random=float(y_delta)/float(1000.0)
 
-
-    z_hight=random.randint(113,150)
+    z_hight=random.randint(115,120)
     z_random_hight=float(z_hight)/float(100.0)
 
     print(x_delta)
     print(y_delta_random)
     # now_pose = group.get_current_pose().pose
 
-
     ee_pose.position.x =x_delta_random
     ee_pose.position.y=y_delta_random
     ee_pose.position.z=z_random_hight
+    # ee_pose.position.x =-0.11
+    # ee_pose.position.y=-0.25
+    # ee_pose.position.z=1.19
+
 
     #rpy:变换
     q = tf.transformations.quaternion_from_euler(tf_angle, rpy[1], rpy[2])
@@ -230,7 +233,7 @@ def set_move_tilt_capture(ee_pose):
     ee_pose.orientation.y = q[1]
     ee_pose.orientation.z = q[2]
     ee_pose.orientation.w = q[3]
-    
+
     # set_arm_pose(group, ee_pose, effector)
 
     if  set_arm_pose(group, ee_pose, effector):
@@ -279,7 +282,7 @@ if __name__=="__main__":
 
 
 
-                
+
 
 
 
