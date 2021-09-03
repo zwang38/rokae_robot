@@ -324,7 +324,6 @@ if __name__ == "__main__":
 
     # robot_position(0.38 , 0.27)
 
-
     # Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
     # the robot:
     robot = moveit_commander.RobotCommander()
@@ -341,8 +340,6 @@ if __name__ == "__main__":
     # if input_delete=='add':
     #     load_battery_model=      product_spawn()
     #     print('load_battery_model',load_battery_model)
-
-
 
     #加载障碍物
     # import concept_demo
@@ -362,33 +359,31 @@ if __name__ == "__main__":
     
     # if input_delete=='delete':
     #     Delete_Part(load_battery_model)
-    
-    parts_pose=part_pose_collect(battery_pack_describe_name)
-    print(parts_pose)
 
-    # x,y=bolt_position_detector.detection_position()
-    # print( "x={0},y={1}" .format(x,y))
+    try:
+        parts_pose=part_pose_collect(battery_pack_describe_name)
+        print(parts_pose)
 
+        for model_num in range(len(parts_pose)):
 
-    for model_num in range(len(parts_pose)):
+            # 机器人移动到某个位置
+            print('parts_pose[model_num][0]',parts_pose[model_num][0])
+            print('parts_pose[model_num][1]',parts_pose[model_num][1])
+            
+            robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
+            rospy.sleep(5)
 
-        # 机器人移动到某个位置
-        print('parts_pose[model_num][0]',parts_pose[model_num][0])
-        print('parts_pose[model_num][1]',parts_pose[model_num][1])
-        
-        robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
+            robot_move_circle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
+
+            robot_move_rectangle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
+            # 下探
+            robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.5, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
+            # 推
+            robot_move_push(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
+            # 回来，  好像有点问题，回不来的感觉
+            # robot_move_line(parts_pose[model_num][0]+2, parts_pose[model_num][1]+2, 1.3 ,parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
+            # 回来，加套接
+            robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
+    except Exception:
+        robot_move_location(group1,0,0,1.5, -3.14, 0, 0)
         rospy.sleep(5)
-
-
-        robot_move_circle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
-
-        robot_move_rectangle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
-
-        # 下探
-        robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.5, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
-        # 推
-        robot_move_push(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
-        # 回来，  好像有点问题，回不来的感觉
-        # robot_move_line(parts_pose[model_num][0]+2, parts_pose[model_num][1]+2, 1.3 ,parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
-        # 回来，加套接
-        robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
