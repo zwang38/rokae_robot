@@ -189,7 +189,7 @@ def set_move_vertical_capture(ee_pose):
         camera.set_capture()
         # 本想定义个采集次数，全局变量不给编译
         # capture_number= capture_number+1
-        # if capture_number is 2:
+        # if capture_number is 1000:
         #     print('采集了1000次{0}'.format(capture_number))
     else :
         ee_pose = group.get_current_pose(effector).pose
@@ -275,7 +275,7 @@ if __name__=="__main__":
     print('请输入：竖直采集为0,倾斜采集为1')
     input=raw_input()
     if input=='0':
-        while(1):
+        for i in  range(300):
             set_move_vertical_capture(ee_pose)
     else :
         while(1):

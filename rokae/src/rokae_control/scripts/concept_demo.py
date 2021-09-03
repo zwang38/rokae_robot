@@ -90,7 +90,8 @@ def robot_move(group, x, y, z, R, P, Y):
 
 
 if __name__ == "__main__":
-#    product_spawn()
+    #加载障碍物，可以关闭
+    product_spawn()
 
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
