@@ -28,8 +28,7 @@ import os
 
 
 
-
-
+global capture_number
 
 
 def load_obstacle():
@@ -42,6 +41,7 @@ def load_obstacle():
 
 
 class Camera():
+
     def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic):
 
         self.camera_name = camera_name
@@ -177,7 +177,7 @@ def set_move_vertical_capture(ee_pose):
     ee_pose.position.z=z_random_hight
 
     #rpy:变换
-    q = tf.transformations.quaternion_from_euler(rpy[0], rpy[1], rpy[2]+delta_rpy_random)
+    q = tf.transformations.quaternion_from_euler(-math.pi, rpy[1], rpy[2]+delta_rpy_random)
     ee_pose.orientation.x = q[0]
     ee_pose.orientation.y = q[1]
     ee_pose.orientation.z = q[2]
@@ -187,6 +187,10 @@ def set_move_vertical_capture(ee_pose):
 
     if  set_arm_pose(group, ee_pose, effector):
         camera.set_capture()
+        # 本想定义个采集次数，全局变量不给编译
+        # capture_number= capture_number+1
+        # if capture_number is 2:
+        #     print('采集了1000次{0}'.format(capture_number))
     else :
         ee_pose = group.get_current_pose(effector).pose
 
@@ -244,6 +248,7 @@ def set_move_tilt_capture(ee_pose):
     print_pose(ee_pose)
 
 if __name__=="__main__":
+
     effector = sys.argv[1] if len(sys.argv) > 1 else 'rokae_link7'
 
     settings = termios.tcgetattr(sys.stdin)
