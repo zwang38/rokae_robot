@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 import sys, random, copy
@@ -116,7 +116,7 @@ def set_arm_pose(group, pose, effector):
         group.execute(plan, wait=True)
         return True
     else:
-        print 'no plan result'
+        print ('no plan result')
         return False
 
 def reset_arm(group):
@@ -138,12 +138,12 @@ def reset_arm(group):
 def print_pose(pose):
     q = (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
     rpy = tf.transformations.euler_from_quaternion(q)
-    print '%s: position (%.2f %.2f %.2f) orientation (%.2f %.2f %.2f %.2f) RPY (%.2f %.2f %.2f)' % \
+    print( '%s: position (%.2f %.2f %.2f) orientation (%.2f %.2f %.2f %.2f) RPY (%.2f %.2f %.2f)' % \
         (effector, pose.position.x, pose.position.y, pose.position.z, \
         pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, \
-        rpy[0], rpy[1], rpy[2])
+        rpy[0], rpy[1], rpy[2]))
 
-def set_move_capture(ee_pose):
+def set_move_vertical_capture(ee_pose):
     delta_rpy_random=random.randint(-314,314)
     delta_rpy_random=float(delta_rpy_random)/float(100.0)
     q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
@@ -193,6 +193,52 @@ def set_move_capture(ee_pose):
     print_pose(ee_pose)
 
 
+def set_move_tilt_capture(ee_pose):
+    
+    print( 'location 45度到倾斜角，采集图像')
+    tf_angle=-math.pi+math.pi/4
+
+
+    delta_rpy_random=random.randint(-314,314)
+    delta_rpy_random=float(delta_rpy_random)/float(100.0)
+    
+    q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
+    rpy = tf.transformations.euler_from_quaternion(q)
+
+    x_delta=random.randint(-5,5)
+    x_delta_random=float(x_delta)/float(1000.0)
+
+    y_delta=random.randint(-5,15)
+    y_delta_random=float(y_delta)/float(1000.0)
+
+
+    z_hight=random.randint(113,150)
+    z_random_hight=float(z_hight)/float(100.0)
+
+    print(x_delta)
+    print(y_delta_random)
+    # now_pose = group.get_current_pose().pose
+
+
+    ee_pose.position.x =x_delta_random
+    ee_pose.position.y=y_delta_random
+    ee_pose.position.z=z_random_hight
+
+    #rpy:变换
+    q = tf.transformations.quaternion_from_euler(tf_angle, rpy[1], rpy[2])
+    ee_pose.orientation.x = q[0]
+    ee_pose.orientation.y = q[1]
+    ee_pose.orientation.z = q[2]
+    ee_pose.orientation.w = q[3]
+    
+    # set_arm_pose(group, ee_pose, effector)
+
+    if  set_arm_pose(group, ee_pose, effector):
+        camera.set_capture()
+    else :
+        ee_pose = group.get_current_pose(effector).pose
+
+    print_pose(ee_pose)
 
 if __name__=="__main__":
     effector = sys.argv[1] if len(sys.argv) > 1 else 'rokae_link7'
@@ -218,9 +264,15 @@ if __name__=="__main__":
     #加载障碍物
     # load_obstacle()
 
+    print('请输入：竖直采集为0,倾斜采集为1')
+    input=raw_input()
+    if input=='0':
+        while(1):
+            set_move_vertical_capture(ee_pose)
+    else :
+        while(1):
+            set_move_tilt_capture(ee_pose)
 
-    while(1):
-        set_move_capture(ee_pose)
 
     termios.tcsetattr(sys.stdin, termios.TCSADRAIN, settings)
 
