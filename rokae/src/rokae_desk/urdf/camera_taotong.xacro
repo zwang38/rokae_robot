@@ -3,6 +3,9 @@
 <robot  name="rokea"   xmlns:xacro="http://wiki.ros.org/xacro">
 
 
+
+
+
 <!--link 4--> 
   <link    name="tool_base_link">
     <inertial>
@@ -58,7 +61,7 @@
 
 
   <gazebo reference="tool_base_link">
-     <material>Gazebo/Green</material>
+     <material>Gazebo/Red</material>
   </gazebo>
 
 
@@ -67,7 +70,7 @@
   <link    name="tool_link">
     <visual>
       <geometry>
-        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl"  scale="1.25 1.25 1.25"/>
+        <mesh          filename="package://rokae_desk/meshes/tool_Link.stl"  scale="1.3 1.3 1.3"/>
        
       </geometry>
 	    <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -82,8 +85,7 @@
         ixz="-3.99"
         iyy="0.000106"
         iyz="-1.185"
-        izz="6.544" />    
-      <origin        xyz="5.20417042793042E-18 3.79470760369927E-19 -0.0550139882029437"        rpy="0 0 0" />
+        izz="6.544" />      <origin        xyz="5.20417042793042E-18 3.79470760369927E-19 -0.0550139882029437"        rpy="0 0 0" />
     </inertial>
     
     <collision>
@@ -97,7 +99,8 @@
 
 
   <gazebo reference="tool_Link">
-     <material>Gazebo/BlackTransparent</material>
+     <!-- <material>Gazebo/BlackTransparent</material> -->
+     <material>Gazebo/Red</material>
   </gazebo>
 
 

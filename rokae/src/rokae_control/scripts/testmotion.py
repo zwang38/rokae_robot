@@ -11,7 +11,7 @@ import moveit_commander
 import moveit_msgs.msg
 from moveit_commander.conversions import pose_to_list
 
-
+import math
 from time import sleep
 from gazebo_msgs.srv import DeleteModel
 import  bolt_position_detector 
@@ -245,8 +245,74 @@ def load_battery():
     if input_delete=='add':
         load_battery_model=product_spawn()
         print('load_battery_model',load_battery_model)
-    return load_battery_model
+        return load_battery_model
+    else :
+        return 'vertical_battery_product'
 
+
+def robot_move_circle(x_temp, y_temp,z_temp):
+    init_angle=0
+    delta_angle=30
+    scale_angle=delta_angle*math.pi/180
+    radius=0.05
+    robot_pose = geometry_msgs.msg.Pose()
+    now_pose = group1.get_current_pose().pose
+    # robot move following vector
+    for i in range(360/delta_angle  +1):
+        init_angle=+delta_angle* i
+
+        tamp_angle=scale_angle * init_angle/delta_angle
+
+        x_transform=radius*math.cos(tamp_angle)
+        y_transform=radius*math.sin(tamp_angle)
+        
+
+        # print('x_transform{0},{1},{2}'.format(x_transform,init_angle,i))
+        # print('y_transform{0},{1},{2}'.format(y_transform,init_angle,i))
+
+        x_transform_distance=x_transform+x_temp
+        y_transform_distance=y_transform+y_temp
+
+        robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_transform_distance,y_transform_distance,now_pose.position.z)
+
+    robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_temp,y_temp,z_temp)
+
+
+
+def robot_move_rectangle(x_temp, y_temp,z_temp):
+
+    tranform_angle=[90,270,0,180]
+
+    # delta_angle=30
+    # scale_angle=delta_angle*3.14/180
+    radius=0.05
+
+    robot_pose = geometry_msgs.msg.Pose()
+    now_pose = group1.get_current_pose().pose
+
+    # robot move following vector
+    for i in range(len(tranform_angle)):
+
+        tamp_angle=float(math.pi * tranform_angle[i])/float(180.0)
+    
+        x_transform=radius*math.cos(tamp_angle)
+        y_transform=radius*math.sin(tamp_angle)
+        
+
+        # print('x_transform{0}，当前角度{1}'.format(x_transform ,tamp_angle))
+        # print('y_transform{0}，当前角度{1}'.format(y_transform,tamp_angle))
+
+        x_transform_distance=x_transform+x_temp
+        y_transform_distance=y_transform+y_temp
+
+
+
+        robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_transform_distance,y_transform_distance,now_pose.position.z)
+
+        if i is 1:
+            robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_temp,y_temp,z_temp)
+
+    robot_move_line(now_pose.position.x,now_pose.position.y,now_pose.position.z,x_temp,y_temp,z_temp)
 
 
 
@@ -257,7 +323,6 @@ if __name__ == "__main__":
     rospy.init_node('motion_planning', anonymous=True)
 
     # robot_position(0.38 , 0.27)
-
 
     # Instantiate a `RobotCommander`_ object. This object is the outer-level interface to
     # the robot:
@@ -276,6 +341,9 @@ if __name__ == "__main__":
     #     load_battery_model=      product_spawn()
     #     print('load_battery_model',load_battery_model)
 
+    #加载障碍物
+    # import concept_demo
+    # concept_demo.product_spawn()
 
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
@@ -291,27 +359,31 @@ if __name__ == "__main__":
     
     # if input_delete=='delete':
     #     Delete_Part(load_battery_model)
-    
-    parts_pose=part_pose_collect(battery_pack_describe_name)
-    print(parts_pose)
 
-    # x,y=bolt_position_detector.detection_position()
-    # print( "x={0},y={1}" .format(x,y))
+    try:
+        parts_pose=part_pose_collect(battery_pack_describe_name)
+        print(parts_pose)
 
+        for model_num in range(len(parts_pose)):
 
-    for model_num in range(len(parts_pose)):
+            # 机器人移动到某个位置
+            print('parts_pose[model_num][0]',parts_pose[model_num][0])
+            print('parts_pose[model_num][1]',parts_pose[model_num][1])
+            
+            robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
+            rospy.sleep(5)
 
-        # 机器人移动到某个位置
-        print('parts_pose[model_num][0]',parts_pose[model_num][0])
-        print('parts_pose[model_num][1]',parts_pose[model_num][1])
-        
-        robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
+            robot_move_circle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
+
+            robot_move_rectangle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
+            # 下探
+            robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.5, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
+            # 推
+            robot_move_push(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
+            # 回来，  好像有点问题，回不来的感觉
+            # robot_move_line(parts_pose[model_num][0]+2, parts_pose[model_num][1]+2, 1.3 ,parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
+            # 回来，加套接
+            robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
+    except Exception:
+        robot_move_location(group1,0,0,1.5, -3.14, 0, 0)
         rospy.sleep(5)
-        # 下探
-        robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.5, parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
-        # 推
-        robot_move_push(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)
-        # 回来，  好像有点问题，回不来的感觉
-        # robot_move_line(parts_pose[model_num][0]+2, parts_pose[model_num][1]+2, 1.3 ,parts_pose[model_num][0], parts_pose[model_num][1], 1.3)
-        # 回来，加套接
-        robot_move_insert(parts_pose[model_num][0], parts_pose[model_num][1], 1.3, parts_pose[model_num][0], parts_pose[model_num][1], 1.2)

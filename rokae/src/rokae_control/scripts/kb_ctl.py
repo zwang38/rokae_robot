@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-
+# -*- coding: utf-8 -*-  
+import math
 import sys
 import select, termios, tty
 import rospy
@@ -15,9 +16,11 @@ import os
 usage = """
 Control the position of an end effector
 ---------------------------
+t   : robot transform to tilt
+a/q : left/right in tilt 
 j/l : left/right
 i/k : forward/backward
-p/; : up/down
+p/; : up/downw
 x   : reset all joints on arms to zero
 e/r : raw -/+
 d/f : pitch -/+
@@ -146,8 +149,14 @@ if __name__=="__main__":
     print_pose(ee_pose)
     camera = Camera('camera', '/camera/color/image_raw', '/camera/depth/image_raw',
                     '/camera/color/camera_info')
+    z_delta=0.01
+    x_delta=0.01
+    y_delta=0.01
 
     while(1):
+            
+            delta_distance_tilt=0.01
+        
             key = get_key()
             #if key in moveBindings.keys():
             q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
@@ -155,6 +164,51 @@ if __name__=="__main__":
             if key == ' ' :
                 ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
+
+            elif key== 't':
+                print 'location 45度到倾斜角'
+                tf_angle=-math.pi+math.pi/4
+                q = tf.transformations.quaternion_from_euler(tf_angle, 0.001130,-0.000277)
+                ee_pose.position.x=-0.080070
+                ee_pose.position.y=-0.154564
+                ee_pose.position.z=1.135476
+
+                ee_pose.orientation.x = q[0]
+                ee_pose.orientation.y = q[1]
+                ee_pose.orientation.z = q[2]
+                ee_pose.orientation.w = q[3]
+                if not set_arm_pose(group, ee_pose, effector):
+                    ee_pose = group.get_current_pose(effector).pose
+                print_pose(ee_pose)
+
+
+            elif key== 'a':
+                print '-zy,倾斜面的移动,会带动y,z的移动，采取45度倾斜角进行计算'
+                z_tilt=1 /1.41*delta_distance_tilt
+                y_tilt=1/1.41*delta_distance_tilt
+                # z_tilt=1/delta_distance_tilt
+
+                ee_pose.position.z -=z_tilt
+                ee_pose.position.y -= y_tilt
+
+                set_arm_pose(group, ee_pose, effector)
+                if not set_arm_pose(group, ee_pose, effector):
+                    ee_pose = group.get_current_pose(effector).pose
+                print_pose(ee_pose)
+
+            elif key== 'q':
+                print '+zy,倾斜面的移动,会带动y,z的移动，采取45度倾斜角进行计算'
+                z_tilt=1 /1.41*delta_distance_tilt
+                y_tilt=1/1.41*delta_distance_tilt
+                # z_tilt=1/delta_distance_tilt
+                ee_pose.position.z +=z_tilt
+                ee_pose.position.y += y_tilt
+                set_arm_pose(group, ee_pose, effector)
+                if not set_arm_pose(group, ee_pose, effector):
+                    ee_pose = group.get_current_pose(effector).pose
+                print_pose(ee_pose)
+
+
             elif key== 'c':
                 print 'Y-'
                 q = tf.transformations.quaternion_from_euler(rpy[0], rpy[1], rpy[2]-0.2)
@@ -218,40 +272,40 @@ if __name__=="__main__":
                 print_pose(ee_pose)
             elif key== 'p':
                 print 'z+'
-                ee_pose.position.z += 0.05
+                ee_pose.position.z += z_delta
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== ';':
                 print 'z-'
-                ee_pose.position.z -= 0.05
+                ee_pose.position.z -= z_delta
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'l':
                 print 'y-'
-                ee_pose.position.y -= 0.05
+                ee_pose.position.y -=y_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'j':
                 print 'y+'
-                ee_pose.position.y += 0.05
+                ee_pose.position.y += y_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'i':
                 print 'x+'
-                ee_pose.position.x += 0.05
+                ee_pose.position.x +=x_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
                 print_pose(ee_pose)
             elif key== 'k':
                 print 'x-'
-                ee_pose.position.x -= 0.05
+                ee_pose.position.x -=x_delta
                 set_arm_pose(group, ee_pose, effector)
                 if not set_arm_pose(group, ee_pose, effector):
                     ee_pose = group.get_current_pose(effector).pose
