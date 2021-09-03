@@ -47,14 +47,32 @@
 
 
   <gazebo reference="v_battery_base_link">
-      <maxVel>0.01</maxVel>
-      <kd>1</kd>
-      <maxContacts>20</maxContacts>
-      <mu2>500000</mu2>
-      <selfCollide>0</selfCollide>
-      <mu1>500000</mu1>
-      <minDepth>0</minDepth>
+      <maxVel>100</maxVel>
+      <kd>200</kd>
+      <maxContacts>200</maxContacts>
+      <mu2>5000000000000</mu2>
+      <selfCollide>10</selfCollide>
+      <mu1>5000000000000</mu1>
+      <minDepth>10</minDepth>
       <kp>1000000000000.0</kp>
+
+
+      <!-- <gravity>bool</gravity> -->
+
+
+
+
+      <!-- <gravity>bool</gravity> -->
+      <!-- <maxVel>100</maxVel>
+      <kd>10</kd>
+      <maxContacts>200</maxContacts>
+      <mu2>10</mu2>
+      <selfCollide>10</selfCollide>
+      <mu1>10</mu1>
+      <minDepth>10</minDepth>
+      <kp>1</kp> -->
+
+
   </gazebo> 
 
 

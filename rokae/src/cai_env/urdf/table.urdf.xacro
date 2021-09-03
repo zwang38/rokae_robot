@@ -48,7 +48,18 @@
     </collision>
 
     <gazebo reference="table">
-      <material>Gazebo/Green </material>
+      <!-- <material>Gazebo/Green </material> -->
+
+      <gravity>bool</gravity>
+      <maxVel>100</maxVel>
+      <kd>1</kd>
+      <maxContacts>20</maxContacts>
+      <mu2>1000000000000</mu2>
+      <selfCollide>10</selfCollide>
+      <mu1>1000000000000</mu1>
+      <minDepth>2</minDepth>
+      <kp>1000000000000.0</kp>
+
     </gazebo> 
 
   </link>
