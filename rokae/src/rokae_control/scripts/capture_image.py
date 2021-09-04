@@ -270,7 +270,11 @@ if __name__=="__main__":
     rospy.sleep(2)
 
     #加载障碍物
-    # load_obstacle()
+    print('请输入：add,加载障碍物,不加载直接回车')
+    input=raw_input()
+    if input=='add':
+        load_obstacle()
+
 
     print('请输入：竖直采集为0,倾斜采集为1')
     input=raw_input()
