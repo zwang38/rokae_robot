@@ -236,6 +236,28 @@ def set_align_tilt_capture(ee_pose):
     print( 'location 45度到倾斜角，采集图像')
     tf_angle=-math.pi+math.pi/4
 
+    z_hight=random.randint(0,5)
+    z_random_hight=float(z_hight)/float(100.0)
+    y_delta_random=z_random_hight
+
+    q = tf.transformations.quaternion_from_euler(tf_angle,0,0)
+    ee_pose.position.x=-0.060
+    ee_pose.position.y=-0.233-y_delta_random
+    ee_pose.position.z=1.131+z_hight
+
+    ee_pose.orientation.x = q[0]
+    ee_pose.orientation.y = q[1]
+    ee_pose.orientation.z = q[2]
+    ee_pose.orientation.w = q[3]
+
+    if  set_arm_pose(group, ee_pose, effector):
+        camera.set_capture()
+    else :
+        ee_pose = group.get_current_pose(effector).pose
+
+    print_pose(ee_pose)
+
+
 
 def set_move_tilt_capture(ee_pose):
 
@@ -306,6 +328,9 @@ if __name__=="__main__":
                     '/camera/color/camera_info')
     # testmotion.robot_position(-0.0595,0.0419,1.18)   #移动到电池包
 
+    # set_align_tilt_capture(ee_pose)
+
+
     testmotion.robot_position(-0.0585,0.0408,1.30)   #移动到电池包
 
     rospy.sleep(2)
@@ -330,7 +355,7 @@ if __name__=="__main__":
     print('请输入：ta,进行垂直方向进行对齐.倾斜采集，请输入tn')
     input=raw_input()
     if input=='ta':
-        for i in  range(300):
+        for i in  range(100):
             set_align_tilt_capture(ee_pose)
     elif input=='tn':
         for i in  range(300):  #采样300次
