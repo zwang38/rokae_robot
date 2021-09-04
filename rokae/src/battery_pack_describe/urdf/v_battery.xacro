@@ -123,17 +123,17 @@
 <!--摩擦力参考链接，我修改了mu的大小。 https://boschresearch.github.io/pcg_gazebo_pkgs/tutorials/parsers/urdf/robots/ 
 https://whtqh.gitbooks.io/gazebo_simu_chs/content/using_a_urdf_model.html  摩擦力和其他参数，定义链接
 -->
-  <!-- <gazebo reference="v_battery_bolt_Link">
+  <gazebo reference="v_battery_bolt_Link">
       <maxVel>0.01</maxVel>
       <kd>1</kd>
       <maxContacts>20</maxContacts>
-      <mu2>50000</mu2>
+      <mu2>5000000000000000</mu2>
       <selfCollide>0</selfCollide>
-      <mu1>50000</mu1>
+      <mu1>5000000000000000</mu1>
       <minDepth>0</minDepth>
       <kp>1000000000000.0</kp>
     <material>Gazebo/Grey </material>
-</gazebo> -->
+  </gazebo>
 
 
 
