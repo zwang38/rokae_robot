@@ -15,25 +15,31 @@ train_layer = ['fc8', 'fc7', 'fc6']
 filewriter_path = "tmp/tensorboard"  # 存储tensorBoard文件
 checkpoint_path = "tmp/checkpoints"  # 训练好的模型和参数存放目录
 
-#对齐时有障碍物的图像
-training_obstacle_align_image_path = 'rokae_image/vertical_capture/true_align_obstacle/rgbd/'
+#对齐时的图像
+training_obstacle_align_image_path = 'rokae_image/train/align/'
 
 #没有障碍物的图像
-training_non_align_obstacle_image_path = 'rokae_image/vertical_capture/false_obstacle/rgbd/'
+training_non_align_obstacle_image_path = 'rokae_image/train/no_align/'
 
-testing_fire_image_path = training_obstacle_align_image_path
-testing_non_fire_image_path = training_non_align_obstacle_image_path
+
+
+
+
+testing_obstacle_align_image_path = 'rokae_image/test/align/'
+testing_non_align_obstacle_image_path = 'rokae_image/test/no_align/'
 training_labels = []
 testing_labels = []
 
 # 加载训练数据
 training_images = glob.glob(training_obstacle_align_image_path + '*.jpg')
 training_images[len(training_images):len(training_images)] = glob.glob(training_non_align_obstacle_image_path + '*.jpg')
-for i in range(len(training_images)):
-    if i < 98:
+for i in range(len(training_images)):   # 对图像打标
+    if i < 80:
         training_labels.append(1)
     else:
         training_labels.append(0)
+
+
 
 training = ImageDataGenerator(
     images=training_images,
@@ -42,10 +48,10 @@ training = ImageDataGenerator(
     num_classes=num_classes)
 
 # 加载测试数据
-testing_images = glob.glob(testing_fire_image_path + '*.jpg')
-testing_images[len(testing_images):len(testing_images)] = glob.glob(testing_non_fire_image_path + '*.jpg')
+testing_images = glob.glob(testing_obstacle_align_image_path + '*.jpg')
+testing_images[len(testing_images):len(testing_images)] = glob.glob(testing_non_align_obstacle_image_path + '*.jpg')
 for i in range(len(testing_images)):
-    if i < 50:
+    if i < 20:
         testing_labels.append(1)
     else:
         testing_labels.append(0)
@@ -130,8 +136,6 @@ with tf.Session() as sess:
                     fp += 1
                 elif prediction_label[i] == 0 and actual_label[i] == 1:
                     fn += 1
-
-
         denominator=tp + fp
         precision=0
         if  denominator is  0:
