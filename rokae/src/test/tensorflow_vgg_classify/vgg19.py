@@ -25,7 +25,9 @@ class Vgg19(object):
         self.build()
 
     def build(self, train_mode=None):
-
+        
+        # https://blog.csdn.net/qq_36560894/article/details/104923543?spm=1001.2014.3001.5501
+       
         self.conv1_1 = self.conv_layer(self.BGR_IMAGE, 3, 64, "conv1_1")
         self.conv1_2 = self.conv_layer(self.conv1_1, 64, 64, "conv1_2")
         self.pool1 = self.max_pool(self.conv1_2, 'pool1')

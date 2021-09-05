@@ -131,7 +131,13 @@ with tf.Session() as sess:
                 elif prediction_label[i] == 0 and actual_label[i] == 1:
                     fn += 1
 
-        precision = tp / (tp + fp)
+
+        denominator=tp + fp
+        precision=0
+        if  denominator is  0:
+            precision=0
+        else  :
+            precision = tp / (tp + fp)
         recall = tp / (tp + fn)
         f1 = (2 * tp) / (2 * tp + fp + fn)  # f1为精确率precision和召回率recall的调和平均
         print("{} Testing Precision = {:.4f}".format(datetime.now(), precision))
