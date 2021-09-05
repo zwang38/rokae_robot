@@ -16,16 +16,15 @@ def moveFile(fileDir):
 
     for index, image in enumerate(pathDir):
         if image not in sample:
-            shutil.move(fileDir+image, trainDir+image)
+            shutil.move(fileDir+ '/'+image, trainDir+ '/'+image)
         else :
-            shutil.move(fileDir+image, testDir+image)
-
+            shutil.move(fileDir+ '/'+image, testDir+ '/'+image)
     return
 
 if __name__ == '__main__':
     fileDir = 'rokae_image/vertical_capture/false_align/rgbd/'   #源图片文件夹路径
-    trainDir = 'rokae_image/train/'    #移动到新的文件夹路径
-    testDir = 'rokae_image/test/'    #移动到新的文件夹路径
+    trainDir = 'rokae_image/train'    #移动到新的文件夹路径
+    testDir = 'rokae_image/test'    #移动到新的文件夹路径
     mkfile(trainDir)    #创建文件夹
     mkfile(testDir)     #创建文件夹
     moveFile(fileDir)   #移动图像
