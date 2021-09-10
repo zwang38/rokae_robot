@@ -150,6 +150,51 @@ class PrimAimTarget:
             return ps_tgt.pose
         except:
             traceback.print_exc()
+            return None
+
+    def add_bolt_frame(self, x, y, all_info):
+        tl_x = self.clamp(int(x) - 1, 0, all_info['depth_img'].shape[0])
+        br_x = self.clamp(int(x) + 1, 0, all_info['depth_img'].shape[0])
+        tl_y = self.clamp(int(y) - 1, 0, all_info['depth_img'].shape[1])
+        br_y = self.clamp(int(y) + 1, 0, all_info['depth_img'].shape[1])
+
+        print((x, y), (tl_x, tl_y, br_x, br_y))
+        roi = all_info['depth_img'][tl_y:br_y, tl_x:br_x]
+        depth_distance = np.median(roi)
+
+        if np.isnan(depth_distance):
+            print("null depth info")
+            return
+        d = depth_distance / 1000
+
+        cam_model = all_info['camera_model']
+        coord_x = (x - cam_model.cx()) * d * (1.0 / cam_model.fx())
+        coord_y = (y - cam_model.cy()) * d * (1.0 / cam_model.fy())
+        coord_z = d
+        print("coord (%f, %f, %f)" % (coord_x, coord_y, coord_z))
+        R_quat, t = self.calc_transform(x, y, d, all_info)
+        print(R_quat)
+        print(t)
+        self.broadcast_tf(R_quat, t, all_info)
+
+    def get_tgt_pose_in_world_frame(self, all_info):
+        tgt_pose_in_bolt_frame = geometry_msgs.msg.Pose()
+        tgt_pose_in_bolt_frame.position.x = -0.5
+        tgt_pose_in_bolt_frame.position.y = 0
+        tgt_pose_in_bolt_frame.position.z = 0
+        # q = tf.transformations.quaternion_from_euler(0, 1.57, 0)
+        q = tf.transformations.quaternion_from_euler(0, 1.57, 0)
+        tgt_pose_in_bolt_frame.orientation.x = q[0]
+        tgt_pose_in_bolt_frame.orientation.y = q[1]
+        tgt_pose_in_bolt_frame.orientation.z = q[2]
+        tgt_pose_in_bolt_frame.orientation.w = q[3]
+        self.print_pose(tgt_pose_in_bolt_frame, 'tgt_pose_in_bolt_frame')
+        tgt_pose_in_world_frame = self.transform_pose("bolt_frame",
+                                                      "world",
+                                                      tgt_pose_in_bolt_frame,
+                                                      all_info['timestamp'])
+        self.print_pose(tgt_pose_in_world_frame, 'tgt_pose_in_world_frame')
+        return tgt_pose_in_world_frame
 
     def action(self, all_info):
         for param in self.action_params:
@@ -165,46 +210,11 @@ class PrimAimTarget:
 
             x = circle[0]
             y = circle[1]
-            tl_x = self.clamp(int(x) - 1, 0, all_info['depth_img'].shape[0])
-            br_x = self.clamp(int(x) + 1, 0, all_info['depth_img'].shape[0])
-            tl_y = self.clamp(int(y) - 1, 0, all_info['depth_img'].shape[1])
-            br_y = self.clamp(int(y) + 1, 0, all_info['depth_img'].shape[1])
+            self.add_bolt_frame(x, y, all_info)
 
-            print((x, y), (tl_x, tl_y, br_x, br_y))
-            roi = all_info['depth_img'][tl_y:br_y, tl_x:br_x]
-            depth_distance = np.median(roi)
-
-            if np.isnan(depth_distance):
-                print("null depth info")
-                return
-            d = depth_distance / 1000
-
-            cam_model = all_info['camera_model']
-            coord_x = (x - cam_model.cx()) * d * (1.0 / cam_model.fx())
-            coord_y = (y - cam_model.cy()) * d * (1.0 / cam_model.fy())
-            coord_z = d
-            print("coord (%f, %f, %f)" % (coord_x, coord_y, coord_z))
-            R_quat, t = self.calc_transform(x, y, d, all_info)
-            print(R_quat)
-            print(t)
-            self.broadcast_tf(R_quat, t, all_info)
-            tgt_pose_in_bolt_frame = geometry_msgs.msg.Pose()
-            tgt_pose_in_bolt_frame.position.x = -0.5
-            tgt_pose_in_bolt_frame.position.y = 0
-            tgt_pose_in_bolt_frame.position.z = 0
-            # q = tf.transformations.quaternion_from_euler(0, 1.57, 0)
-            q = tf.transformations.quaternion_from_euler(0, 1.57, 0)
-            tgt_pose_in_bolt_frame.orientation.x = q[0]
-            tgt_pose_in_bolt_frame.orientation.y = q[1]
-            tgt_pose_in_bolt_frame.orientation.z = q[2]
-            tgt_pose_in_bolt_frame.orientation.w = q[3]
-            self.print_pose(tgt_pose_in_bolt_frame, 'tgt_pose_in_bolt_frame')
-            tgt_pose_in_world_frame = self.transform_pose("bolt_frame",
-                                                          "world",
-                                                          tgt_pose_in_bolt_frame,
-                                                          all_info['timestamp'])
-            self.print_pose(tgt_pose_in_world_frame, 'tgt_pose_in_world_frame')
-            ee_pose = tgt_pose_in_world_frame
+            ee_pose = self.get_tgt_pose_in_world_frame(all_info)
+            if ee_pose is None:
+                return False
             # q = tf.transformations.quaternion_from_euler(3.14, 0, 0)
             # ee_pose.orientation.x = q[0]
             # ee_pose.orientation.y = q[1]
