@@ -370,7 +370,7 @@ class Camera():
 if __name__ == '__main__':
     
     #加载电池包，不加载直接回车
-    testmotion.load_battery()
+    # testmotion.load_battery()
     testmotion.robot_position(0,0,1.5)
     try:
         rospy.init_node('depth_from_object')

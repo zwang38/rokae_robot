@@ -22,6 +22,7 @@ import testmotion
 # from  bolt_position_detector
 import templateMatching
 import copy
+import moveit_commander
 
 
 # from PIL import Image,ImageDraw
@@ -64,19 +65,29 @@ class NSPlanner:
                                                                queue_size=30, slop=0.2)
 
         self.tss.registerCallback(self.callback)
-        self.aim_target_prim = PrimAimTarget()
+
+        moveit_commander.roscpp_initialize(sys.argv)
+        self.group = moveit_commander.MoveGroupCommander("arm")
+        self.group.set_planner_id("RRTConnectkConfigDefault")
+
+
+        self.aim_target_prim = PrimAimTarget(self.group)
         self.all_infos = {}
         self.all_infos_lock = threading.Lock()
         self.prim_thread = threading.Thread(target=self.do_action)
         self.prim_execution = True
         self.prim_thread.start()
 
+
+
     def do_action(self):
         while self.prim_execution:
             if self.all_infos_lock.acquire():
-                self.aim_target_prim.action(copy.deepcopy(self.all_infos))
+                infos = copy.deepcopy(self.all_infos)
                 self.all_infos.clear()
                 self.all_infos_lock.release()
+                self.aim_target_prim.action(infos)
+                print("action finished")
             rospy.sleep(0.5)
 
     def cam_info_cb(self, msg):
@@ -92,7 +103,7 @@ class NSPlanner:
             img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
             depth_img = self.bridge.imgmsg_to_cv2(depth_msg, '16UC1')
             ts = rospy.Time.now()
-            rospy.loginfo('receiving image')
+            #rospy.loginfo('receiving image')
             if self.all_infos_lock.acquire():
                 self.all_infos = {'rgb_img': img, 'depth_img': depth_img,
                                   'camera_model': self.camera_model, 'timestamp': ts}
@@ -111,7 +122,7 @@ if __name__ == '__main__':
     # testmotion.load_battery()
     # testmotion.robot_position(0, 0, 1.5)
     try:
-        rospy.init_node('depth_from_object')
+        rospy.init_node('nsplanner-moveit', anonymous=True)
 
         planner = NSPlanner('camera', '/camera/color/image_raw', '/camera/depth/image_raw', '/camera/color/camera_info')
 

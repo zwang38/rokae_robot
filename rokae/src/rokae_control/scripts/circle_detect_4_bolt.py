@@ -8,7 +8,8 @@ from torch.autograd import Variable
 from net_canny import Net
 import tf
 
-class CycleDetection4Bolt:
+
+class CircleDetection4Bolt:
     def __init__(self, use_cuda_=False):
         self.use_cuda = use_cuda_
         self.tf_listener = tf.TransformListener()
@@ -32,19 +33,21 @@ class CycleDetection4Bolt:
         img = early_threshold.data.cpu().numpy()[0, 0]
         return img
 
-
     def detect(self, img, depth_img):
+        print("resize")
         img = cv2.resize(img, (img.shape[1] * self.scale, img.shape[0] * self.scale))
+        img = img / 255.0
+        img = img[0:480 * self.scale, 0:640 * self.scale]
 
+        print("canny")
         img = self.canny(img)
-        # cv2.imshow("hex", img)
 
+        print("HoughCircles")
         img = np.uint8(img * 255)
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 20,
                                    param1=50, param2=30, minRadius=0, maxRadius=50)
         # img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
-
-
+        ret_dict = {}
         if not circles is None:
             # circles = np.uint16(np.around(circles))
             # for i in circles[0, :]:
@@ -55,10 +58,12 @@ class CycleDetection4Bolt:
             #     cv2.imshow("circle", img)
             #     cv2.waitKey()
             print(len(circles[0, :]))
+            for circle in circles[0, :]:
+                for idx in range(3):
+                    circle[idx] = circle[idx] / self.scale
+                print("(%f, %f),r: %f" % (circle[0], circle[1], circle[2]))
+            if len(circles) > 0:
+                ret_dict['circles'] = circles[0, :]
         else:
             print("none circle detected")
-
-        return circles
-
-
-
+        return ret_dict
