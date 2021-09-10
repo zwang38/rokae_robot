@@ -10,6 +10,7 @@
   <xacro:include filename="$(find realsense2_description)/urdf/test_d435_camera.urdf.xacro"   />
   <xacro:include filename="$(find realsense2_description)/urdf/gloal_d435_camera.urdf.xacro"   />
   <xacro:include filename="$(find battery_pack_describe)/urdf/weilan.urdf" />
+  <!-- <xacro:include filename="$(find battery_pack_describe)/urdf/v_battery.xacro"   /> -->
 
 
   <joint name="weilan_joint" type="fixed">
@@ -25,9 +26,9 @@
   </joint>
 
   <!-- <joint name="battery_pack_joint" type="fixed">
-    <origin xyz="0 0 0.12" rpy="0 0 3.14" />
+    <origin xyz="0 0 0.1000002" rpy="0 0 3.14" />
     <parent link="table"/>
-    <child link="battery_pack_link"/>
+    <child link="v_battery_base_link"/>
   </joint> -->
 
   <joint name="taotong_tool_joint" type="fixed">
@@ -48,6 +49,9 @@
     <parent link="table"/>
     <child link="gloal_world_base"/>
   </joint>
+
+
+
 
 
 </robot>

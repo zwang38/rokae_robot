@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys, random, copy
 import rospy, tf, rospkg
 from gazebo_msgs.srv import SpawnModel, DeleteModel
@@ -90,7 +93,7 @@ def robot_move(group, x, y, z, R, P, Y):
 
 
 if __name__ == "__main__":
-#    product_spawn()
+    # product_spawn()
 
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)

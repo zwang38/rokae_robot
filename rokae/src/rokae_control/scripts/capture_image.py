@@ -28,13 +28,12 @@ import os
 
 
 
-
-
+global capture_number
 
 
 def load_obstacle():
 
-    print('加载障碍物,please input load；若是不加载请直接回车')
+    print('加载障碍物,please input add')
     input_delete=raw_input()
 
     if input_delete=='add':
@@ -42,6 +41,7 @@ def load_obstacle():
 
 
 class Camera():
+
     def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic):
 
         self.camera_name = camera_name
@@ -143,6 +143,42 @@ def print_pose(pose):
         pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w, \
         rpy[0], rpy[1], rpy[2]))
 
+
+
+def set_align_vertical_capture(ee_pose):
+    # 相机旋转
+    delta_rpy_random=random.randint(-314,314)
+    delta_rpy_random=float(delta_rpy_random)/float(100.0)
+
+    q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
+    rpy = tf.transformations.euler_from_quaternion(q)
+
+    # Z轴移动范围
+    z_hight=random.randint(118,150)
+    z_random_hight=float(z_hight)/float(100.0)
+
+    ee_pose.position.x =-0.0595
+    ee_pose.position.y =0.0419
+
+    print ' range z  '
+    ee_pose.position.z = z_random_hight
+
+    #rpy:变换
+    q = tf.transformations.quaternion_from_euler(-math.pi, rpy[1], rpy[2]+delta_rpy_random)
+    ee_pose.orientation.x = q[0]
+    ee_pose.orientation.y = q[1]
+    ee_pose.orientation.z = q[2]
+    ee_pose.orientation.w = q[3]
+    # set_arm_pose(group, ee_pose, effector)
+    if  set_arm_pose(group, ee_pose, effector):
+        camera.set_capture()
+    else :
+        ee_pose = group.get_current_pose(effector).pose
+    print_pose(ee_pose)
+
+
+
+
 def set_move_vertical_capture(ee_pose):
     delta_rpy_random=random.randint(-314,314)
     delta_rpy_random=float(delta_rpy_random)/float(100.0)
@@ -177,7 +213,7 @@ def set_move_vertical_capture(ee_pose):
     ee_pose.position.z=z_random_hight
 
     #rpy:变换
-    q = tf.transformations.quaternion_from_euler(rpy[0], rpy[1], rpy[2]+delta_rpy_random)
+    q = tf.transformations.quaternion_from_euler(-math.pi, rpy[1], rpy[2]+delta_rpy_random)
     ee_pose.orientation.x = q[0]
     ee_pose.orientation.y = q[1]
     ee_pose.orientation.z = q[2]
@@ -187,10 +223,40 @@ def set_move_vertical_capture(ee_pose):
 
     if  set_arm_pose(group, ee_pose, effector):
         camera.set_capture()
+        # 本想定义个采集次数，全局变量不给编译
+        # capture_number= capture_number+1
+        # if capture_number is 1000:
+        #     print('采集了1000次{0}'.format(capture_number))
     else :
         ee_pose = group.get_current_pose(effector).pose
 
     print_pose(ee_pose)
+
+def set_align_tilt_capture(ee_pose):
+    print( 'location 45度到倾斜角，采集图像')
+    tf_angle=-math.pi+math.pi/4
+
+    z_hight=random.randint(0,5)
+    z_random_hight=float(z_hight)/float(100.0)
+    y_delta_random=z_random_hight
+
+    q = tf.transformations.quaternion_from_euler(tf_angle,0,0)
+    ee_pose.position.x=-0.060
+    ee_pose.position.y=-0.233-y_delta_random
+    ee_pose.position.z=1.131+z_hight
+
+    ee_pose.orientation.x = q[0]
+    ee_pose.orientation.y = q[1]
+    ee_pose.orientation.z = q[2]
+    ee_pose.orientation.w = q[3]
+
+    if  set_arm_pose(group, ee_pose, effector):
+        camera.set_capture()
+    else :
+        ee_pose = group.get_current_pose(effector).pose
+
+    print_pose(ee_pose)
+
 
 
 def set_move_tilt_capture(ee_pose):
@@ -244,6 +310,7 @@ def set_move_tilt_capture(ee_pose):
     print_pose(ee_pose)
 
 if __name__=="__main__":
+
     effector = sys.argv[1] if len(sys.argv) > 1 else 'rokae_link7'
 
     settings = termios.tcgetattr(sys.stdin)
@@ -259,21 +326,39 @@ if __name__=="__main__":
     print_pose(ee_pose)
     camera = Camera('camera', '/camera/color/image_raw', '/camera/depth/image_raw',
                     '/camera/color/camera_info')
+    # testmotion.robot_position(-0.0595,0.0419,1.18)   #移动到电池包
 
-    testmotion.robot_position(0,0,1.5)   #移动到电池包
+    # set_align_tilt_capture(ee_pose)
+
+
+    testmotion.robot_position(-0.0585,0.0408,1.30)   #移动到电池包
 
     rospy.sleep(2)
 
     #加载障碍物
-    # load_obstacle()
-
-    print('请输入：竖直采集为0,倾斜采集为1')
+    print('请输入：add,加载障碍物,不加载直接回车')
     input=raw_input()
-    if input=='0':
-        while(1):
+    if input=='add':
+        load_obstacle()
+
+
+    print('请输入：va,进行垂直方向进行对齐，不在垂直方向采集，请输入vn')
+    input=raw_input()
+    if input=='va':
+        for i in  range(100):  #采样100次
+            set_align_vertical_capture(ee_pose)
+    elif input=='vn':
+        for i in  range(300):  #采样300次
             set_move_vertical_capture(ee_pose)
-    else :
-        while(1):
+
+
+    print('请输入：ta,进行垂直方向进行对齐.倾斜采集，请输入tn')
+    input=raw_input()
+    if input=='ta':
+        for i in  range(100):
+            set_align_tilt_capture(ee_pose)
+    elif input=='tn':
+        for i in  range(300):  #采样300次
             set_move_tilt_capture(ee_pose)
 
 

@@ -2,8 +2,7 @@
 <!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
      Commit Version: 1.5.1-0-g916b5db  Build Version: 1.5.7152.31018
      For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
-<robot
-  name="v_battery">
+<robot  name="v_battery">
   <link    name="v_battery_base_link"  xmlns:xacro="http://www.ros.org/wiki/xacro">
     <inertial>
       <origin
@@ -45,17 +44,40 @@
     </collision>
   </link>
 
-
   <gazebo reference="v_battery_base_link">
-      <maxVel>0.01</maxVel>
-      <kd>1</kd>
-      <maxContacts>20</maxContacts>
-      <mu2>500000</mu2>
-      <selfCollide>0</selfCollide>
-      <mu1>500000</mu1>
-      <minDepth>0</minDepth>
-      <kp>1000000000000.0</kp>
-  </gazebo> 
+    <!-- <material>Gazebo/GreyTransparent</material> -->
+    <kp>1000000.0</kp>
+    <kd>100.0</kd>
+    <mu1>50000000000000000000.0</mu1>
+    <mu2>50000000000000000000.0</mu2>
+    <maxVel>0</maxVel>
+    <minDepth>0.001</minDepth>
+  </gazebo>
+
+  <!-- <gazebo reference="v_battery_base_link">
+      <maxVel>100</maxVel>
+      <kd>200</kd>
+      <maxContacts>200</maxContacts>
+      <mu2>50000000000000000000</mu2>
+      <selfCollide>10</selfCollide>
+      <mu1>50000000000000000000</mu1>
+      <minDepth>10</minDepth>
+      <kp>1000000000000.0</kp> -->
+
+
+      <!-- <gravity>bool</gravity> -->
+
+      <!-- <gravity>bool</gravity> -->
+      <!-- <maxVel>100</maxVel>
+      <kd>10</kd>
+      <maxContacts>200</maxContacts>
+      <mu2>10</mu2>
+      <selfCollide>10</selfCollide>
+      <mu1>10</mu1>
+      <minDepth>10</minDepth>
+      <kp>1</kp> -->
+
+  <!-- </gazebo>  -->
 
 
   <link    name="v_battery_bolt_Link">
@@ -105,13 +127,13 @@ https://whtqh.gitbooks.io/gazebo_simu_chs/content/using_a_urdf_model.html  æ‘©æ“
       <maxVel>0.01</maxVel>
       <kd>1</kd>
       <maxContacts>20</maxContacts>
-      <mu2>50000</mu2>
+      <mu2>5000000000000000</mu2>
       <selfCollide>0</selfCollide>
-      <mu1>50000</mu1>
+      <mu1>5000000000000000</mu1>
       <minDepth>0</minDepth>
       <kp>1000000000000.0</kp>
     <material>Gazebo/Grey </material>
-</gazebo>
+  </gazebo>
 
 
 
@@ -171,7 +193,7 @@ https://whtqh.gitbooks.io/gazebo_simu_chs/content/using_a_urdf_model.html  æ‘©æ“
     </collision>
   </link>
 
-  <gazebo reference="v_battery_nut_Link">
+  <!-- <gazebo reference="v_battery_nut_Link">
     <mu1>0.1</mu1>
     <mu2>0.1</mu2>
     <kp>1</kp>
@@ -180,7 +202,7 @@ https://whtqh.gitbooks.io/gazebo_simu_chs/content/using_a_urdf_model.html  æ‘©æ“
     <maxVel>0.1</maxVel>
     <fdir1>1 0 0</fdir1>
     <material>Gazebo/FlatBlack</material>
-  </gazebo>
+  </gazebo> -->
 
 
   <joint
