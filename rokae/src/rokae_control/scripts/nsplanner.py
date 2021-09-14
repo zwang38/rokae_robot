@@ -24,10 +24,15 @@ import templateMatching
 import copy
 import moveit_commander
 
+from geometry_msgs.msg import TransformStamped
 
 # from PIL import Image,ImageDraw
 # import numpy as np
 from prim_aim_target import PrimAimTarget
+from prim_clear_obstacle import PrimClearObstacle
+from prim_insert import PrimInsert
+import tf2_ros
+
 
 class NSPlanner:
     def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic):
@@ -36,6 +41,7 @@ class NSPlanner:
         self.rgb_topic = rgb_topic
         self.depth_topic = depth_topic
         self.camera_info_topic = camera_info_topic
+        self.bolt_trans_topic = '/NSPlanner/bolt_trans'
 
         self.pose = None
 
@@ -44,7 +50,7 @@ class NSPlanner:
         # cv2.namedWindow("Image window", cv2.WINDOW_NORMAL)
         # cv2.setMouseCallback("Image window", self.mouse_callback)
 
-        self.br = tf.TransformBroadcaster()
+        self.br = tf2_ros.TransformBroadcaster()
 
         # Have we recieved camera_info and image yet?
         self.ready_ = False
@@ -66,12 +72,17 @@ class NSPlanner:
 
         self.tss.registerCallback(self.callback)
 
+
         moveit_commander.roscpp_initialize(sys.argv)
         self.group = moveit_commander.MoveGroupCommander("arm")
         self.group.set_planner_id("RRTConnectkConfigDefault")
 
 
         self.aim_target_prim = PrimAimTarget(self.group)
+        self.clear_obstacle_prim = PrimClearObstacle(self.group)
+        self.insert_prim = PrimInsert(self.group)
+        self.prims = {'aim': self.aim_target_prim, 'clear': self.clear_obstacle_prim, 'insert': self.insert_prim}
+        self.action = 'aim'
         self.all_infos = {}
         self.all_infos_lock = threading.Lock()
         self.prim_thread = threading.Thread(target=self.do_action)
@@ -79,16 +90,25 @@ class NSPlanner:
         self.prim_thread.start()
 
 
+    def plan(self):
+        if self.action == 'aim':
+            self.action = 'clear'
+        elif self.action == 'clear':
+            self.action = 'insert'
+        elif self.action == 'insert':
+            self.action = 'aim'
 
     def do_action(self):
+        ret_dict = {}
         while self.prim_execution:
             if self.all_infos_lock.acquire():
                 infos = copy.deepcopy(self.all_infos)
                 self.all_infos.clear()
                 self.all_infos_lock.release()
-                self.aim_target_prim.action(infos)
-                print("action finished")
-            rospy.sleep(0.5)
+                prim = self.prims[self.action]
+                ret_dict = prim.action(infos, ret_dict)
+                self.plan()
+            rospy.sleep(1)
 
     def cam_info_cb(self, msg):
         self.camera_model.fromCameraInfo(msg)
