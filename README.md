@@ -29,3 +29,6 @@ https://python.hotexamples.com/zh/examples/moveit_commander/PlanningSceneInterfa
 
 RGBD图像转tf, 暂时需要在图像上点击一下，暂时图像检测位置点接口没有添加。src/rokae_control/scripts/bolt_position_detector.py 是螺栓的检测。src/rokae_control/scripts/battery_position.py是电池包位置的检测，里面的面积cv2.contourArea(contour) 即可改变检测范围
 rgbd_imgpoint_to_tf.py
+
+
+deep-learning-for-image-processing中的vgg 是图像处理 和pytorch vgg     是图像处理 是同一个东西。 教程来源https://blog.csdn.net/Action_now_zj/article/details/109250528  数据集也在这里。
