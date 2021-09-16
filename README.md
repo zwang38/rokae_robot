@@ -31,4 +31,4 @@ RGBD图像转tf, 暂时需要在图像上点击一下，暂时图像检测位置
 rgbd_imgpoint_to_tf.py
 
 
-deep-learning-for-image-processing中的vgg 是图像处理 和pytorch vgg     是图像处理 是同一个东西。 教程来源https://blog.csdn.net/Action_now_zj/article/details/109250528  数据集也在这里。
+deep-learning-for-image-processing中的vgg 是图像处理 和pytorch vgg     是图像处理 是同一个东西。 教程来源https://blog.csdn.net/Action_now_zj/article/details/109250528  数据集也在这里。　脚本解释　https://zhuanlan.zhihu.com/p/279823946　　　我判断不准确是因为－过拟合　
