@@ -35,7 +35,7 @@ def main():
     class_indict = json.load(json_file)
     
     # create model
-    model = vgg(model_name="vgg16", num_classes=5).to(device)
+    model = vgg(model_name="vgg16", num_classes=len(class_indict)).to(device)
     # load model weights
     weights_path = "./vgg16Net.pth"
     assert os.path.exists(weights_path), "file: '{}' dose not exist.".format(weights_path)
