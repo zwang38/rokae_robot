@@ -7,7 +7,9 @@ def mkfile(file):
 
 
 def moveFile(fileDir):
-    pathDir = os.listdir(fileDir)    #取图片的原始路径
+    pathDir = [cla for cla in os.listdir(fileDir) if "rgb_img"  in cla]   #取图片的原始路径
+
+    # pathDir = os.listdir(fileDir)    #取图片的原始路径
     filenumber=len(pathDir)
     rate=0.8    #自定义抽取图片的比例，比方说100张抽10张，那就是0.1
     picknumber=int(filenumber*rate) #按照rate比例从文件夹中取一定数量图片
