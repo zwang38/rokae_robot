@@ -185,6 +185,10 @@ def set_move_vertical_capture(ee_pose):
     q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
     rpy = tf.transformations.euler_from_quaternion(q)
 
+    x_center_bolt_pos=-0.0585
+    y_center_bolt_pos=0.0408
+
+
     x_delta=random.randint(-25,25)
     x_delta_random=float(x_delta)/float(1000.0)
 
@@ -202,11 +206,11 @@ def set_move_vertical_capture(ee_pose):
     # xyz:变换
     # ee_pose.position.x += x_delta_random
     # if  ee_pose.position.x < -0.25  or  ee_pose.position.x >0.25 :
-    ee_pose.position.x =x_delta_random
+    ee_pose.position.x =x_delta_random +x_center_bolt_pos
 
     # ee_pose.position.y += y_delta_random
     # if  ee_pose.position.y < -0.35  or  ee_pose.position.y >0.35 :
-    ee_pose.position.y =y_delta_random
+    ee_pose.position.y =y_delta_random+y_center_bolt_pos
 
     # ee_pose.position.z += z_random_hight
     # if  ee_pose.position.z< 1.18  or  ee_pose.position.z>1.50:
@@ -348,7 +352,7 @@ if __name__=="__main__":
         for i in  range(100):  #采样100次
             set_align_vertical_capture(ee_pose)
     elif input=='vn':
-        for i in  range(300):  #采样300次
+        for i in  range(2000):  #采样300次
             set_move_vertical_capture(ee_pose)
 
 
