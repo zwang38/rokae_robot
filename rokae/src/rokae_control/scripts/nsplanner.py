@@ -24,14 +24,15 @@ import templateMatching
 import copy
 import moveit_commander
 
-from geometry_msgs.msg import TransformStamped
 
 # from PIL import Image,ImageDraw
 # import numpy as np
 from prim_aim_target import PrimAimTarget
 from prim_clear_obstacle import PrimClearObstacle
 from prim_insert import PrimInsert
+from prim_move import PrimMove
 import tf2_ros
+import geometry_msgs.msg
 
 
 class NSPlanner:
@@ -81,9 +82,14 @@ class NSPlanner:
         self.aim_target_prim = PrimAimTarget(self.group)
         self.clear_obstacle_prim = PrimClearObstacle(self.group)
         self.insert_prim = PrimInsert(self.group)
-        self.prims = {'aim': self.aim_target_prim, 'clear': self.clear_obstacle_prim, 'insert': self.insert_prim}
-        self.action = 'aim'
+        self.move_prim = PrimMove(self.group)
+        self.prims = {'aim': self.aim_target_prim,
+                      'clear': self.clear_obstacle_prim,
+                      'insert': self.insert_prim,
+                      'move': self.move_prim}
+        self.action = 'end'
         self.all_infos = {}
+        self.ret_dict = {}
         self.all_infos_lock = threading.Lock()
         self.prim_thread = threading.Thread(target=self.do_action)
         self.prim_execution = True
@@ -91,23 +97,44 @@ class NSPlanner:
 
 
     def plan(self):
-        if self.action == 'aim':
-            self.action = 'clear'
-        elif self.action == 'clear':
-            self.action = 'insert'
-        elif self.action == 'insert':
-            self.action = 'aim'
+        prev_action = self.action
+        print(self.ret_dict)
+        if self.ret_dict['success'] is True:
+            if self.action == 'start':
+                self.action = 'move'
+            elif self.action == 'move':
+                self.action = 'aim'
+            elif self.action == 'aim':
+                self.action = 'clear'
+            elif self.action == 'clear':
+                self.action = 'insert'
+            elif self.action == 'insert':
+                self.action = 'end'
+        print("%s --> %s"%(prev_action,self.action))
+
+    def start(self,  pose):
+        if self.action != 'end':
+            print("Please start after previous task was done!")
+            return False
+        else:
+            self.ret_dict['coarse_pose'] = pose
+            self.ret_dict['success'] = True
+            self.action = 'start'
+            return True
 
     def do_action(self):
-        ret_dict = {}
         while self.prim_execution:
+            self.plan()
+            if self.action == 'end':
+                rospy.sleep(1)
+                continue
             if self.all_infos_lock.acquire():
                 infos = copy.deepcopy(self.all_infos)
                 self.all_infos.clear()
                 self.all_infos_lock.release()
-                prim = self.prims[self.action]
-                ret_dict = prim.action(infos, ret_dict)
-                self.plan()
+                if self.action in self.prims.keys():
+                    prim = self.prims[self.action]
+                    self.ret_dict = prim.action(infos, self.ret_dict)
             rospy.sleep(1)
 
     def cam_info_cb(self, msg):
@@ -145,6 +172,17 @@ if __name__ == '__main__':
         rospy.init_node('nsplanner-moveit', anonymous=True)
 
         planner = NSPlanner('camera', '/camera/color/image_raw', '/camera/depth/image_raw', '/camera/color/camera_info')
+
+        quat = tf.transformations.quaternion_from_euler(-3.14, 0, 0)
+        pose_target = geometry_msgs.msg.Pose()
+        pose_target.position.x = 0
+        pose_target.position.y = 0
+        pose_target.position.z = 1.3
+        pose_target.orientation.x = quat[0]
+        pose_target.orientation.y = quat[1]
+        pose_target.orientation.z = quat[2]
+        pose_target.orientation.w = quat[3]
+        planner.start(pose_target)
 
         while not rospy.is_shutdown():
             rospy.spin()

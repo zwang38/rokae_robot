@@ -33,7 +33,7 @@ from circle_detect_4_bolt import CircleDetection4Bolt
 from rigid_transform_3D import rigid_transform_3D
 
 
-class PrimBase:
+class PrimBase(object):
     def __init__(self, group_):
         self.tf_listener = tf.TransformListener()
         self.action_params = ['rgb_img', 'depth_img', 'camera_model', 'timestamp']
@@ -80,17 +80,18 @@ class PrimBase:
             return False
 
     def print_pose(self, pose, pose_info='rokae_link7'):
-        try:
-            q = (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
-            rpy = tf.transformations.euler_from_quaternion(q)
-            print '%s: position (%.2f %.2f %.2f) orientation (%.2f %.2f %.2f %.2f) RPY (%.2f %.2f %.2f)' % \
-            (pose_info, pose.position.x, pose.position.y, pose.position.z,
-             pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w,
-             rpy[0], rpy[1], rpy[2])
-            print('end print_pose')
-        except:
-            traceback.print_exc()
-            print('execption happen in print pose')
+        # try:
+        #     q = (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
+        #     rpy = tf.transformations.euler_from_quaternion(q)
+        #     print '%s: position (%.2f %.2f %.2f) orientation (%.2f %.2f %.2f %.2f) RPY (%.2f %.2f %.2f)' % \
+        #     (pose_info, pose.position.x, pose.position.y, pose.position.z,
+        #      pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w,
+        #      rpy[0], rpy[1], rpy[2])
+        #     print('end print_pose')
+        # except:
+        #     traceback.print_exc()
+        #     print('execption happen in print pose')
+        pass
 
     def calc_transform(self, x, y, d, all_info):
         cam_model = all_info['camera_model']
@@ -200,4 +201,4 @@ class PrimBase:
 
 
     def action(self, all_info, pre_result_dict):
-        pass
+        raise NotImplementedError
