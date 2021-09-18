@@ -13,3 +13,5 @@ src/CMakeLists.txt
 *.jpg
 src/test/tensorflow_vgg_classify/rokae_image/
 tmp/
+align_images/
+v_false_align/
