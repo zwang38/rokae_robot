@@ -145,7 +145,8 @@ def print_pose(pose):
 
 
 
-def set_align_vertical_capture(ee_pose):
+def set_align_vertical_capture(ee_pose ,   x_bolt, y_bolt, z_bolt)   :
+    x_battery  ,  y_battery= get_gazebo_model_pose()
     # 相机旋转
     delta_rpy_random=random.randint(-314,314)
     delta_rpy_random=float(delta_rpy_random)/float(100.0)
@@ -157,11 +158,12 @@ def set_align_vertical_capture(ee_pose):
     z_hight=random.randint(118,150)
     z_random_hight=float(z_hight)/float(100.0)
 
-    ee_pose.position.x =-0.0595
-    ee_pose.position.y =0.0419
+    ee_pose.position.x =x_battery +x_bolt
+    ee_pose.position.y =y_battery +y_bolt
 
     print ' range z  '
     ee_pose.position.z = z_random_hight
+    # ee_pose.position.z = 1.18
 
     #rpy:变换
     q = tf.transformations.quaternion_from_euler(-math.pi, rpy[1], rpy[2]+delta_rpy_random)
@@ -313,7 +315,31 @@ def set_move_tilt_capture(ee_pose):
 
     print_pose(ee_pose)
 
+
+
+def get_gazebo_model_pose():
+    parts_pose=[]
+    model_pose = rospy.wait_for_message("gazebo/model_states",ModelStates)
+    # for count in range(len(model_pose.name)-1):
+    current_product=len(model_pose.name)-1
+    name = model_pose.name[current_product]
+    x = model_pose.pose[current_product].position.x
+    y = model_pose.pose[current_product].position.y
+
+    # ee_pose = model_pose.pose[current_product].pose
+
+
+    # parts_pose.append([name, x, y])
+    
+    return   x ,  y
+
+
+
 if __name__=="__main__":
+
+    x_bolt=-0.057323   # 数值大，向下
+    y_bolt=0.03838  # 数值大，向左
+    z_bolt=1.1815
 
     effector = sys.argv[1] if len(sys.argv) > 1 else 'rokae_link7'
 
@@ -334,8 +360,17 @@ if __name__=="__main__":
 
     # set_align_tilt_capture(ee_pose)
 
+    # x_bolt=-0.057323   # 数值大，向下
+    # y_bolt=0.03838  # 数值大，向左
+    # z_bolt=1.1815
 
-    testmotion.robot_position(-0.0585,0.0408,1.30)   #移动到电池包
+    # x_bolt=-0.058   # 数值大，向下
+    # y_bolt=0.0417 # 数值大，向左
+    # z_bolt=1.1815
+
+
+    x_battery  ,  y_battery= get_gazebo_model_pose()
+    testmotion.robot_position(x_battery + x_bolt , y_battery + y_bolt,z_bolt)   #移动到电池包
 
     rospy.sleep(2)
 
@@ -350,9 +385,14 @@ if __name__=="__main__":
     input=raw_input()
     if input=='va':
         for i in  range(100):  #采样100次
-            set_align_vertical_capture(ee_pose)
+            print('current {0}'.format(i))
+            set_align_vertical_capture(ee_pose,  x_bolt, y_bolt, z_bolt)
+            # if i%100==0:
+            #     testmotion.robot_position(x_bolt,y_bolt,z_bolt)   #移动到电池包
+
     elif input=='vn':
         for i in  range(2000):  #采样300次
+            print('current {0}'.format(i))
             set_move_vertical_capture(ee_pose)
 
 
@@ -360,6 +400,7 @@ if __name__=="__main__":
     input=raw_input()
     if input=='ta':
         for i in  range(100):
+            print('current {0}'.format(i))
             set_align_tilt_capture(ee_pose)
     elif input=='tn':
         for i in  range(300):  #采样300次

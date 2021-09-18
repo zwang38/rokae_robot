@@ -318,7 +318,7 @@ def robot_move_rectangle(x_temp, y_temp,z_temp):
 
 def load_battery_collision(battery_pack_describe_name):
 
-
+    # uodo   动态加载 碰撞盒位置
     scene = moveit_commander.PlanningSceneInterface()
     rospy.sleep(2)
     box_pose = geometry_msgs.msg.PoseStamped()
@@ -350,6 +350,7 @@ if __name__ == "__main__":
 
     # 加载电池
     battery_pack_describe_name=load_battery()
+    # get_gazebo_model_pose()
     # print('add product,please input add')
     
     # input_delete=raw_input()
