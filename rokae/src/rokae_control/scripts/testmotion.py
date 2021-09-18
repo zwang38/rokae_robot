@@ -316,6 +316,23 @@ def robot_move_rectangle(x_temp, y_temp,z_temp):
 
 
 
+def load_battery_collision(battery_pack_describe_name):
+
+
+    scene = moveit_commander.PlanningSceneInterface()
+    rospy.sleep(2)
+    box_pose = geometry_msgs.msg.PoseStamped()
+    scene.remove_world_object("box1")
+    box_pose.header.frame_id = robot.get_planning_frame()
+    box_pose.pose.position.x = 0.05
+    box_pose.pose.position.y = 0.05
+    box_pose.pose.position.z = 0.85
+    box_pose.pose.orientation.w = 1.0
+    # box_pose.pose.position.z = 1 # slightly above the end effector
+    scene.add_box("box1", box_pose, size=(0.3, 0.4, 0.1))
+    
+
+
 if __name__ == "__main__":
 
     # First initialize `moveit_commander`_ and a `rospy`_ node:
@@ -344,7 +361,7 @@ if __name__ == "__main__":
     #加载障碍物
     # import concept_demo
     # concept_demo.product_spawn()
-
+    load_battery_collision(battery_pack_describe_name)
     group_name1 = "arm"
     group1 = moveit_commander.MoveGroupCommander(group_name1)
     group1.set_planner_id("RRTConnectkConfigDefault")
