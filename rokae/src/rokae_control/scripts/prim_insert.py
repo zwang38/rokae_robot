@@ -39,8 +39,8 @@ class PrimInsert(PrimBase):
                 if not self.set_arm_pose(self.group, tgt_pose_in_world_frame, self.effector):
                     break
             else:
-                return False
+                return {'success': False}
             #return original pose for testing.
             rospy.sleep(1)
         self.set_arm_pose(self.group, orgin_pose, self.effector)
-        return True
+        return {'success': True}
