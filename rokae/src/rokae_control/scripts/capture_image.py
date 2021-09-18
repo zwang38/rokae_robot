@@ -181,15 +181,18 @@ def set_align_vertical_capture(ee_pose ,   x_bolt, y_bolt, z_bolt)   :
 
 
 
-def set_move_vertical_capture(ee_pose):
+def set_move_vertical_capture(ee_pose ,   x_bolt, y_bolt, z_bolt)   :
+    x_battery  ,  y_battery= get_gazebo_model_pose()
+
     delta_rpy_random=random.randint(-314,314)
     delta_rpy_random=float(delta_rpy_random)/float(100.0)
     q = (ee_pose.orientation.x, ee_pose.orientation.y, ee_pose.orientation.z, ee_pose.orientation.w)
     rpy = tf.transformations.euler_from_quaternion(q)
 
-    x_center_bolt_pos=-0.0585
-    y_center_bolt_pos=0.0408
-
+    x_center_bolt_pos=x_battery+x_bolt
+    y_center_bolt_pos=y_battery+y_bolt
+    # ee_pose.position.x =x_battery +x_bolt
+    # ee_pose.position.y =y_battery +y_bolt
 
     x_delta=random.randint(-25,25)
     x_delta_random=float(x_delta)/float(1000.0)
@@ -381,7 +384,7 @@ if __name__=="__main__":
         load_obstacle()
 
 
-    print('请输入：va,进行垂直方向进行对齐，不在垂直方向采集，请输入vn')
+    print('请输入：va,进行垂直方向对齐采集；垂直方向非对齐采集，请输入vn')
     input=raw_input()
     if input=='va':
         for i in  range(100):  #采样100次
@@ -393,7 +396,8 @@ if __name__=="__main__":
     elif input=='vn':
         for i in  range(2000):  #采样300次
             print('current {0}'.format(i))
-            set_move_vertical_capture(ee_pose)
+            set_move_vertical_capture(ee_pose,  x_bolt, y_bolt, z_bolt)
+
 
 
     print('请输入：ta,进行垂直方向进行对齐.倾斜采集，请输入tn')
