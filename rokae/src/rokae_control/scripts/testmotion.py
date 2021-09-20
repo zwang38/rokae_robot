@@ -333,7 +333,27 @@ def load_battery_collision(battery_pack_describe_name):
     
 
 
+def get_gazebo_model_pose():
+    parts_pose=[]
+    model_pose = rospy.wait_for_message("gazebo/model_states",ModelStates)
+    # for count in range(len(model_pose.name)-1):
+    if len(model_pose.name)>2:
+        current_product=len(model_pose.name)-1
+        name = model_pose.name[current_product]
+        x = model_pose.pose[current_product].position.x
+        y = model_pose.pose[current_product].position.y
+
+        return   x ,  y
+    else :
+        return   0, 0
+
+
 if __name__ == "__main__":
+
+    x_bolt=-0.057323   # 数值大，向下
+    y_bolt=0.03838  # 数值大，向左
+    z_bolt=1.3
+
 
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
@@ -388,8 +408,11 @@ if __name__ == "__main__":
             print('parts_pose[model_num][0]',parts_pose[model_num][0])
             print('parts_pose[model_num][1]',parts_pose[model_num][1])
             
-            robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
-            rospy.sleep(5)
+            x_battery  ,  y_battery= get_gazebo_model_pose()
+            robot_position(x_battery + x_bolt , y_battery + y_bolt,z_bolt)   #移动到电池包
+
+            # robot_move_location(group1,parts_pose[model_num][0],parts_pose[model_num][1],1.5, -3.14, 0, 0)
+            rospy.sleep(2)
 
             robot_move_circle(parts_pose[model_num][0], parts_pose[model_num][1], 1.5)
 
