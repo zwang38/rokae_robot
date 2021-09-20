@@ -324,17 +324,20 @@ def get_gazebo_model_pose():
     parts_pose=[]
     model_pose = rospy.wait_for_message("gazebo/model_states",ModelStates)
     # for count in range(len(model_pose.name)-1):
-    current_product=len(model_pose.name)-1
-    name = model_pose.name[current_product]
-    x = model_pose.pose[current_product].position.x
-    y = model_pose.pose[current_product].position.y
+    if len(model_pose.name)>2:
+        current_product=len(model_pose.name)-1
+        name = model_pose.name[current_product]
+        x = model_pose.pose[current_product].position.x
+        y = model_pose.pose[current_product].position.y
 
     # ee_pose = model_pose.pose[current_product].pose
 
 
     # parts_pose.append([name, x, y])
     
-    return   x ,  y
+        return   x ,  y
+    else :
+        return   0, 0
 
 
 
@@ -387,7 +390,7 @@ if __name__=="__main__":
     print('请输入：va,进行垂直方向对齐采集；垂直方向非对齐采集，请输入vn')
     input=raw_input()
     if input=='va':
-        for i in  range(100):  #采样100次
+        for i in  range(2000):  #采样100次
             print('current {0}'.format(i))
             set_align_vertical_capture(ee_pose,  x_bolt, y_bolt, z_bolt)
             # if i%100==0:
