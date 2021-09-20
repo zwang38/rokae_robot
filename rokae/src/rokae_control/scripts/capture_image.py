@@ -28,16 +28,74 @@ import os
 
 
 
+
+def product_spawn(x_bolt_pos , y_bolt_pos):
+    # This function spawn three types parts(screw1, screw2, woodbolt) in gazebo
+
+    rospy.wait_for_service("gazebo/spawn_urdf_model")
+    spawn_model = rospy.ServiceProxy("gazebo/spawn_urdf_model", SpawnModel)
+    delete_model = rospy.ServiceProxy("gazebo/delete_model", DeleteModel)
+
+    rospack = rospkg.RosPack()
+    part_pkg = rospack.get_path('cai_env')
+
+    max_count = 3
+    max_num = 3
+
+    for count in range(max_count):
+        for num in range(0, max_num):
+            item_name = "product_{0}_{1}".format(count, num)
+            delete_model(item_name)
+    # if clear_only:
+    #     return
+    for count in range(max_count):  # three types products spawn in gazebo
+        if (count == 0):
+            with open(part_pkg + '/urdf/' + 'block.urdf', "r") as wood1:
+                product_xml = wood1.read()
+                wood1.close()
+
+        elif (count == 1):
+            with open(part_pkg + '/urdf/' + 'screw1.urdf', "r") as screw1:
+                product_xml = screw1.read()
+                screw1.close()
+        else:
+            with open(part_pkg + '/urdf/' + 'screw2.urdf', "r") as screw2:
+                product_xml = screw2.read()
+                screw2.close()
+
+        for num in range(0, max_num):
+            print(num)
+            x_rand = random.randrange(-20, 20) * 0.01
+            y_rand = random.randrange(-20, 20) * 0.01
+            R_rand = random.randrange(-314, 314) * 0.01
+            P_rand = random.randrange(-314, 314) * 0.01
+            Y_rand = random.randrange(-314, 314) * 0.01
+            if (num == 0):
+                x_rand = x_bolt_pos
+                y_rand = y_bolt_pos
+                R_rand = 0
+                P_rand = 0
+                Y_rand = 0
+            quat = tf.transformations.quaternion_from_euler(1.57, P_rand, Y_rand)
+            orient = Quaternion(quat[0], quat[1], quat[2], quat[3])
+            item_name = "product_{0}_{1}".format(count, num)
+            print("Spawning model:%s, %f, %f, %f", item_name, x_rand, y_rand, 1.235)
+            item_pose = Pose(Point(x=x_rand, y=y_rand, z=1.235), orient)
+            spawn_model(item_name, product_xml, "", item_pose, "world")
+            rospy.sleep(2)
+
+
 global capture_number
 
 
-def load_obstacle():
+def load_obstacle(x_bolt_pos , y_bolt_pos):
 
     print('加载障碍物,please input add')
     input_delete=raw_input()
 
     if input_delete=='add':
-        concept_demo.product_spawn()
+        # concept_demo.product_spawn()
+        product_spawn(x_bolt_pos , y_bolt_pos)
 
 
 class Camera():
@@ -376,7 +434,7 @@ if __name__=="__main__":
 
 
     x_battery  ,  y_battery= get_gazebo_model_pose()
-    testmotion.robot_position(x_battery + x_bolt , y_battery + y_bolt,z_bolt)   #移动到电池包
+    testmotion.robot_position(x_battery + x_bolt , y_battery + y_bolt,1.5)   #移动到电池包
 
     rospy.sleep(2)
 
@@ -384,7 +442,7 @@ if __name__=="__main__":
     print('请输入：add,加载障碍物,不加载直接回车')
     input=raw_input()
     if input=='add':
-        load_obstacle()
+        load_obstacle(x_battery + x_bolt , y_battery + y_bolt)
 
 
     print('请输入：va,进行垂直方向对齐采集；垂直方向非对齐采集，请输入vn')
