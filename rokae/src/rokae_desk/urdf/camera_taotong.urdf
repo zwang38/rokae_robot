@@ -88,6 +88,7 @@
     
     <collision>
       <geometry>
+        <cylinder length="0.04" radius="0.02"/>
         <mesh          filename="package://rokae_desk/meshes/tool_Link.stl" />
       </geometry>
 	    <origin rpy="0 0 0" xyz="0 0 0"/>
