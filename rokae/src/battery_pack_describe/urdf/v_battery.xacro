@@ -5,11 +5,8 @@
 <robot  name="v_battery">
   <link    name="v_battery_base_link"  xmlns:xacro="http://www.ros.org/wiki/xacro">
     <inertial>
-      <origin
-        xyz="-0.17823 0.0014541 -0.18254"
-        rpy="0 0 0" />
-      <mass
-        value="2.1452" />
+      <origin   xyz="-0.17823 0.0014541 -0.18254"  rpy="0 0 0" />
+      <mass        value="2.1452" />
       <inertia
         ixx="0.04437"
         ixy="-0.00066651"
@@ -19,25 +16,18 @@
         izz="0.045613" />
     </inertial>
     <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+      <origin   xyz="0 0 0"   rpy="0 0 0" />
       <geometry>
         <mesh     filename="package://battery_pack_describe/meshes/v_battery_base_link.dae" />
-
-
       </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.79216 0.81961 0.93333 1" />
+      <material     name="">
+        <color    rgba="0.79216 0.81961 0.93333 1" />
       </material>
     </visual>
     <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+      <origin     xyz="0 0 0"    rpy="0 0 0" />
       <geometry>
+        <box size="0.5 0.5 0.05" />
         <mesh
           filename="package://battery_pack_describe/meshes/v_battery_base_link.dae" />
       </geometry>
@@ -82,11 +72,9 @@
 
   <link    name="v_battery_bolt_Link">
     <inertial>
-      <origin
-        xyz="-0.00224797355412683 -2.42669320749123E-09 1.13997717515746E-09"
+      <origin     xyz="-0.00224797355412683 -2.42669320749123E-09 1.13997717515746E-09"
         rpy="0 0 0" />
-      <mass
-        value="0.010043058879212" />
+      <mass  value="0.010043058879212" />
       <inertia
         ixx="8.16036465000949E-08"
         ixy="-2.67875420699996E-13"
@@ -96,25 +84,19 @@
         izz="1.22914675774153E-06" />
     </inertial>
     <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+      <origin   xyz="0 0 0"  rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link_metal.dae" />
+        <mesh   filename="package://battery_pack_describe/meshes/v_battery_bolt_Link_metal.dae" />
       </geometry>
       <material  name="">
-        <color
-          rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
+        <color  rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
       </material>
     </visual>
     <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+      <origin   xyz="0 0 0"   rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://battery_pack_describe/meshes/v_battery_bolt_Link_metal.dae" />
+        <cylinder length="0.1" radius="0.02"/>
+        <mesh   filename="package://battery_pack_describe/meshes/v_battery_bolt_Link_metal.dae" />
       </geometry>
     </collision>
   </link>
@@ -169,26 +151,19 @@ https://whtqh.gitbooks.io/gazebo_simu_chs/content/using_a_urdf_model.html  æ‘©æ“
         izz="4.46160415460721E-08" />
     </inertial>
     <visual>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+      <origin   xyz="0 0 0"  rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://battery_pack_describe/meshes/v_battery_nut_Link.dae" />
+        <mesh    filename="package://battery_pack_describe/meshes/v_battery_nut_Link.dae" />
       </geometry>
-      <material
-        name="">
-        <color
-          rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
+      <material     name="">
+        <color    rgba="0.776470588235294 0.756862745098039 0.737254901960784 1" />
       </material>
     </visual>
     <collision>
-      <origin
-        xyz="0 0 0"
-        rpy="0 0 0" />
+      <origin        xyz="0 0 0"        rpy="0 0 0" />
       <geometry>
-        <mesh
-          filename="package://battery_pack_describe/meshes/v_battery_nut_Link.dae" />
+        <cylinder length="0.04" radius="0.02"/>
+        <mesh   filename="package://battery_pack_describe/meshes/v_battery_nut_Link.dae" />
       </geometry>
     </collision>
   </link>
