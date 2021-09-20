@@ -27,7 +27,7 @@
     <collision>
       <origin     xyz="0 0 0"    rpy="0 0 0" />
       <geometry>
-        <box size="0.5 0.5 0.05" />
+        <!-- <box size="0.5 0.5 0.05" /> -->
         <mesh
           filename="package://battery_pack_describe/meshes/v_battery_base_link.dae" />
       </geometry>
@@ -95,7 +95,7 @@
     <collision>
       <origin   xyz="0 0 0"   rpy="0 0 0" />
       <geometry>
-        <cylinder length="0.1" radius="0.02"/>
+        <cylinder length="0.002" radius="0.002"/>
         <mesh   filename="package://battery_pack_describe/meshes/v_battery_bolt_Link_metal.dae" />
       </geometry>
     </collision>
@@ -162,7 +162,7 @@ https://whtqh.gitbooks.io/gazebo_simu_chs/content/using_a_urdf_model.html  æ‘©æ“
     <collision>
       <origin        xyz="0 0 0"        rpy="0 0 0" />
       <geometry>
-        <cylinder length="0.04" radius="0.02"/>
+        <!-- <cylinder length="0.001" radius="0.02"/> -->
         <mesh   filename="package://battery_pack_describe/meshes/v_battery_nut_Link.dae" />
       </geometry>
     </collision>
