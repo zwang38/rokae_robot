@@ -1,7 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+#-*- coding: utf-8 -*-
 
-import sys
+
+
 import random
 import copy
 import rospy
@@ -85,7 +86,7 @@ def writelogs(write_data):
     x = np.linspace(x_data[0], x_data[len(x_data)-1] * 100, 1000)
     y = stats.expon.pdf(x, loc=0, scale=1)
 
-    plt.plot(x, y, label='成功率')
+    plt.plot(x, y, label='Success rate')
     # plt.plot(x, c, label='cdf')
     plt.legend()
     plt.show()
@@ -339,7 +340,7 @@ def set_shift_vertical(ee_pose,   x_bolt, y_bolt, z_bolt):
 
     ee_pose.position.y = y_delta_random+y_center_bolt_pos
 
-    ee_pose.position.z = 1.1815
+    ee_pose.position.z = 1.2
 
     # rpy:变换
     q = tf.transformations.quaternion_from_euler(
