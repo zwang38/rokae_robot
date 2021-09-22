@@ -92,8 +92,34 @@ def writelogs(write_data):
     plt.show()
 
 
+def get_model_pose_name():
+    is_battery = False
+    parts_pose = []
+    model_pose = rospy.wait_for_message("gazebo/model_states", ModelStates)
+    # for count in range(len(model_pose.name)-1):
+    # current_product = 0
+    if len(model_pose.name) > 2:
+        for current_product in range(len(model_pose.name)):
+            if "battery" in model_pose.name[current_product]:
+                is_battery = True
+                # current_product = len(model_pose.name)-1
+                name = model_pose.name[current_product]
+                x = model_pose.pose[current_product].position.x
+                y = model_pose.pose[current_product].position.y
+                # current_product = current_product + 1
+                print ('current_battery_product {},{}'.format(x, y))
+                return x,  y, name, is_battery
+    else:
+        return 0, 0,  'world', is_battery
+
+
 def product_spawn(x_bolt_pos, y_bolt_pos):
+
     # This function spawn three types parts(screw1, screw2, woodbolt) in gazebo
+    x_battery_pos, y_battery_pos, name_product, is_battery = get_model_pose_name()
+
+    x_target = float(x_battery_pos) - x_bolt_pos
+    y_target = float(y_battery_pos) - y_bolt_pos
 
     rospy.wait_for_service("gazebo/spawn_urdf_model")
     spawn_model = rospy.ServiceProxy("gazebo/spawn_urdf_model", SpawnModel)
@@ -128,29 +154,41 @@ def product_spawn(x_bolt_pos, y_bolt_pos):
 
         for num in range(0, max_num):
             print(num)
-            x_rand = random.randrange(-20, 20) * 0.01
-            y_rand = random.randrange(-20, 20) * 0.01
-            R_rand = random.randrange(-314, 314) * 0.01
-            P_rand = random.randrange(-314, 314) * 0.01
-            Y_rand = random.randrange(-314, 314) * 0.01
             if (num == 0):
-                x_rand = x_bolt_pos
-                y_rand = y_bolt_pos
+                x_rand = 0
+                y_rand = 0
                 R_rand = 0
                 P_rand = 0
                 Y_rand = 0
+            else:
+                x_rand = random.randrange(-20, 20) * 0.001
+                y_rand = random.randrange(-20, 20) * 0.001
+                R_rand = random.randrange(-314, 314) * 0.01
+                P_rand = random.randrange(-314, 314) * 0.01
+                Y_rand = random.randrange(-314, 314) * 0.01
+
+            x_product_pos = x_target + x_rand
+            y_product_pos = y_target + y_rand
+            # testmotion.robot_position(x_product_pos, y_product_pos, 1.1815)
+
             quat = tf.transformations.quaternion_from_euler(
                 1.57, P_rand, Y_rand)
             orient = Quaternion(quat[0], quat[1], quat[2], quat[3])
             item_name = "product_{0}_{1}".format(count, num)
             print("Spawning model:%s, %f, %f, %f",
-                  item_name, x_rand, y_rand, 1.235)
-            item_pose = Pose(Point(x=x_rand, y=y_rand, z=1.235), orient)
-            spawn_model(item_name, product_xml, "", item_pose, "world")
+                  item_name, x_product_pos, y_product_pos, 1.235)
+            item_pose = Pose(
+                Point(x=x_product_pos, y=y_product_pos, z=1.235), orient)
+            if is_battery:
+                spawn_model(item_name, product_xml, "",
+                            item_pose, name_product)
+            else:
+                spawn_model(item_name, product_xml, "",
+                            item_pose, 'world')
             rospy.sleep(2)
 
 
-global capture_number
+# global capture_number
 
 
 def load_obstacle(x_bolt_pos, y_bolt_pos):
@@ -504,16 +542,16 @@ def get_gazebo_model_pose():
     model_pose = rospy.wait_for_message("gazebo/model_states", ModelStates)
     # for count in range(len(model_pose.name)-1):
     if len(model_pose.name) > 2:
-        current_product = len(model_pose.name)-1
-        name = model_pose.name[current_product]
-        x = model_pose.pose[current_product].position.x
-        y = model_pose.pose[current_product].position.y
-
-    # ee_pose = model_pose.pose[current_product].pose
-
-    # parts_pose.append([name, x, y])
-
-        return x,  y
+        # current_product = len(model_pose.name)-1
+        # name = model_pose.name[current_product]
+        # x = model_pose.pose[current_product].position.x
+        # y = model_pose.pose[current_product].position.y
+        for current_product in range(len(model_pose.name)):
+            if "battery" in model_pose.name[current_product]:
+                name = model_pose.name[current_product]
+                x = model_pose.pose[current_product].position.x
+                y = model_pose.pose[current_product].position.y
+                return x,  y
     else:
         return 0, 0
 
@@ -562,7 +600,7 @@ if __name__ == "__main__":
     # print('请输入：add,加载障碍物,不加载直接回车')
     # input=raw_input()
     # if input=='add':
-    load_obstacle(x_battery + x_bolt, y_battery + y_bolt)
+    load_obstacle(x_bolt,  y_bolt)
 
     print('对齐偏移shift,please input sh')
     input = raw_input()

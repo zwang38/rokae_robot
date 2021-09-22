@@ -15,3 +15,8 @@ src/test/tensorflow_vgg_classify/rokae_image/
 tmp/
 align_images/
 v_false_align/
+
+git
+libbz2-dev
+libncursesw5-dev
+*.txt
