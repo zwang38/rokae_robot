@@ -27,8 +27,8 @@ https://answers.ros.org/question/81716/robot-state-publisher-error/
 https://www.cxyzjd.com/article/qq_42521542/104434397
 
 
-
-
+virtualenv--创建虚拟环境
+https://www.cnblogs.com/zhaopanpan/p/9160760.html
 
 
 https://blog.csdn.net/Xueting_B/article/details/108053319
