@@ -75,7 +75,7 @@ def writelogs(write_data):
     file_name = 'random_deviation.txt'
 
     fo = open(file_name, 'w')
-    print "文件名为: ", fo.name
+    print( "文件名为: ", fo.name)
     for every in write_data:
         fo.write(every + "\n")
 
