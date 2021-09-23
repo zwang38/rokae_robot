@@ -1,8 +1,22 @@
   ubuntu 1804 安装基于Python3的ROS melodic
   https://zhuanlan.zhihu.com/p/77682229
 
+pytorch   1.4
+pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+https://pytorch.org/get-started/previous-versions/
 
-  
+
+
+
+
+How To Install "python-image-geometry" Package on Ubuntu
+sudo apt-get update -y
+  sudo apt-get install -y python-image-geometry
+https://zoomadmin.com/HowToInstall/UbuntuPackage/python-image-geometry
+
+
+
+
   
     controller_managerConfig.cmake      error
     controller_manager-config.cmake 
