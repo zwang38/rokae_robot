@@ -52,8 +52,6 @@ import threading
 from nsplanner import NSPlanner
 
 
-
-        
 def get_gazebo_model_pose():
     parts_pose = []
     model_pose = rospy.wait_for_message("gazebo/model_states", ModelStates)
@@ -75,7 +73,7 @@ def writelogs(write_data):
     file_name = 'random_deviation.txt'
 
     fo = open(file_name, 'w')
-    print( "文件名为: ", fo.name)
+    print("文件名为: ", fo.name)
     for every in write_data:
         fo.write(every + "\n")
 
@@ -108,15 +106,14 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
     print(pose_target)
     print(bolt_pose)
     print('====================================================')
-    return bolt_pose
+    return start_success
 
 
 if __name__ == "__main__":
     rospy.init_node('nsplanner-moveit', anonymous=True)
 
-
     planner = NSPlanner('camera', '/camera/color/image_raw',
-                                   '/camera/depth/image_raw', '/camera/color/camera_info')
+                        '/camera/depth/image_raw', '/camera/color/camera_info')
 
     x_bolt = -0.057323   # 数值大，向下
     y_bolt = 0.03838  # 数值大，向左
@@ -127,7 +124,7 @@ if __name__ == "__main__":
     datasets = []
     datasets.append('x,y,semidiameter,normal_success,nsplanner_success')
     # datasets = [0.01, 0.02, 0.03, 0.04, 0.05]
-    for step in range(1, 11):
+    for step in range(1, 7):
         is_probability = False
         is_success_nsplanner = False
         current_sigma = round(float(step)/100, 2)
@@ -143,13 +140,14 @@ if __name__ == "__main__":
             if abs(semidiameter[number]) <= deviation:
                 is_probability = True
 
+            print('current epoch is {} round {} sequence '.format(step, number+1))
+            is_success_nsplanner = move_robot_nsplanner(
+                planner, x_current, y_current)
 
-            is_success_nsplanner = move_robot_nsplanner(planner, x_current, y_current)
-            
-            datasets.append('{},{},{},{}'.format(x_current, y_current,
+            datasets.append('{},{},{},{},{}'.format(x_current, y_current,
                             semidiameter[number], is_probability, is_success_nsplanner))
 
-            is_probability = False
+            # is_probability = False
 
     writelogs(datasets)
     while not rospy.is_shutdown():
