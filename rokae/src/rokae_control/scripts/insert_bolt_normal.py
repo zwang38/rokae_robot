@@ -190,4 +190,10 @@ if __name__ == "__main__":
     plt.plot(x_datasets, nsplanner_count, linewidth=2.0, color='blue' ,linestyle='-')
     plt.show()
 
+    writelogs('data_number')
+
+    for i in range(0,len(x_datasets)):
+        string = ('{},{},{}'.format(x_datasets[i], normal_count[i], nsplanner_count[i]))
+        writelogs(string)
+
     # fo.close()
