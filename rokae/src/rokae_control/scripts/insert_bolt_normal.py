@@ -50,6 +50,7 @@ import geometry_msgs.msg
 from visualization_msgs.msg import Marker
 import threading
 from nsplanner import NSPlanner
+import matplotlib.pyplot as plt
 
 
 def get_gazebo_model_pose():
@@ -144,9 +145,9 @@ if __name__ == "__main__":
     # datasets = [0.01, 0.02, 0.03, 0.04, 0.05]
 
     x_datasets = []
-    normal_count=[]
-    nsplanner_count=[]
-    
+    normal_count = []
+    nsplanner_count = []
+
     for step in range(1, 7):
         is_probability = False
         is_success_nsplanner = False
@@ -154,8 +155,8 @@ if __name__ == "__main__":
         x_datasets.append(current_sigma)
         semidiameter = np.random.normal(loc=mu, scale=current_sigma, size=10)
         angle = np.random.randint(360, size=10)
-        normal_num=0
-        nsplanner_num=0
+        normal_num = 0
+        nsplanner_num = 0
         for number in range(len(semidiameter)):
             x_current = abs(semidiameter[number]) * \
                 math.cos(2 * math.pi * angle[number] / 360)
@@ -164,36 +165,45 @@ if __name__ == "__main__":
 
             if abs(semidiameter[number]) <= deviation:
                 is_probability = True
-                normal_num+=1
+                normal_num += 1
 
             print('current epoch is {} round {} sequence '.format(step, number+1))
             is_success_nsplanner = move_robot_nsplanner(
                 planner, x_current, y_current)
-            if  is_success_nsplanner :
-                nsplanner_num+=1
+            if is_success_nsplanner:
+                nsplanner_num += 1
             string = ('{},{},{},{},{}'.format(x_current, y_current,
                                               semidiameter[number], is_probability, is_success_nsplanner))
             writelogs(string)
 
             is_probability = False
             is_success_nsplanner = False
-        normal_count.append(normal_num)
-        nsplanner_count.append(nsplanner_num)
+
+        normal_count.append(float(normal_num) / 10)
+        nsplanner_count.append(float(nsplanner_num)/10)
+
+    plt.title("planner demo")
+    plt.xlabel("sigma distance")
+    plt.ylabel("success rate")
+    parameter = np.polyfit(x_datasets, normal_count, 3)
+    p = np.poly1d(parameter)
+
+    plt.plot(x_datasets, p(x_datasets), color='g')
+
+    plt.plot(x_datasets, normal_count, linewidth=2.0,
+             color='red', linestyle='--')
+    plt.plot(x_datasets, nsplanner_count,
+             linewidth=2.0, color='blue', linestyle='-')
+    plt.show()
+
+    writelogs('data_summary')
+
+    for i in range(0, len(x_datasets)):
+        string = ('{},{},{}'.format(
+            x_datasets[i], normal_count[i], nsplanner_count[i]))
+        writelogs(string)
 
     while not rospy.is_shutdown():
         rospy.spin()
-    
-    plt.title("planner demo") 
-    plt.xlabel("sigma distance") 
-    plt.ylabel("success rate") 
-    plt.plot(x_datasets, normal_count, linewidth=2.0, color='red',linestyle='--')
-    plt.plot(x_datasets, nsplanner_count, linewidth=2.0, color='blue' ,linestyle='-')
-    plt.show()
-
-    writelogs('data_number')
-
-    for i in range(0,len(x_datasets)):
-        string = ('{},{},{}'.format(x_datasets[i], normal_count[i], nsplanner_count[i]))
-        writelogs(string)
 
     # fo.close()
