@@ -71,7 +71,7 @@ def get_gazebo_model_pose():
 def writelogs(write_data):
     # write_data.sort(key=takeSecond)
     # 打开文件
-    file_name = 'random_deviation1.txt'
+    file_name = 'random_deviation.txt'
     fo = open(file_name, 'a+')
     print("文件名为: ", fo.name)
     # for every in write_data:
@@ -190,8 +190,6 @@ if __name__ == "__main__":
     plt.ylabel("success rate") 
     plt.plot(x_datasets, normal_count, linewidth=2.0, color='red',linestyle='--')
     plt.plot(x_datasets, nsplanner_count, linewidth=2.0, color='blue' ,linestyle='-')
-    plt.show()
-
 
     parameter = np.polyfit(x_datasets,normal_count, 3)
     y2 = parameter[0] * x_datasets ** 3 + parameter[1] * \
