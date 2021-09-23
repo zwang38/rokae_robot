@@ -71,13 +71,11 @@ def get_gazebo_model_pose():
 def writelogs(write_data):
     # write_data.sort(key=takeSecond)
     # 打开文件
-    file_name = 'random_deviation.txt'
-
+    file_name = 'random_deviation1.txt'
     fo = open(file_name, 'a+')
     print("文件名为: ", fo.name)
     # for every in write_data:
     fo.write(write_data + "\n")
-
     fo.close()
 
 
@@ -123,9 +121,7 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
 
 
 if __name__ == "__main__":
-    file_name = 'random_deviation.txt'
 
-    fo = open(file_name, 'a+')
 
     rospy.init_node('nsplanner-moveit', anonymous=True)
 
@@ -180,9 +176,15 @@ if __name__ == "__main__":
         normal_count.append(normal_num)
         nsplanner_count.append(nsplanner_num)
 
-    while not rospy.is_shutdown():
-        rospy.spin()
+
     
+    writelogs('data_number')
+    for i in range(0,len(x_datasets)):
+        string = ('{},{},{}'.format(x_datasets[i], normal_count[i], nsplanner_count[i]))
+        writelogs(string)
+
+
+
     plt.title("planner demo") 
     plt.xlabel("sigma distance") 
     plt.ylabel("success rate") 
@@ -190,10 +192,15 @@ if __name__ == "__main__":
     plt.plot(x_datasets, nsplanner_count, linewidth=2.0, color='blue' ,linestyle='-')
     plt.show()
 
-    writelogs('data_number')
 
-    for i in range(0,len(x_datasets)):
-        string = ('{},{},{}'.format(x_datasets[i], normal_count[i], nsplanner_count[i]))
-        writelogs(string)
+    parameter = np.polyfit(x_datasets,normal_count, 3)
+    y2 = parameter[0] * x_datasets ** 3 + parameter[1] * \
+        x_datasets** 2 + parameter[2] * x_datasets + parameter[3]
+    plt.plot(x_datasets, y2, color='g')
+    plt.show()
+
+
+    while not rospy.is_shutdown():
+        rospy.spin()
 
     # fo.close()
