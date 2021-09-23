@@ -1,8 +1,13 @@
   如何用virtualenv 创建python2.7环境和python3.6环境
   https://www.jianshu.com/p/25151e46b621
   
+
+
+
+  pip install rospkg
+  https://pypi.org/project/rospkg/
   
-  
+
   
   ubuntu 1804 安装基于Python3的ROS melodic
   https://zhuanlan.zhihu.com/p/77682229
