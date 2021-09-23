@@ -72,10 +72,10 @@ def writelogs(write_data):
     # 打开文件
     file_name = 'random_deviation.txt'
 
-    fo = open(file_name, 'w')
+    fo = open(file_name, 'a+')
     print("文件名为: ", fo.name)
-    for every in write_data:
-        fo.write(every + "\n")
+    # for every in write_data:
+    fo.write(write_data + "\n")
 
     fo.close()
 
@@ -94,6 +94,7 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
     pose_target.orientation.w = quat[3]
     print('we have started.')
     start_success = False
+    execute_frequency = 0
     while not start_success:
         print('++++++++++++++++++++++++++++++++++++++++++++++++++++')
         start_success = planner.start(pose_target)
@@ -101,6 +102,10 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
     while not planner.is_stoping():
         print('wait for finished')
         rospy.sleep(3)
+        if execute_frequency > 100:
+            break
+        execute_frequency += 1
+
     bolt_pose = planner.get_bolt_pose()
     print('====================================================')
     print(pose_target)
@@ -110,6 +115,10 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
 
 
 if __name__ == "__main__":
+    file_name = 'random_deviation.txt'
+
+    fo = open(file_name, 'a+')
+
     rospy.init_node('nsplanner-moveit', anonymous=True)
 
     planner = NSPlanner('camera', '/camera/color/image_raw',
@@ -121,8 +130,8 @@ if __name__ == "__main__":
 
     deviation = 0.03
     mu = 0
-    datasets = []
-    datasets.append('x,y,semidiameter,normal_success,nsplanner_success')
+    # datasets = []
+    writelogs('x,y,semidiameter,normal_success,nsplanner_success')
     # datasets = [0.01, 0.02, 0.03, 0.04, 0.05]
     for step in range(1, 7):
         is_probability = False
@@ -144,39 +153,13 @@ if __name__ == "__main__":
             is_success_nsplanner = move_robot_nsplanner(
                 planner, x_current, y_current)
 
-            datasets.append('{},{},{},{},{}'.format(x_current, y_current,
-                            semidiameter[number], is_probability, is_success_nsplanner))
+            string = ('{},{},{},{},{}'.format(x_current, y_current,
+                                              semidiameter[number], is_probability, is_success_nsplanner))
+            writelogs(string)
 
-            # is_probability = False
+            is_probability = False
+            is_success_nsplanner = False
 
-    writelogs(datasets)
     while not rospy.is_shutdown():
         rospy.spin()
-    # z_bolt=1.1815
-    # try:
-    #     for data in datasets:
-
-    #         # rospy.init_node('nsplanner-moveit', anonymous=True)
-
-    #         # planner = nsplanner. NSPlanner('camera', '/camera/color/image_raw',
-    #         #                                '/camera/depth/image_raw', '/camera/color/camera_info')
-
-    #         x_pos_battery, y_pos_battery = get_gazebo_model_pose()
-
-    #         quat = tf.transformations.quaternion_from_euler(-3.14, 0, 0)
-    #         pose_target = geometry_msgs.msg.Pose()
-    #         pose_target.position.x = x_pos_battery + x_bolt + data
-    #         pose_target.position.y = y_pos_battery + y_bolt
-    #         pose_target.position.z = z_bolt
-    #         pose_target.orientation.x = quat[0]
-    #         pose_target.orientation.y = quat[1]
-    #         pose_target.orientation.z = quat[2]
-    #         pose_target.orientation.w = quat[3]
-    #         planner.start(pose_target)
-
-    #         while not rospy.is_shutdown():
-    #             rospy.spin()
-
-    # except rospy.ROSInterruptException:
-    #     print("Shutting down")
-    #     cv2.destroyAllWindows()
+    # fo.close()
