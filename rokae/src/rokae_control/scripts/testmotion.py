@@ -96,15 +96,17 @@ def product_spawn():
             product_xml = tilt_battery.read()
             battery_name = 'tilt_battery'
             tilt_battery.close()
-
-    quat = tf.transformations.quaternion_from_euler(0, 0, 3.14)
-    orient = Quaternion(quat[0], quat[1], quat[2], quat[3])
-    item_name = "{0}_product".format(battery_name)
-    print("Spawning model:%s", item_name)
-    item_pose = Pose(Point(x=0, y=0, z=0.12), orient)
-    spawn_model(item_name, product_xml, "", item_pose, "table")
-    rospy.sleep(0.5)
-    return item_name
+    try:
+        quat = tf.transformations.quaternion_from_euler(0, 0, 3.14)
+        orient = Quaternion(quat[0], quat[1], quat[2], quat[3])
+        item_name = "{0}_product".format(battery_name)
+        print("Spawning model:%s", item_name)
+        item_pose = Pose(Point(x=0, y=0, z=0.12), orient)
+        spawn_model(item_name, product_xml, "", item_pose, "table")
+        rospy.sleep(0.5)
+        return item_name
+    except rospy.ServiceException as e:
+        print("add battery is fail: {0}".format(e))
 
 
 def part_pose_collect(battery_pack_describe_name):

@@ -1,3 +1,49 @@
+  ubuntu 1804 安装基于Python3的ROS melodic
+  https://zhuanlan.zhihu.com/p/77682229
+
+pytorch   1.4
+pip install torch==1.4.0+cpu torchvision==0.5.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+https://pytorch.org/get-started/previous-versions/
+
+
+
+
+
+How To Install "python-image-geometry" Package on Ubuntu
+sudo apt-get update -y
+  sudo apt-get install -y python-image-geometry
+https://zoomadmin.com/HowToInstall/UbuntuPackage/python-image-geometry
+
+
+
+
+  
+    controller_managerConfig.cmake      error
+    controller_manager-config.cmake 
+sudo apt-get install ros-melodic-ros-control ros-melodic-ros-controllers
+https://github.com/cvra/roscvra/issues/4
+
+
+ gazebo： [gazebo-2] process has died [pid 2476, exit code 134, cmd / ] 
+echo " export SVGA_VGPU10=0" >> ~/.bashrc
+source ~/.bashrc
+https://www.codeleading.com/article/68883634995/
+
+
+
+ robot state publisher error
+sudo apt-get install ros-melodic-robot-state-publisher
+https://answers.ros.org/question/81716/robot-state-publisher-error/
+
+
+    gazebo_msgsConfig.cmake   error
+    sudo apt-get install ros-melodic-gazebo-ros-pkgs ros-melodic-gazebo-ros-control
+https://www.cxyzjd.com/article/qq_42521542/104434397
+
+
+virtualenv--创建虚拟环境
+https://www.cnblogs.com/zhaopanpan/p/9160760.html
+
 
 https://blog.csdn.net/Xueting_B/article/details/108053319
 

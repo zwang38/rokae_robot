@@ -90,16 +90,23 @@ class NSPlanner:
         self.action = 'end'
         self.all_infos = {}
         self.ret_dict = {}
+        self.bolt_pose = None
         self.all_infos_lock = threading.Lock()
         self.prim_thread = threading.Thread(target=self.do_action)
         self.prim_execution = True
         self.prim_thread.start()
 
+    def is_stoping(self):
+        return self.action == 'end'
+
+    def get_bolt_pose(self):
+        #only call for get experiment result
+        return self.bolt_pose
 
     def plan(self):
         prev_action = self.action
-        print(self.ret_dict)
-        if self.ret_dict['success'] is True:
+        #print(self.ret_dict)
+        if 'success' in self.ret_dict.keys() and self.ret_dict['success'] is True:
             if self.action == 'start':
                 self.action = 'move'
             elif self.action == 'move':
@@ -107,9 +114,11 @@ class NSPlanner:
             elif self.action == 'aim':
                 self.action = 'clear'
             elif self.action == 'clear':
-                self.action = 'insert'
-            elif self.action == 'insert':
                 self.action = 'end'
+            ## skip insert prim for testing
+            #     self.action = 'insert'
+            # elif self.action == 'insert':
+            #     self.action = 'end'
         print("%s --> %s"%(prev_action,self.action))
 
     def start(self,  pose):
@@ -120,6 +129,7 @@ class NSPlanner:
             self.ret_dict['coarse_pose'] = pose
             self.ret_dict['success'] = True
             self.action = 'start'
+            self.bolt_pose = pose
             return True
 
     def do_action(self):
@@ -135,6 +145,8 @@ class NSPlanner:
                 if self.action in self.prims.keys():
                     prim = self.prims[self.action]
                     self.ret_dict = prim.action(infos, self.ret_dict)
+                    if 'bolt_pose' in self.ret_dict.keys():
+                        self.bolt_pose = self.ret_dict['bolt_pose']
             rospy.sleep(1)
 
     def cam_info_cb(self, msg):
