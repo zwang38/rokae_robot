@@ -142,13 +142,20 @@ if __name__ == "__main__":
     # datasets = []
     writelogs('x,y,semidiameter,normal_success,nsplanner_success')
     # datasets = [0.01, 0.02, 0.03, 0.04, 0.05]
+
+    x_datasets = []
+    normal_count=[]
+    nsplanner_count=[]
+    
     for step in range(1, 7):
         is_probability = False
         is_success_nsplanner = False
         current_sigma = round(float(step)/100, 2)
+        x_datasets.append(current_sigma)
         semidiameter = np.random.normal(loc=mu, scale=current_sigma, size=10)
         angle = np.random.randint(360, size=10)
-
+        normal_num=0
+        nsplanner_num=0
         for number in range(len(semidiameter)):
             x_current = abs(semidiameter[number]) * \
                 math.cos(2 * math.pi * angle[number] / 360)
@@ -157,18 +164,30 @@ if __name__ == "__main__":
 
             if abs(semidiameter[number]) <= deviation:
                 is_probability = True
+                normal_num+=1
 
             print('current epoch is {} round {} sequence '.format(step, number+1))
             is_success_nsplanner = move_robot_nsplanner(
                 planner, x_current, y_current)
-
+            if  is_success_nsplanner :
+                nsplanner_num+=1
             string = ('{},{},{},{},{}'.format(x_current, y_current,
                                               semidiameter[number], is_probability, is_success_nsplanner))
             writelogs(string)
 
             is_probability = False
             is_success_nsplanner = False
+        normal_count.append(normal_num)
+        nsplanner_count.append(nsplanner_num)
 
     while not rospy.is_shutdown():
         rospy.spin()
+    
+    plt.title("planner demo") 
+    plt.xlabel("sigma distance") 
+    plt.ylabel("success rate") 
+    plt.plot(x_datasets, normal_count, linewidth=2.0, color='red',linestyle='--')
+    plt.plot(x_datasets, nsplanner_count, linewidth=2.0, color='blue' ,linestyle='-')
+    plt.show()
+
     # fo.close()
