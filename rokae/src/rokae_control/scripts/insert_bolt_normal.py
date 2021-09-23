@@ -61,8 +61,9 @@ def get_gazebo_model_pose():
         name = model_pose.name[current_product]
         x = model_pose.pose[current_product].position.x
         y = model_pose.pose[current_product].position.y
+        z = model_pose.pose[current_product].position.z
 
-        return x,  y
+        return x,  y, z
     else:
         return 0, 0
 
@@ -81,7 +82,7 @@ def writelogs(write_data):
 
 
 def move_robot_nsplanner(planner,  x_offset, y_offset):
-    x_pos_battery, y_pos_battery = get_gazebo_model_pose()
+    x_pos_battery, y_pos_battery, z_pos_battery = get_gazebo_model_pose()
 
     quat = tf.transformations.quaternion_from_euler(-3.14, 0, 0)
     pose_target = geometry_msgs.msg.Pose()
@@ -107,6 +108,13 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
         execute_frequency += 1
 
     bolt_pose = planner.get_bolt_pose()
+    x_pos_battery, y_pos_battery, z_pos_battery = get_gazebo_model_pose()
+
+    if (bolt_pose.position.x == x_pos_battery + x_bolt and bolt_pose.position.y == y_pos_battery + y_bolt) and (bolt_pose.position.z <= 1.2):
+        start_success = True
+    else:
+        start_success = False
+
     print('====================================================')
     print(pose_target)
     print(bolt_pose)
