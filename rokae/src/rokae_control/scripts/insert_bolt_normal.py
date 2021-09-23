@@ -109,8 +109,9 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
 
     bolt_pose = planner.get_bolt_pose()
     x_pos_battery, y_pos_battery, z_pos_battery = get_gazebo_model_pose()
-
-    if (bolt_pose.position.x == x_pos_battery + x_bolt and bolt_pose.position.y == y_pos_battery + y_bolt) and (bolt_pose.position.z <= 1.2):
+    x_temp=x_pos_battery + x_bolt
+    y_temp=y_pos_battery + y_bolt
+    if (bolt_pose.position.x <= x_temp +0.03 and bolt_pose.position.x >= x_temp - 0.03)and (bolt_pose.position.y <= y_temp +0.03 and  bolt_pose.position.y >= y_temp - 0.03) and (bolt_pose.position.z <= 1.2):
         start_success = True
     else:
         start_success = False
