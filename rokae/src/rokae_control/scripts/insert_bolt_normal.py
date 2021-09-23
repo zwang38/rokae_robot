@@ -107,13 +107,13 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
             break
         execute_frequency += 1
 
-    now_pose = group1.get_current_pose().pose
+    # now_pose = group1.get_current_pose().pose
     bolt_pose = planner.get_bolt_pose()
 
-    if (bolt_pose.position.x == now_pose.position.x and bolt_pose.position.y == now_pose.position.y) and (now_pose.position.z <= 1.2):
-        start_success = True
-    else:
-        start_success = False
+    # if (bolt_pose.position.x == now_pose.position.x and bolt_pose.position.y == now_pose.position.y) and (now_pose.position.z <= 1.2):
+    #     start_success = True
+    # else:
+    #     start_success = False
 
     print('====================================================')
     print(pose_target)
@@ -131,8 +131,8 @@ if __name__ == "__main__":
 
     planner = NSPlanner('camera', '/camera/color/image_raw',
                         '/camera/depth/image_raw', '/camera/color/camera_info')
-    group_name1 = "arm"
-    group1 = moveit_commander.MoveGroupCommander(group_name1)
+    # group_name1 = "arm"
+    # group1 = moveit_commander.MoveGroupCommander(group_name1)
     x_bolt = -0.057323   # 数值大，向下
     y_bolt = 0.03838  # 数值大，向左
     z_bolt = 1.3
