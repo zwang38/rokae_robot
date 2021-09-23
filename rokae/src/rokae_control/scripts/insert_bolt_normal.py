@@ -106,6 +106,7 @@ class NSPlanner:
         self.action = 'end'
         self.all_infos = {}
         self.ret_dict = {}
+        self.ret_dict  ['success']=True
         self.all_infos_lock = threading.Lock()
         self.prim_thread = threading.Thread(target=self.do_action)
         self.prim_execution = True
@@ -113,21 +114,24 @@ class NSPlanner:
 
 
     def plan(self):
-        prev_action = self.action
-        print('is start ?,{0}'.format(self.ret_dict))
-        if self.ret_dict['success'] is True:
-            if self.action == 'start':
-                self.action = 'move'
-            elif self.action == 'move':
-                self.action = 'aim'
-            elif self.action == 'aim':
-                self.action = 'clear'
-            elif self.action == 'clear':
-                self.action = 'insert'
-            elif self.action == 'insert':
-                self.action = 'end'
-        print("%s --> %s"%(prev_action,self.action))
-
+        try:
+            prev_action = self.action
+            print('is start ?,{0}'.format(self.ret_dict))
+            if self.ret_dict['success'] is True:
+                if self.action == 'start':
+                    self.action = 'move'
+                elif self.action == 'move':
+                    self.action = 'aim'
+                elif self.action == 'aim':
+                    self.action = 'clear'
+                elif self.action == 'clear':
+                    self.action = 'insert'
+                elif self.action == 'insert':
+                    self.action = 'end'
+            print("%s --> %s"%(prev_action,self.action))
+        except Exception, err:
+            print("exception plan, Don't care it will run again :", err)
+            
     def start(self,  pose):
         if self.action != 'end':
             print("Please start after previous task was done!")
@@ -211,9 +215,6 @@ def writelogs(write_data):
 def move_robot_nsplanner( x_offset, y_offset):
     x_pos_battery, y_pos_battery = get_gazebo_model_pose()
 
-    planner = NSPlanner('camera', '/camera/color/image_raw',
-                                   '/camera/depth/image_raw', '/camera/color/camera_info')
-
     quat = tf.transformations.quaternion_from_euler(-3.14, 0, 0)
     pose_target = geometry_msgs.msg.Pose()
     pose_target.position.x = x_pos_battery + x_bolt + x_offset
@@ -223,12 +224,16 @@ def move_robot_nsplanner( x_offset, y_offset):
     pose_target.orientation.y = quat[1]
     pose_target.orientation.z = quat[2]
     pose_target.orientation.w = quat[3]
+    print('we have started.')
     return planner.start(pose_target)
 
 
 if __name__ == "__main__":
     rospy.init_node('nsplanner-moveit', anonymous=True)
 
+
+    planner = NSPlanner('camera', '/camera/color/image_raw',
+                                   '/camera/depth/image_raw', '/camera/color/camera_info')
 
     x_bolt = -0.057323   # 数值大，向下
     y_bolt = 0.03838  # 数值大，向左
@@ -245,9 +250,7 @@ if __name__ == "__main__":
         current_sigma = round(float(step)/100, 2)
         semidiameter = np.random.normal(loc=mu, scale=current_sigma, size=10)
         angle = np.random.randint(360, size=10)
-        # math.
-        # print('x is {}'.format(semidiameter))
-        # print('y is {}'.format(y))
+
         for number in range(len(semidiameter)):
             x_current = abs(semidiameter[number]) * \
                 math.cos(2 * math.pi * angle[number] / 360)
@@ -256,32 +259,18 @@ if __name__ == "__main__":
 
             if abs(semidiameter[number]) <= deviation:
                 is_probability = True
+
+
+            is_success_nsplanner = move_robot_nsplanner( x_current, y_current)
             
-            
-            
-            # x_pos_battery, y_pos_battery = get_gazebo_model_pose()
-            # quat = tf.transformations.quaternion_from_euler(-3.14, 0, 0)
-            # pose_target = geometry_msgs.msg.Pose()
-            # pose_target.position.x = x_pos_battery + x_bolt + x_current
-            # pose_target.position.y = y_pos_battery + y_bolt + y_current
-            # pose_target.position.z = z_bolt
-            # pose_target.orientation.x = quat[0]
-            # pose_target.orientation.y = quat[1]
-            # pose_target.orientation.z = quat[2]
-            # pose_target.orientation.w = quat[3]
-            # planner.start(pose_target)
-    
-    
-            while not rospy.is_shutdown():
-                is_success_nsplanner = move_robot_nsplanner( x_current, y_current)
-                rospy.spin()
             datasets.append('{},{},{},{}'.format(x_current, y_current,
                             semidiameter[number], is_probability, is_success_nsplanner))
 
             is_probability = False
 
     writelogs(datasets)
-
+    while not rospy.is_shutdown():
+        rospy.spin()
     # z_bolt=1.1815
     # try:
     #     for data in datasets:
