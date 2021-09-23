@@ -34,15 +34,15 @@ class CircleDetection4Bolt:
         return img
 
     def detect(self, img, depth_img):
-        print("resize")
+        #print("resize")
         img = cv2.resize(img, (img.shape[1] * self.scale, img.shape[0] * self.scale))
         img = img / 255.0
         img = img[0:480 * self.scale, 0:640 * self.scale]
 
-        print("canny")
+        #print("canny")
         img = self.canny(img)
 
-        print("HoughCircles")
+        #print("HoughCircles")
         img = np.uint8(img * 255)
         circles = cv2.HoughCircles(img, cv2.HOUGH_GRADIENT, 1, 20,
                                    param1=50, param2=30, minRadius=0, maxRadius=50)

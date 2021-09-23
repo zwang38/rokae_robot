@@ -49,140 +49,10 @@ import tf2_ros
 import geometry_msgs.msg
 from visualization_msgs.msg import Marker
 import threading
+from nsplanner import NSPlanner
 
 
-class NSPlanner:
-    def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic):
 
-        self.camera_name = camera_name
-        self.rgb_topic = rgb_topic
-        self.depth_topic = depth_topic
-        self.camera_info_topic = camera_info_topic
-        self.bolt_trans_topic = '/NSPlanner/bolt_trans'
-
-        self.pose = None
-
-        self.marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
-
-        # cv2.namedWindow("Image window", cv2.WINDOW_NORMAL)
-        # cv2.setMouseCallback("Image window", self.mouse_callback)
-
-        self.br = tf2_ros.TransformBroadcaster()
-
-        # Have we recieved camera_info and image yet?
-        self.ready_ = False
-
-        self.bridge = CvBridge()
-
-        self.camera_model = image_geometry.PinholeCameraModel()
-        rospy.loginfo(
-            'Camera {} initialised, {}, , {}'.format(self.camera_name, rgb_topic, depth_topic, camera_info_topic))
-        print('')
-
-        q = 1
-        self.sub_rgb = message_filters.Subscriber(rgb_topic, Image, queue_size=q)
-        self.sub_depth = message_filters.Subscriber(depth_topic, Image, queue_size=q)
-        self.sub_camera_info = rospy.Subscriber(camera_info_topic, CameraInfo, self.cam_info_cb)
-        self.camera_model_ready = False
-        self.tss = message_filters.ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth],
-                                                               queue_size=30, slop=0.2)
-
-        self.tss.registerCallback(self.callback)
-
-
-        moveit_commander.roscpp_initialize(sys.argv)
-        self.group = moveit_commander.MoveGroupCommander("arm")
-        self.group.set_planner_id("RRTConnectkConfigDefault")
-
-
-        self.aim_target_prim = PrimAimTarget(self.group)
-        self.clear_obstacle_prim = PrimClearObstacle(self.group)
-        self.insert_prim = PrimInsert(self.group)
-        self.move_prim = PrimMove(self.group)
-        self.prims = {'aim': self.aim_target_prim,
-                      'clear': self.clear_obstacle_prim,
-                      'insert': self.insert_prim,
-                      'move': self.move_prim}
-        self.action = 'end'
-        self.all_infos = {}
-        self.ret_dict = {}
-        self.ret_dict  ['success']=True
-        self.all_infos_lock = threading.Lock()
-        self.prim_thread = threading.Thread(target=self.do_action)
-        self.prim_execution = True
-        self.prim_thread.start()
-
-
-    def plan(self):
-        try:
-            prev_action = self.action
-            print('is start ?,{0}'.format(self.ret_dict))
-            if self.ret_dict['success'] is True:
-                if self.action == 'start':
-                    self.action = 'move'
-                elif self.action == 'move':
-                    self.action = 'aim'
-                elif self.action == 'aim':
-                    self.action = 'clear'
-                elif self.action == 'clear':
-                    self.action = 'insert'
-                elif self.action == 'insert':
-                    self.action = 'end'
-            print("%s --> %s"%(prev_action,self.action))
-        except Exception, err:
-            print("exception plan, Don't care it will run again :", err)
-            
-    def start(self,  pose):
-        if self.action != 'end':
-            print("Please start after previous task was done!")
-            return False
-        else:
-            self.ret_dict['coarse_pose'] = pose
-            self.ret_dict['success'] = True
-            self.action = 'start'
-            return True
-
-    def do_action(self):
-        while self.prim_execution:
-            self.plan()
-            if self.action == 'end':
-                rospy.sleep(1)
-                continue
-            if self.all_infos_lock.acquire():
-                infos = copy.deepcopy(self.all_infos)
-                self.all_infos.clear()
-                self.all_infos_lock.release()
-                if self.action in self.prims.keys():
-                    prim = self.prims[self.action]
-                    self.ret_dict = prim.action(infos, self.ret_dict)
-            rospy.sleep(1)
-
-    def cam_info_cb(self, msg):
-        self.camera_model.fromCameraInfo(msg)
-        self.camera_model_ready = True
-        self.sub_camera_info.unregister()
-
-    def callback(self, rgb_msg, depth_msg):
-        try:
-            if not self.camera_model_ready:
-                print("camera info is not ready")
-                return
-            img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
-            depth_img = self.bridge.imgmsg_to_cv2(depth_msg, '16UC1')
-            ts = rospy.Time.now()
-            #rospy.loginfo('receiving image')
-            if self.all_infos_lock.acquire():
-                self.all_infos = {'rgb_img': img, 'depth_img': depth_img,
-                                  'camera_model': self.camera_model, 'timestamp': ts}
-                self.all_infos_lock.release()
-
-        except Exception, err:
-            print("exception happen in message call back:", err)
-
-    def __del__(self):
-        self.prim_execution = False
-        self.prim_thread.join()
-        
         
 def get_gazebo_model_pose():
     parts_pose = []
@@ -212,7 +82,7 @@ def writelogs(write_data):
     fo.close()
 
 
-def move_robot_nsplanner( x_offset, y_offset):
+def move_robot_nsplanner(planner,  x_offset, y_offset):
     x_pos_battery, y_pos_battery = get_gazebo_model_pose()
 
     quat = tf.transformations.quaternion_from_euler(-3.14, 0, 0)
@@ -225,7 +95,20 @@ def move_robot_nsplanner( x_offset, y_offset):
     pose_target.orientation.z = quat[2]
     pose_target.orientation.w = quat[3]
     print('we have started.')
-    return planner.start(pose_target)
+    start_success = False
+    while not start_success:
+        print('++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        start_success = planner.start(pose_target)
+        rospy.sleep(3)
+    while not planner.is_stoping():
+        print('wait for finished')
+        rospy.sleep(3)
+    bolt_pose = planner.get_bolt_pose()
+    print('====================================================')
+    print(pose_target)
+    print(bolt_pose)
+    print('====================================================')
+    return bolt_pose
 
 
 if __name__ == "__main__":
@@ -261,7 +144,7 @@ if __name__ == "__main__":
                 is_probability = True
 
 
-            is_success_nsplanner = move_robot_nsplanner( x_current, y_current)
+            is_success_nsplanner = move_robot_nsplanner(planner, x_current, y_current)
             
             datasets.append('{},{},{},{}'.format(x_current, y_current,
                             semidiameter[number], is_probability, is_success_nsplanner))
