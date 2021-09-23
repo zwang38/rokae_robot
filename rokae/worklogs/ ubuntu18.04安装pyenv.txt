@@ -4,11 +4,30 @@
 
 
 
+ opencv-python 3.3.0.9 
+pip install opencv-python==3.3.0.9
+https://pypi.org/project/opencv-python/3.3.0.9/
+
+
+
+
+scipy
+pip install scipy
+https://pypi.org/project/scipy/
+
+
+
+ImportError:No module named builtins
+pip install future
+https://blog.csdn.net/sinat_28442665/article/details/85325232
+
+
+
   pip install rospkg
   https://pypi.org/project/rospkg/
   
 
-  
+
   ubuntu 1804 安装基于Python3的ROS melodic
   https://zhuanlan.zhihu.com/p/77682229
 
