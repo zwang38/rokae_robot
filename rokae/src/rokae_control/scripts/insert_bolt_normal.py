@@ -188,12 +188,14 @@ if __name__ == "__main__":
     parameter = np.polyfit(x_datasets, normal_count, 3)
     p = np.poly1d(parameter)
 
-    plt.plot(x_datasets, p(x_datasets), color='g')
+    plt.plot(x_datasets, p(x_datasets), color='g', label='PDDL')
 
     plt.plot(x_datasets, normal_count, linewidth=2.0,
-             color='red', linestyle='--')
+             color='red', linestyle='--', label='PDDL')
     plt.plot(x_datasets, nsplanner_count,
-             linewidth=2.0, color='blue', linestyle='-')
+             linewidth=2.0, color='blue', linestyle='-', label='Our')
+    plt.legend()
+
     plt.show()
 
     writelogs('data_summary')
