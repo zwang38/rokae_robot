@@ -14,7 +14,6 @@ from numpy import random
 import matplotlib.pyplot as plt
 
 
-
 def writelogs(write_data):
     # write_data.sort(key=takeSecond)
     # 打开文件
@@ -28,15 +27,12 @@ def writelogs(write_data):
     fo.close()
 
 
-
-
-
 if __name__ == "__main__":
     file_name = 'random_deviation.txt'
 
     fo = open(file_name, 'a+')
 
-    deviation = 0.03
+    deviation = 0.003
     mu = 0
     # datasets = []
     writelogs('x,y,semidiameter,normal_success,nsplanner_success')
@@ -46,11 +42,11 @@ if __name__ == "__main__":
     normal_count = []
     nsplanner_count = []
 
-    for step in range(0,10):
+    for step in range(0, 10):
         is_probability = False
         is_success_nsplanner = False
-        current_sigma = round(float(step)/100, 2)
-        x_datasets.append(current_sigma)
+        current_sigma = round(float(step)/1000, 4)
+        x_datasets.append(int(current_sigma * 1000))
         semidiameter = np.random.normal(loc=mu, scale=current_sigma, size=10)
         angle = np.random.randint(360, size=10)
         normal_num = 0
@@ -66,8 +62,8 @@ if __name__ == "__main__":
                 normal_num += 1
 
             print('current epoch is {} round {} sequence '.format(step, number+1))
-            is_success_nsplanner=True
-            
+            is_success_nsplanner = True
+
             if is_success_nsplanner:
                 nsplanner_num += 1
             string = ('{},{},{},{},{}'.format(x_current, y_current,
@@ -76,10 +72,10 @@ if __name__ == "__main__":
 
             is_probability = False
             is_success_nsplanner = False
-        normal_count.append(float(normal_num)   /10)
-        if step  is 4:
-            nsplanner_num-=1
-        nsplanner_count.append(float (nsplanner_num)/10)
+        normal_count.append(float(normal_num) / 10)
+        if step is 4:
+            nsplanner_num -= 1
+        nsplanner_count.append(float(nsplanner_num)/10)
 
     plt.title("planner demo")
     plt.xlabel("sigma distance")
@@ -89,15 +85,15 @@ if __name__ == "__main__":
     # y2 = parameter[0] * x_datasets ** 3 + parameter[1] * \
     #     x_datasets ** 2 + parameter[2] * x_datasets + parameter[3]
     # plt.plot(x_datasets, y2, color='g')
-    plt.plot(x_datasets, p_normal(x_datasets), color='g',label='Traditional')
+    plt.plot(x_datasets, p_normal(x_datasets), color='g', label='Traditional')
     # plt.plot(x_datasets, normal_count, linewidth=2.0,
     #          color='red', linestyle='--', label='Traditional')
-    
+
     parameter_our = np.polyfit(x_datasets, nsplanner_count, 3)
     p_our = np.poly1d(parameter_our)
     plt.plot(x_datasets, p_our(x_datasets),
              linewidth=2.0, color='blue', linestyle='-', label='Our')
-    
+
     # plt.plot(x_datasets, nsplanner_count,
     #          linewidth=2.0, color='blue', linestyle='-', label='Our')
     plt.legend()

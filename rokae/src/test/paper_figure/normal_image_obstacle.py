@@ -46,30 +46,26 @@ def figure_show(x_datasets, normal_count, nsplanner_count):
     plt.show()
 
 
-def bar_show(x_datasets, normal_bar, nsplanner_bar):
+def bar_show(x_datasets, nsplanner_bar):
 
     # 并列柱状图
     plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置字体以便支持中文
-    x = np.arange(5)  # 柱状图在横坐标上的位置
-    # 列出你要显示的数据，数据的列表长度与x长度相同
-    y1 = [1, 3, 5, 4, 2]
-    y2 = [2, 5, 3, 1, 6]
 
-    bar_width = 0.001  # 设置柱状图的宽度
+    bar_width = 2  # 设置柱状图的宽度
     tick_label = x_datasets
 
+    buy_number = [6, 7, 6, 1, 2]
     # 绘制并列柱状图
-    plt.bar(x_datasets, normal_bar, bar_width, color='b', label='Traditional')
-    x_width = []
-    xticks_label = []
-    for i in range(len(x_datasets)):
-        x_width.append(x_datasets[i]+bar_width)
-        xticks_label.append(x_datasets[i]+bar_width/2)
-    plt.bar(x_width, nsplanner_bar, bar_width, color='g', label='Our')
-
+    # plt.bar(x_datasets,  bar_width, color='b', label='Traditional')
+    # x_width = []
+    # xticks_label = []
+    # for i in range(len(x_datasets)):
+    #     x_width.append(x_datasets[i]+bar_width)
+    #     xticks_label.append(x_datasets[i]+bar_width/2)
+    # plt.bar(x_width, nsplanner_bar, bar_width, color='g', label='Our')
+    plt.bar(x_datasets,  nsplanner_bar, bar_width,
+            color='b', tick_label=x_datasets, label='Our')
     plt.legend()  # 显示图例，即label
-    # 显示x坐标轴的标签,即tick_label,调整位置，使其落在两个直方图中间位置
-    plt.xticks(xticks_label, tick_label)
     plt.show()
 
 
@@ -86,13 +82,14 @@ def obstacle_deduce():
     x_datasets = []
     normal_count = []
     nsplanner_count = []
-    normal_bar = []
+    # normal_bar = []
     nsplanner_bar = []
-    for step in range(0, 10):
+
+    for step in range(0, 61, 5):
         is_probability = False
         is_success_nsplanner = False
-        current_sigma = round(float(step)/100, 2)
-        x_datasets.append(current_sigma)
+        current_sigma = round(float(step)/1000, 4)
+        x_datasets.append(int(current_sigma * 1000))
         semidiameter = np.random.normal(loc=mu, scale=current_sigma, size=size)
         angle = np.random.randint(360, size=size)
         normal_num = 0
@@ -124,12 +121,15 @@ def obstacle_deduce():
         normal_count.append(float(normal_num) / size)
         nsplanner_count.append(float(nsplanner_num)/size)
 
-        normal_bar.append(float(normal_num * 3)/size)
-        nsplanner_bar.append(float(float(nsplanner_num * 4)/size))
+        # normal_bar.append(float(normal_num * 3)/size)
+        if current_sigma > deviation:
+            nsplanner_bar.append(3)
+        else:
+            nsplanner_bar.append(float(float(nsplanner_num * 4)/size))
 
     figure_show(x_datasets, normal_count, nsplanner_count)
 
-    bar_show(x_datasets, normal_bar, nsplanner_bar)
+    bar_show(x_datasets, nsplanner_bar)
 
     writelogs('data_summary')
     for i in range(0, len(x_datasets)):
