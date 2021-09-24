@@ -123,7 +123,6 @@ def move_robot_nsplanner(planner,  x_offset, y_offset):
 
 if __name__ == "__main__":
 
-
     rospy.init_node('nsplanner-moveit', anonymous=True)
 
     planner = NSPlanner('camera', '/camera/color/image_raw',
@@ -175,7 +174,6 @@ if __name__ == "__main__":
             is_probability = False
             is_success_nsplanner = False
 
-<<<<<<< HEAD
         normal_count.append(float(normal_num) / 10)
         nsplanner_count.append(float(nsplanner_num)/10)
 
@@ -201,32 +199,6 @@ if __name__ == "__main__":
         string = ('{},{},{}'.format(
             x_datasets[i], normal_count[i], nsplanner_count[i]))
         writelogs(string)
-=======
-
-    
-    writelogs('data_number')
-    for i in range(0,len(x_datasets)):
-        string = ('{},{},{}'.format(x_datasets[i], normal_count[i], nsplanner_count[i]))
-        writelogs(string)
-
-
-
-    plt.title("planner demo") 
-    plt.xlabel("sigma distance") 
-    plt.ylabel("success rate") 
-    plt.plot(x_datasets, normal_count, linewidth=2.0, color='red',linestyle='--')
-    plt.plot(x_datasets, nsplanner_count, linewidth=2.0, color='blue' ,linestyle='-')
-
-    parameter = np.polyfit(x_datasets,normal_count, 3)
-    y2 = parameter[0] * x_datasets ** 3 + parameter[1] * \
-        x_datasets** 2 + parameter[2] * x_datasets + parameter[3]
-    plt.plot(x_datasets, y2, color='g')
-    plt.show()
-
-
-    while not rospy.is_shutdown():
-        rospy.spin()
->>>>>>> e7e8d95d1134e252240a024d4171c2de31df202e
 
     while not rospy.is_shutdown():
         rospy.spin()
