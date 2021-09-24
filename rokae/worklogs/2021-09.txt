@@ -5,16 +5,3 @@
 9/17   继续收集图像添加谓语，  修改电池包的碰撞盒，改成逻辑添加的。
 
 
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-x = np.arange(-1, 1, 0.02)
-y = 2 * np.sin(x * 2.3) + np.random.rand(len(x))
-
-parameter = np.polyfit(x, y, 3)
-y2 = parameter[0] * x ** 3 + parameter[1] * \
-    x ** 2 + parameter[2] * x + parameter[3]
-plt.scatter(x, y)
-plt.plot(x, y2, color='g')
-plt.show()
