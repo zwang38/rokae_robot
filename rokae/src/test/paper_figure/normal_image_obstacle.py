@@ -55,7 +55,7 @@ def writelogs(write_data):
 def figure_show(x_datasets, normal_count, nsplanner_count):
     # plt.rcParams['font.sans-serif'] = ['SimSun']  # 设置字体以便支持中文
 
-    font_size = 9  # 小五
+    font_size = 12  # 小五
     plt.title(u'障碍物清理示范', fontproperties=SimSun)
     plt.xlabel(u'位移/毫米', size=font_size, fontproperties=SimSun)
     plt.ylabel(u'成功率/%', size=font_size, fontproperties=SimSun)
@@ -77,7 +77,7 @@ def bar_show(x_datasets, nsplanner_bar):
 
     # 并列柱状图
     # plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置字体以便支持中文
-    font_size = 9  # 小五
+    font_size = 12  # 小五
 
     bar_width = 2  # 设置柱状图的宽度
     tick_label = x_datasets

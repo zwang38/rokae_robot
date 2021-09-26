@@ -50,7 +50,7 @@ if __name__ == "__main__":
     file_name = 'random_deviation.txt'
 
     fo = open(file_name, 'a+')
-    font_size = 9  # 小五
+    font_size = 12  # 小五
 
     deviation = 0.003
     mu = 0
