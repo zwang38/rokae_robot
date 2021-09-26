@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-#-*- coding: utf-8 -*-
-
+# -*- coding: utf-8 -*-
 
 
 import random
@@ -339,6 +338,7 @@ def set_align_vertical_capture(ee_pose,   x_bolt, y_bolt, z_bolt):
     ee_pose.orientation.y = q[1]
     ee_pose.orientation.z = q[2]
     ee_pose.orientation.w = q[3]
+
     # set_arm_pose(group, ee_pose, effector)
     if set_arm_pose(group, ee_pose, effector):
         camera.set_capture()
@@ -612,8 +612,8 @@ if __name__ == "__main__":
                 ee_pose,  x_bolt, y_bolt, z_bolt))
         writelogs(dataset)
 
-    print('请输入：va,进行垂直方向对齐采集；垂直方向非对齐采集，请输入vn')
-
+    print('请输入：va,进行垂直方向对齐采集；vn,垂直方向非对齐采集;ta,进行倾斜方向上对齐采集;tn 倾斜方向非对齐采集')
+    input = raw_input()
     if input == 'va':
         for i in range(2000):  # 采样100次
             print('current {0}'.format(i))
@@ -626,9 +626,9 @@ if __name__ == "__main__":
             print('current {0}'.format(i))
             set_move_vertical_capture(ee_pose,  x_bolt, y_bolt, z_bolt)
 
-    print('请输入：ta,进行垂直方向进行对齐.倾斜采集，请输入tn')
-    input = raw_input()
-    if input == 'ta':
+    # print('请输入：')
+    # input = raw_input()
+    elif input == 'ta':
         for i in range(100):
             print('current {0}'.format(i))
             set_align_tilt_capture(ee_pose)
