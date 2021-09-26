@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from matplotlib import rcParams
 import sys
 import random
 import copy
@@ -12,6 +13,30 @@ import numpy as np
 import math
 from numpy import random
 import matplotlib.pyplot as plt
+import matplotlib as mpl
+
+import matplotlib
+import matplotlib.pyplot as plt
+from matplotlib import rcParams
+
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+from matplotlib import rcParams
+
+
+# 全局设置字体及大小，设置公式字体即可，若要修改刻度字体，可在此修改全局字体
+config = {
+    "mathtext.fontset": 'stix',
+    # "font.family":'serif',
+    # "font.serif": ['SimSun'],
+    # "font.size": 15,
+}
+rcParams.update(config)
+# 载入宋体
+SimSun = FontProperties(
+    fname='/home/nuc/.local/lib/python3.6/site-packages/matplotlib/mpl-data/fonts/ttf/SimSun.ttf')
 
 
 def writelogs(write_data):
@@ -28,32 +53,37 @@ def writelogs(write_data):
 
 
 def figure_show(x_datasets, normal_count, nsplanner_count):
+    # plt.rcParams['font.sans-serif'] = ['SimSun']  # 设置字体以便支持中文
 
-    plt.title("planner demo")
-    plt.xlabel("sigma distance")
-    plt.ylabel("success rate")
+    font_size = 9  # 小五
+    plt.title(u'障碍物清理示范', fontproperties=SimSun)
+    plt.xlabel(u'位移/毫米', size=font_size, fontproperties=SimSun)
+    plt.ylabel(u'成功率/%', size=font_size, fontproperties=SimSun)
     parameter_normal = np.polyfit(x_datasets, normal_count, 3)
     p_normal = np.poly1d(parameter_normal)
 
-    plt.plot(x_datasets, p_normal(x_datasets), color='g', label='Traditional')
+    plt.plot(x_datasets, p_normal(x_datasets)*100, color='g', label=u'传统模型')
 
     parameter_our = np.polyfit(x_datasets, nsplanner_count, 3)
     p_our = np.poly1d(parameter_our)
-    plt.plot(x_datasets, p_our(x_datasets),
-             linewidth=2.0, color='blue', linestyle='-', label='Our')
+    plt.plot(x_datasets, p_our(x_datasets)*100,
+             linewidth=2.0, color='blue', linestyle='-', label=u'神经元符号模型')
 
-    plt.legend()
+    plt.legend(prop={'family': 'SimSun', 'size': font_size})
     plt.show()
 
 
 def bar_show(x_datasets, nsplanner_bar):
 
     # 并列柱状图
-    plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置字体以便支持中文
+    # plt.rcParams['font.sans-serif'] = ['SimHei']  # 设置字体以便支持中文
+    font_size = 9  # 小五
 
     bar_width = 2  # 设置柱状图的宽度
     tick_label = x_datasets
-
+    plt.title(u'平均执行拆解动作示范', fontproperties=SimSun)
+    plt.xlabel(u'位移/毫米', size=font_size, fontproperties=SimSun)
+    plt.ylabel(u'平均次数', size=font_size, fontproperties=SimSun)
     buy_number = [6, 7, 6, 1, 2]
     # 绘制并列柱状图
     # plt.bar(x_datasets,  bar_width, color='b', label='Traditional')
@@ -64,8 +94,8 @@ def bar_show(x_datasets, nsplanner_bar):
     #     xticks_label.append(x_datasets[i]+bar_width/2)
     # plt.bar(x_width, nsplanner_bar, bar_width, color='g', label='Our')
     plt.bar(x_datasets,  nsplanner_bar, bar_width,
-            color='b', tick_label=x_datasets, label='Our')
-    plt.legend()  # 显示图例，即label
+            color='b', tick_label=x_datasets, label=u'平均执行次数')
+    plt.legend(prop={'family': 'SimSun', 'size': font_size})
     plt.show()
 
 
@@ -74,7 +104,7 @@ def obstacle_deduce():
     file_name = 'random_deviation_obstacle.txt'
     fo = open(file_name, 'a+')
     size = 10
-    deviation = 0.03
+    deviation = 0.025
     mu = 0
     # datasets = []
     writelogs('x,y,semidiameter,normal_success,nsplanner_success')
@@ -85,7 +115,7 @@ def obstacle_deduce():
     # normal_bar = []
     nsplanner_bar = []
 
-    for step in range(0, 61, 5):
+    for step in range(0, 51, 5):
         is_probability = False
         is_success_nsplanner = False
         current_sigma = round(float(step)/1000, 4)

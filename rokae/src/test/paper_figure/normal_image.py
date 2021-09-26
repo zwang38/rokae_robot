@@ -13,6 +13,25 @@ import math
 from numpy import random
 import matplotlib.pyplot as plt
 
+import os
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontProperties
+from matplotlib import rcParams
+
+
+# 全局设置字体及大小，设置公式字体即可，若要修改刻度字体，可在此修改全局字体
+config = {
+    "mathtext.fontset": 'stix',
+    # "font.family":'serif',
+    # "font.serif": ['SimSun'],
+    # "font.size": 15,
+}
+rcParams.update(config)
+# 载入宋体
+SimSun = FontProperties(
+    fname='/home/nuc/.local/lib/python3.6/site-packages/matplotlib/mpl-data/fonts/ttf/SimSun.ttf')
+
 
 def writelogs(write_data):
     # write_data.sort(key=takeSecond)
@@ -31,6 +50,7 @@ if __name__ == "__main__":
     file_name = 'random_deviation.txt'
 
     fo = open(file_name, 'a+')
+    font_size = 9  # 小五
 
     deviation = 0.003
     mu = 0
@@ -46,7 +66,7 @@ if __name__ == "__main__":
         is_probability = False
         is_success_nsplanner = False
         current_sigma = round(float(step)/1000, 4)
-        x_datasets.append(int(current_sigma * 1000))
+        x_datasets.append(current_sigma*1000)
         semidiameter = np.random.normal(loc=mu, scale=current_sigma, size=10)
         angle = np.random.randint(360, size=10)
         normal_num = 0
@@ -77,26 +97,28 @@ if __name__ == "__main__":
             nsplanner_num -= 1
         nsplanner_count.append(float(nsplanner_num)/10)
 
-    plt.title("planner demo")
-    plt.xlabel("sigma distance")
-    plt.ylabel("success rate")
+    plt.title(u'无障碍拆解示范', fontproperties=SimSun)
+
+    plt.xlabel(u'位移/毫米', size=font_size, fontproperties=SimSun)
+    plt.ylabel(u'成功率/%', size=font_size, fontproperties=SimSun)
+
     parameter_normal = np.polyfit(x_datasets, normal_count, 3)
     p_normal = np.poly1d(parameter_normal)
     # y2 = parameter[0] * x_datasets ** 3 + parameter[1] * \
     #     x_datasets ** 2 + parameter[2] * x_datasets + parameter[3]
     # plt.plot(x_datasets, y2, color='g')
-    plt.plot(x_datasets, p_normal(x_datasets), color='g', label='Traditional')
+    plt.plot(x_datasets, p_normal(x_datasets)*100, color='g', label=u'传统模型')
     # plt.plot(x_datasets, normal_count, linewidth=2.0,
     #          color='red', linestyle='--', label='Traditional')
 
     parameter_our = np.polyfit(x_datasets, nsplanner_count, 3)
     p_our = np.poly1d(parameter_our)
-    plt.plot(x_datasets, p_our(x_datasets),
-             linewidth=2.0, color='blue', linestyle='-', label='Our')
+    plt.plot(x_datasets, p_our(x_datasets)*100,
+             linewidth=2.0, color='blue', linestyle='-', label=u'神经元符号模型')
 
     # plt.plot(x_datasets, nsplanner_count,
     #          linewidth=2.0, color='blue', linestyle='-', label='Our')
-    plt.legend()
+    plt.legend(prop={'family': 'SimSun', 'size': font_size})
     plt.show()
 
     writelogs('data_summary')
