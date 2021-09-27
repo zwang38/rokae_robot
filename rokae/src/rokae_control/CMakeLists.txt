@@ -173,12 +173,12 @@ catkin_install_python(PROGRAMS
   # scripts/motionplanner2.py
   # scripts/testmotion.py
   # scripts/move_group_python_interface_tutorial.py
-  scripts/robot_sorting.py
+  # scripts/robot_sorting.py
   # scripts/battery_position.py
   # scripts/image_subscribe.py 
   scripts/rgbd_sub_and_process.py
-  scripts/rgbd_imagepoint_to_robot_move.py
-  scripts/rgbd_imgpoint_to_tf.py
+  # scripts/rgbd_imagepoint_to_robot_move.py
+  # scripts/rgbd_imgpoint_to_tf.py
   scripts/templateMatching.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
