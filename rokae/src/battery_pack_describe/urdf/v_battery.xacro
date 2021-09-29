@@ -36,6 +36,8 @@
     <mu2>50000000000000000000.0</mu2>
     <maxVel>0</maxVel>
     <minDepth>0.001</minDepth>
+    <fdir1>1 0 0</fdir1>
+
   </gazebo>
 
   <!-- <gazebo reference="v_battery_base_link">
