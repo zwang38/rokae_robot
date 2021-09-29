@@ -86,3 +86,13 @@ pyenv versions
 
 https://bbs.huaweicloud.com/blogs/detail/160844
 https://blog.csdn.net/zhangxiaohui4445/article/details/102562156?utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.no_search_link&depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7EBlogCommendFromBaidu%7Edefault-5.no_search_link
+
+
+
+
+  Could not find a package configuration file provided by "soem" with any of
+  the following names:
+    soemConfig.cmake
+    soem-config.cmake
+  sudo apt-get install ros-melodic-soem
+  https://github.com/tork-a/minas/issues/64
