@@ -56,18 +56,18 @@ def figure_show(x_datasets, normal_count, nsplanner_count):
     # plt.rcParams['font.sans-serif'] = ['SimSun']  # 设置字体以便支持中文
 
     font_size = 12  # 小五
-    plt.title(u'障碍物清理示范', fontproperties=SimSun)
-    plt.xlabel(u'位移/毫米', size=font_size, fontproperties=SimSun)
-    plt.ylabel(u'成功率/%', size=font_size, fontproperties=SimSun)
+    # plt.title(u'障碍物清理示范' ,fontproperties=SimSun)
+    plt.xlabel("σ/毫米", size=font_size, fontproperties=SimSun)
+    plt.ylabel("成功率/%", size=font_size, fontproperties=SimSun)
     parameter_normal = np.polyfit(x_datasets, normal_count, 3)
     p_normal = np.poly1d(parameter_normal)
 
-    plt.plot(x_datasets, p_normal(x_datasets)*100, color='g', label=u'传统模型')
+    plt.plot(x_datasets, p_normal(x_datasets)*100, color='g', label='传统方法')
 
     parameter_our = np.polyfit(x_datasets, nsplanner_count, 3)
     p_our = np.poly1d(parameter_our)
     plt.plot(x_datasets, p_our(x_datasets)*100,
-             linewidth=2.0, color='blue', linestyle='-', label=u'神经元符号模型')
+             linewidth=2.0, color='blue', linestyle='-', label='神经符号学方法')
 
     plt.legend(prop={'family': 'SimSun', 'size': font_size})
     plt.show()
@@ -81,9 +81,9 @@ def bar_show(x_datasets, nsplanner_bar):
 
     bar_width = 2  # 设置柱状图的宽度
     tick_label = x_datasets
-    plt.title(u'平均执行拆解动作示范', fontproperties=SimSun)
-    plt.xlabel(u'位移/毫米', size=font_size, fontproperties=SimSun)
-    plt.ylabel(u'平均次数', size=font_size, fontproperties=SimSun)
+    # plt.title(u'平均执行拆解动作示范', size=font_size ,fontproperties=SimSun)
+    plt.xlabel("σ/毫米", size=font_size, fontproperties=SimSun)
+    plt.ylabel("平均次数", size=font_size, fontproperties=SimSun)
     buy_number = [6, 7, 6, 1, 2]
     # 绘制并列柱状图
     # plt.bar(x_datasets,  bar_width, color='b', label='Traditional')
@@ -94,7 +94,7 @@ def bar_show(x_datasets, nsplanner_bar):
     #     xticks_label.append(x_datasets[i]+bar_width/2)
     # plt.bar(x_width, nsplanner_bar, bar_width, color='g', label='Our')
     plt.bar(x_datasets,  nsplanner_bar, bar_width,
-            color='b', tick_label=x_datasets, label=u'平均执行次数')
+            color='b', tick_label=x_datasets, label='平均执行次数')
     plt.legend(prop={'family': 'SimSun', 'size': font_size})
     plt.show()
 
