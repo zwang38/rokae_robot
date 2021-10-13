@@ -4,6 +4,15 @@
 
 
 
+  
+OSError: [Errno 98] Address already in use
+netstat -tlnp | grep 5050
+https://blog.csdn.net/heybeaman/article/details/100022001
+
+
+
+
+
  opencv-python 3.3.0.9 
 pip install opencv-python==3.3.0.9
 https://pypi.org/project/opencv-python/3.3.0.9/
@@ -96,3 +105,17 @@ https://blog.csdn.net/zhangxiaohui4445/article/details/102562156?utm_medium=dist
     soem-config.cmake
   sudo apt-get install ros-melodic-soem
   https://github.com/tork-a/minas/issues/64
+
+
+
+Could not find a package configuration file provided by "tf_conversions" with any of the following names:
+tf_conversionsConfig.cmake
+tf_conversions-config.cmake
+sudo apt install ros-melodic-tf-conversions
+  https://answers.ros.org/question/347175/error-building-iris_lama_ros-could-not-find-a-package-configuration-file-provided-by-tf_conversions/
+
+
+
+ industrial_robot_status_interface
+sudo apt-get install ros-melodic-industrial-robot-status-interface
+  https://icode9.com/content-4-1044904.html
