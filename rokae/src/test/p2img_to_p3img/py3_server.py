@@ -8,6 +8,16 @@ import struct
 import numpy as np
 import random
 
+
+import os
+import json
+
+import torch
+from PIL import Image
+from torchvision import transforms
+import matplotlib.pyplot as plt
+
+
 def unpack_image(conn):
     data = b""
     print("unpack_image")
@@ -20,12 +30,15 @@ def unpack_image(conn):
     msg_size = struct.unpack(">l", packed_msg_size)[0]
     if msg_size < 0:
         return None
-    print('unpack_image len(data): %d, msg_size %d'%(len(data),msg_size))
+    print('unpack_image len(data): %d, msg_size %d' % (len(data), msg_size))
     while len(data) < msg_size:
         data += conn.recv(4096)
+
     frame_data = data[:msg_size]
     frame = pickle.loads(frame_data, fix_imports=True, encoding="bytes")
     frame = cv2.imdecode(frame, cv2.IMREAD_COLOR)
+
+    print('cv2')
     return frame
 
 
@@ -43,9 +56,11 @@ if __name__ == '__main__':
                 if frame is None:
                     print("client request stop")
                     break
-                cv2.imshow('recv', frame)
-                cv2.waitKey(1)
-                array = [random.uniform(0,1), random.uniform(0,1)]
+                # cv2.imshow('recv', frame)
+                # cv2.waitKey(1)
+
+                img_primitive(frame)
+                array = [random.uniform(0, 1), random.uniform(0, 1)]
                 array_str = pickle.dumps(array, protocol=2)
                 conn.sendall(array_str)
             except ConnectionResetError as e:

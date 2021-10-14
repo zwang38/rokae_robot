@@ -34,6 +34,10 @@ from prim_move import PrimMove
 import tf2_ros
 import geometry_msgs.msg
 
+import socket
+import pickle
+import struct
+
 
 class NSPlanner:
     def __init__(self, camera_name, rgb_topic, depth_topic, camera_info_topic):
@@ -46,7 +50,8 @@ class NSPlanner:
 
         self.pose = None
 
-        self.marker_pub = rospy.Publisher('visualization_marker', Marker, queue_size=10)
+        self.marker_pub = rospy.Publisher(
+            'visualization_marker', Marker, queue_size=10)
 
         # cv2.namedWindow("Image window", cv2.WINDOW_NORMAL)
         # cv2.setMouseCallback("Image window", self.mouse_callback)
@@ -64,20 +69,21 @@ class NSPlanner:
         print('')
 
         q = 1
-        self.sub_rgb = message_filters.Subscriber(rgb_topic, Image, queue_size=q)
-        self.sub_depth = message_filters.Subscriber(depth_topic, Image, queue_size=q)
-        self.sub_camera_info = rospy.Subscriber(camera_info_topic, CameraInfo, self.cam_info_cb)
+        self.sub_rgb = message_filters.Subscriber(
+            rgb_topic, Image, queue_size=q)
+        self.sub_depth = message_filters.Subscriber(
+            depth_topic, Image, queue_size=q)
+        self.sub_camera_info = rospy.Subscriber(
+            camera_info_topic, CameraInfo, self.cam_info_cb)
         self.camera_model_ready = False
         self.tss = message_filters.ApproximateTimeSynchronizer([self.sub_rgb, self.sub_depth],
                                                                queue_size=30, slop=0.2)
 
         self.tss.registerCallback(self.callback)
 
-
         moveit_commander.roscpp_initialize(sys.argv)
         self.group = moveit_commander.MoveGroupCommander("arm")
         self.group.set_planner_id("RRTConnectkConfigDefault")
-
 
         self.aim_target_prim = PrimAimTarget(self.group)
         self.clear_obstacle_prim = PrimClearObstacle(self.group)
@@ -96,30 +102,59 @@ class NSPlanner:
         self.prim_execution = True
         self.prim_thread.start()
 
+        ip_port = ('127.0.0.1', 5050)
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect(ip_port)
+
+        # self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # ip_port_class = ('127.0.0.2', 6050)
+        # self.server.bind(ip_port_class)
+        # self.server.listen(5)
+
+    def pack_image(self, frame):
+        encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 90]
+        result, frame = cv2.imencode('.jpg', frame, encode_param)
+        data = pickle.dumps(frame, 0)
+        size = len(data)
+        packed = struct.pack(">L", size) + data
+        self.sock.sendall(packed)
+        print("send all finished")
+        # return packed, data, size
+        # -------- 接收server端发送的结果文件数据 --------
+        while True:
+            data = self.sock.recv(4096)
+            if data:
+                result = pickle.loads(data)
+                print(result)
+                return result
+
     def is_stoping(self):
         return self.action == 'end'
 
     def get_bolt_pose(self):
-        #only call for get experiment result
+        # only call for get experiment result
         return self.bolt_pose
 
     def plan(self):
         prev_action = self.action
-        #print(self.ret_dict)
+        # print(self.ret_dict)
         if 'success' in self.ret_dict.keys() and self.ret_dict['success'] is True:
             if self.action == 'start':
                 self.action = 'move'
             elif self.action == 'move':
                 self.action = 'aim'
+                is_state = self.pack_image(self.all_infos['rgb_img'])
+                self.sock.close()
+
             elif self.action == 'aim':
                 self.action = 'clear'
             elif self.action == 'clear':
                 self.action = 'end'
-            ## skip insert prim for testing
+            # skip insert prim for testing
             #     self.action = 'insert'
             # elif self.action == 'insert':
             #     self.action = 'end'
-        print("%s --> %s"%(prev_action,self.action))
+        print("%s --> %s" % (prev_action, self.action))
 
     def start(self,  pose):
         if self.action != 'end':
@@ -162,7 +197,7 @@ class NSPlanner:
             img = self.bridge.imgmsg_to_cv2(rgb_msg, "bgr8")
             depth_img = self.bridge.imgmsg_to_cv2(depth_msg, '16UC1')
             ts = rospy.Time.now()
-            #rospy.loginfo('receiving image')
+            # rospy.loginfo('receiving image')
             if self.all_infos_lock.acquire():
                 self.all_infos = {'rgb_img': img, 'depth_img': depth_img,
                                   'camera_model': self.camera_model, 'timestamp': ts}
@@ -175,6 +210,7 @@ class NSPlanner:
         self.prim_execution = False
         self.prim_thread.join()
 
+
 if __name__ == '__main__':
 
     # 加载电池包，不加载直接回车
@@ -183,7 +219,8 @@ if __name__ == '__main__':
     try:
         rospy.init_node('nsplanner-moveit', anonymous=True)
 
-        planner = NSPlanner('camera', '/camera/color/image_raw', '/camera/depth/image_raw', '/camera/color/camera_info')
+        planner = NSPlanner('camera', '/camera/color/image_raw',
+                            '/camera/depth/image_raw', '/camera/color/camera_info')
 
         quat = tf.transformations.quaternion_from_euler(-3.14, 0, 0)
         pose_target = geometry_msgs.msg.Pose()
