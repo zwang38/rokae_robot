@@ -35,8 +35,9 @@ def img_primitive(img):
     align_weights_path = "./vgg16Net.pth"
     json_path_sets = [align_json_path, obstacle_json_path]
     weights_path_sets = [align_weights_path, obstacle_weights_path]
+    predict_class = []
+
     for i in range(0, 2):
-        predict_class = []
         json_path = json_path_sets[i]
         weights_path = weights_path_sets[i]
         assert os.path.exists(

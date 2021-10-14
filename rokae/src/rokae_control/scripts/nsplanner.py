@@ -144,7 +144,7 @@ class NSPlanner:
             elif self.action == 'move':
                 self.action = 'aim'
                 is_state = self.pack_image(self.all_infos['rgb_img'])
-                self.sock.close()
+                # self.sock.close()
 
             elif self.action == 'aim':
                 self.action = 'clear'
