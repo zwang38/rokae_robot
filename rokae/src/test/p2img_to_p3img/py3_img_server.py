@@ -82,6 +82,10 @@ def img_primitive(img):
             output = torch.squeeze(model(img))     # 将输出压缩，即压缩掉 batch 这个维度
             predict = torch.softmax(output, dim=0)  # 采取这里
             print(predict)
+            predict_class.append(predict)
+    return predict_class
+            
+            
         #     predict_cla = torch.argmax(predict).numpy()
         # print("origin: "+i+"\tpredict: " +
         #       class_indict[str(predict_cla)], "\tProbability: ", predict[predict_cla].item())
