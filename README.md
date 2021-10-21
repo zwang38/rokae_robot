@@ -1,4 +1,10 @@
 # rokae_robot
+ＵＲ 機器人的，運行包都在ＵＲ。我們的在１０Ｅ
+
+
+
+
+
 
 camera在 arm 的gazebo启动方式
 arm_world.launch
