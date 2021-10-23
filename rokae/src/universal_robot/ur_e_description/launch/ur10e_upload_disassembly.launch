@@ -5,3 +5,4 @@
   <param unless="$(arg limited)" name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_e_description)/urdf/ur10e_robot.urdf.xacro'" />
   <param if="$(arg limited)" name="robot_description" command="$(find xacro)/xacro --inorder '$(find ur_e_description)/urdf/ur10e_joint_limited_robot.urdf.xacro'" />
 </launch>
+
