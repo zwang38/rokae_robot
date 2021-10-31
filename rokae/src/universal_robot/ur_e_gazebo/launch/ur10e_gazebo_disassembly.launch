@@ -21,10 +21,9 @@
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" args="-urdf -model ur10e -param robot_description"/>
 
 
-
   <!-- Load joint controller configurations from YAML file to parameter server -->
   <!-- load the controllers -->
-  <rosparam file="$(find rokae_control)/config/ur10e_camera_control_moveit.yaml" command="load"/>
+  <rosparam file="$(find universal_robot_control)/config/ur10e_camera_control_moveit.yaml" command="load"/>
 
   <!--加载位置控制器-->
   <node name="arm_controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen" ns="/ur10e" args="  arm_controller  " />
