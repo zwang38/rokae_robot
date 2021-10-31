@@ -10,7 +10,6 @@
   <!-- arm -->
   <xacro:ur10e_robot prefix="" joint_limited="false"/>
 
-
   <xacro:include filename="$(find cai_env)/urdf/ur_table.urdf.xacro" />
   <xacro:include filename="$(find battery_pack_describe)/urdf/weilan.urdf" />
 
@@ -19,9 +18,7 @@
   <xacro:include filename="$(find realsense2_description)/urdf/gloal_d435_camera.urdf.xacro" />
 
 
-
   <link name="world" />
-
   <joint name="table_joint" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0" />
     <parent link="world"/>
@@ -40,8 +37,6 @@
     <child link="weilan"/>
   </joint>
 
-
-
   <joint name="taotong_tool_joint" type="fixed">
     <origin xyz="0 0 0" rpy="0 3.14 0" />
     <parent link="tool0"/>
@@ -53,7 +48,6 @@
     <parent link="tool0"/>
     <child link="world_base"/>
   </joint>
-
 
   <joint name="scene_camera_joint" type="fixed">
     <origin xyz="0 0 2.30" rpy="0 1.57 1.57"/>
