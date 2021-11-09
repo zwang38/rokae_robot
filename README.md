@@ -1,7 +1,9 @@
 # rokae_robot
-ＵＲ 機器人的，運行包都在ＵＲ。我們的在１０Ｅ
+ＵＲ 機器人的，運行包都在ＵＲ。
 
 
+gazebo:             src/universal_robot/ur_e_gazebo/launch/ur10e_gazebo_disassembly.launch    
+rviz:               src/universal_robot/ur_moveit_config/launch/moveit_planning_execution_4_arm_world.launch
 
 
 
