@@ -101,8 +101,8 @@ def product_spawn():
         orient = Quaternion(quat[0], quat[1], quat[2], quat[3])
         item_name = "{0}_product".format(battery_name)
         print("Spawning model:%s", item_name)
-        item_pose = Pose(Point(x=0, y=0, z=0.12), orient)
-        spawn_model(item_name, product_xml, "", item_pose, "table")
+        item_pose = Pose(Point(x=0.15, y=0.46, z=0.89), orient)
+        spawn_model(item_name, product_xml, "", item_pose, "world_table")
         rospy.sleep(0.5)
         return item_name
     except rospy.ServiceException as e:
@@ -362,7 +362,7 @@ if __name__ == "__main__":
 
     x_bolt = -0.057323   # 数值大，向下
     y_bolt = 0.03838  # 数值大，向左
-    z_bolt = 1.3
+    z_bolt = 1.5
 
     # First initialize `moveit_commander`_ and a `rospy`_ node:
     moveit_commander.roscpp_initialize(sys.argv)
