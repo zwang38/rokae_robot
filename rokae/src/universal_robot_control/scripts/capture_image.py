@@ -560,10 +560,10 @@ if __name__ == "__main__":
 
     x_bolt = -0.057323   # 数值大，向下
     y_bolt = 0.03838  # 数值大，向左
-    z_bolt = 1.25
+    z_bolt = 1.55
     # z_bolt=1.1815
 
-    effector = sys.argv[1] if len(sys.argv) > 1 else 'rokae_link7'
+    effector = sys.argv[1] if len(sys.argv) > 1 else 'tool_taotong'
 
     settings = termios.tcgetattr(sys.stdin)
     moveit_commander.roscpp_initialize(sys.argv)
