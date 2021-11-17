@@ -30,6 +30,8 @@ import random
 # from PIL import Image,ImageDraw
 # import numpy as np 
 from circle_detect_4_bolt import CircleDetection4Bolt
+from hexagon_detect_4_bolt import HexagonDetection4Bolt
+from color_detect_4_bolt import ColorDetection4Bolt
 from rigid_transform_3D import rigid_transform_3D
 from prim_base import PrimBase
 
@@ -60,7 +62,26 @@ class PrimAimTarget(PrimBase):
                 print(param, 'must give')
                 return False
         print("param satified, start to do mate")
-        detect_ret = self.circle_detector.detect(all_info['rgb_img'], all_info['depth_img'])
+        detect_ret ={} 
+        self.circle_detector.detect(all_info['rgb_img'], detect_ret)
+        self.hex_detector.detect(all_info['rgb_img'], detect_ret)
+        self.color_detector.detect(all_info['rgb_img'], detect_ret)
+        
+        '''if 'hexes' in detect_ret.keys():
+            hexes = detect_ret["hexes"]
+            hex=self.findBestMatchHex(hexes)
+
+            x = hex[0]
+            y = hex[1]
+            self.add_bolt_frame(x, y, all_info)
+
+            bolt_pose = self.get_bolt_pose_in_world_frame(all_info)
+            ee_pose = self.get_tgt_pose_in_world_frame(all_info)
+            if not ee_pose is None:
+                if not self.set_arm_pose(self.group, ee_pose, self.effector):
+                    ee_pose = self.group.get_current_pose(self.effector).pose
+                self.print_pose(ee_pose)
+                return {'success': True, 'bolt_pose': bolt_pose}'''
 
         if 'circles' in detect_ret.keys():
             circles = detect_ret["circles"]
@@ -72,19 +93,27 @@ class PrimAimTarget(PrimBase):
 
             bolt_pose = self.get_bolt_pose_in_world_frame(all_info)
             ee_pose = self.get_tgt_pose_in_world_frame(all_info)
-            if ee_pose is None:
+            if  not ee_pose is None:
                 return False
-            # q = tf.transformations.quaternion_from_euler(3.14, 0, 0)
-            # ee_pose.orientation.x = q[0]
-            # ee_pose.orientation.y = q[1]
-            # ee_pose.orientation.z = q[2]
-            # ee_pose.orientation.w = q[3]
-
             if not self.set_arm_pose(self.group, ee_pose, self.effector):
                 ee_pose = self.group.get_current_pose(self.effector).pose
             self.print_pose(ee_pose)
             return {'success': True, 'bolt_pose': bolt_pose}
-        elif 'contours' in detect_ret.keys():
-            contours = detect_ret["contours"]
-            return {'success': True}
+
+        '''if  'colorblocks' in detect_ret.keys():
+            colorblocks = detect_ret["colorblocks"]
+            colorblock= self.findBestMatchColor(colorblocks)
+
+            x = colorblock[0]
+            y = colorblock[1]
+            self.add_bolt_frame(x, y, all_info)
+
+            bolt_pose = self.get_bolt_pose_in_world_frame(all_info)
+            ee_pose = self.get_tgt_pose_in_world_frame(all_info)
+            if  not ee_pose is None:
+                if not self.set_arm_pose(self.group, ee_pose, self.effector):
+                    ee_pose = self.group.get_current_pose(self.effector).pose
+                self.print_pose(ee_pose)
+                return {'success': True, 'bolt_pose': bolt_pose}'''
+
         return {'success': False}

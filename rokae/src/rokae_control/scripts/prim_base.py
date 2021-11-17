@@ -27,17 +27,23 @@ import geometry_msgs.msg
 import traceback
 import random
 
+
+
 # from PIL import Image,ImageDraw
 # import numpy as np 
 from circle_detect_4_bolt import CircleDetection4Bolt
+from hexagon_detect_4_bolt import HexagonDetection4Bolt
+from color_detect_4_bolt import ColorDetection4Bolt
 from rigid_transform_3D import rigid_transform_3D
 
-
+ 
 class PrimBase(object):
     def __init__(self, group_):
         self.tf_listener = tf.TransformListener()
         self.action_params = ['rgb_img', 'depth_img', 'camera_model', 'timestamp']
         self.circle_detector = CircleDetection4Bolt()
+        self.hex_detector = HexagonDetection4Bolt()
+        self.color_detector = ColorDetection4Bolt() 
         self.goal_posision = (0.018798, 0.037462, 0.5)
         self.goal_orientation_RPY = (-3.14, 0, 0)
         self.group = group_
@@ -48,6 +54,14 @@ class PrimBase(object):
     def findBestMatchCircle(self, circles):
         assert len(circles) > 0
         return circles[0]
+
+    def findBestMatchHex(self, hexes):
+        assert len(hexes) > 0
+        return hexes[0]
+
+    def findBestMatchColor(self, colorblocks):
+        assert len(colorblocks) > 0
+        return colorblocks[0]
 
     def get_bolt_pose_in_world_frame(self, all_info):
         tgt_pose_in_bolt_frame = geometry_msgs.msg.Pose()
