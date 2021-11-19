@@ -39,4 +39,13 @@ RGBD图像转tf, 暂时需要在图像上点击一下，暂时图像检测位置
 rgbd_imgpoint_to_tf.py
 
 
-deep-learning-for-image-processing中的vgg 是图像处理 和pytorch vgg     是图像处理 是同一个东西。 教程来源https://blog.csdn.net/Action_now_zj/article/details/109250528  数据集也在这里。　脚本解释　https://zhuanlan.zhihu.com/p/279823946　　　我判断不准确是因为－过拟合　
+deep-learning-for-image-processing中的vgg 是图像处理 和pytorch vgg     是图像处理 是同一个东西。 教程来源https://blog.csdn.net/Action_now_zj/article/details/109250528  数据集也在这里。　脚本解释　https://zhuanlan.zhihu.com/p/279823946　　　我判断不准确是因为－过拟合
+
+
+
+关于nsplanner模块的调用：
+首先加载rokae_gazebo arm_world.launch，然后加载rokae_moveit_config moveit_planning_execution_4_arm_world.launch，再运行~/rokae_robot/rokae/src/rokae_control/scripts/env_setup.py，最后运行~/rokae_robot/rokae/src/rokae_control/scripts/nsplanner.py
+
+动作原语的修改在~/rokae_robot/rokae/src/rokae_control/scripts/prim_action.py中
+
+动作执行判据检测在~/rokae_robot/rokae/src/rokae_control/scripts/pri_cri.py中，当前为空，在nsplanner中设定默认执行结果为保守估计的结果。
