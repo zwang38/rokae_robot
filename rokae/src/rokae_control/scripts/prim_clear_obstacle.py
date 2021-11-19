@@ -52,7 +52,7 @@ class PrimClearObstacle(PrimBase):
                 print(param, 'must give')
                 return False
         print("param satified, start to do clear obstacle")
-        detect_ret = self.circle_detector.detect(all_info['rgb_img'], all_info['depth_img'])
+        detect_ret = self.circle_detector.detect(all_info['rgb_img'])
 
         if 'circles' in detect_ret.keys():
             circles = detect_ret["circles"]

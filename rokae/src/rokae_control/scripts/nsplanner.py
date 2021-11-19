@@ -170,7 +170,7 @@ class NSPlanner:
             if len(path)<min_step:
                 min_step=len(path)
         path_list=[i for i in path_list if len(i)==min_step]
-        return path_list
+        return path_list[0]
 
     def start(self,  pose):
         if self.action != 'disassemble':
@@ -214,7 +214,7 @@ class NSPlanner:
                     if pre_is_ok==True:
                         prim = self.prims[self.action]
                         for eff in (prim_dict[self.action]).eff:
-                            self.stage[eff]==(prim_dict[self.action].eff)[eff]
+                            self.stage[eff]=(prim_dict[self.action].eff)[eff]
                         #更新stage
                         self.ret_dict = prim.action(infos, self.ret_dict)
                         if 'bolt_pose' in self.ret_dict.keys():

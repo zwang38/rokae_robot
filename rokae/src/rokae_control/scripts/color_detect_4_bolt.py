@@ -15,7 +15,7 @@ class ColorDetection4Bolt:
         pass
 
     # create an array of points in the shape of a hexagon
-    def detect(self,raw_img,ret_dict):
+    def detect(self,raw_img):
         hsv_img = cv2.cvtColor(raw_img, cv2.COLOR_BGR2HSV)
         #cv2.imshow('hsv_img',hsv_img)
         hsv_color_range = [ ([20,0, 100], [200, 10, 170])]
@@ -40,11 +40,14 @@ class ColorDetection4Bolt:
                 colorblocks.append(cont)
                 centerpoints.append (center)
         
+        ret_dict = {}
         if not colorblocks is None:
             print  (len(colorblocks))
             for centerpoint in centerpoints:
-                print("(%f, %f),r: %f" % (centerpoint[0], centerpoint[1]))
+                print("%f, %f"% (centerpoint[0], centerpoint[1]))
             if len(colorblocks)>0:
                 ret_dict['colorblocks']=centerpoints
-            else:
+        else:
                 print("none colorblocks detected")
+        return ret_dict
+            

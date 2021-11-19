@@ -43,9 +43,9 @@ class HexagonDetection4Bolt:
         img = early_threshold.data.cpu().numpy()[0, 0]
         return img
 
-    def detect(self,img,ret_dict):
+    def detect(self,img):
         hex=self.make_hex_shape()
-        img = self.canny(img, hex)
+        img = self.canny(img)
         img = np.uint8(img * 255)
         contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE,
                                             cv2.CHAIN_APPROX_SIMPLE)
@@ -61,14 +61,16 @@ class HexagonDetection4Bolt:
                 if match < 0.25:
                     cx = rect[0] + (rect[2] * .5)
                     cy = rect[1] + (rect[3] *.5)
-                    centerpoints.append = ([cx, cy])
+                    centerpoints.append([cx, cy])
                     hexes.append(cont)
         
+        ret_dict={}
         if not hexes is None:
             print  (len(hexes))
             for centerpoint in centerpoints:
-                print("(%f, %f),r: %f" % (centerpoint[0], centerpoint[1]))
+                print("%f, %f" % (centerpoint[0], centerpoint[1]))
             if len(hexes)>0:
                 ret_dict['hexes']=centerpoints
-            else:
+        else:
                 print("none hex detected")
+        return ret_dict

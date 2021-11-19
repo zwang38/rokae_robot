@@ -62,12 +62,13 @@ class PrimAimTarget(PrimBase):
                 print(param, 'must give')
                 return False
         print("param satified, start to do mate")
-        detect_ret ={} 
-        self.circle_detector.detect(all_info['rgb_img'], detect_ret)
-        self.hex_detector.detect(all_info['rgb_img'], detect_ret)
-        self.color_detector.detect(all_info['rgb_img'], detect_ret)
+        detect_ret={} 
         
-        '''if 'hexes' in detect_ret.keys():
+        detect_ret.update(self.circle_detector.detect(all_info['rgb_img']))
+        detect_ret.update(self.hex_detector.detect(all_info['rgb_img']))
+        detect_ret.update(self.color_detector.detect(all_info['rgb_img']))
+        
+        if 'hexes' in detect_ret.keys():
             hexes = detect_ret["hexes"]
             hex=self.findBestMatchHex(hexes)
 
@@ -81,7 +82,7 @@ class PrimAimTarget(PrimBase):
                 if not self.set_arm_pose(self.group, ee_pose, self.effector):
                     ee_pose = self.group.get_current_pose(self.effector).pose
                 self.print_pose(ee_pose)
-                return {'success': True, 'bolt_pose': bolt_pose}'''
+                return {'success': True, 'bolt_pose': bolt_pose}
 
         if 'circles' in detect_ret.keys():
             circles = detect_ret["circles"]
@@ -94,13 +95,12 @@ class PrimAimTarget(PrimBase):
             bolt_pose = self.get_bolt_pose_in_world_frame(all_info)
             ee_pose = self.get_tgt_pose_in_world_frame(all_info)
             if  not ee_pose is None:
-                return False
-            if not self.set_arm_pose(self.group, ee_pose, self.effector):
-                ee_pose = self.group.get_current_pose(self.effector).pose
-            self.print_pose(ee_pose)
-            return {'success': True, 'bolt_pose': bolt_pose}
+                if not self.set_arm_pose(self.group, ee_pose, self.effector):
+                    ee_pose = self.group.get_current_pose(self.effector).pose
+                self.print_pose(ee_pose)
+                return {'success': True, 'bolt_pose': bolt_pose}
 
-        '''if  'colorblocks' in detect_ret.keys():
+        if  'colorblocks' in detect_ret.keys():
             colorblocks = detect_ret["colorblocks"]
             colorblock= self.findBestMatchColor(colorblocks)
 
@@ -114,6 +114,6 @@ class PrimAimTarget(PrimBase):
                 if not self.set_arm_pose(self.group, ee_pose, self.effector):
                     ee_pose = self.group.get_current_pose(self.effector).pose
                 self.print_pose(ee_pose)
-                return {'success': True, 'bolt_pose': bolt_pose}'''
+                return {'success': True, 'bolt_pose': bolt_pose}
 
         return {'success': False}
