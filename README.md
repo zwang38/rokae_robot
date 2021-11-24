@@ -2,8 +2,8 @@
 ＵＲ 機器人的，運行包都在ＵＲ。
 
 
-gazebo:             src/universal_robot/ur_e_gazebo/launch/ur10e_gazebo_disassembly.launch    
-rviz:               src/universal_robot/ur_moveit_config/launch/moveit_planning_execution_4_arm_world.launch
+robot:            example_organization_ur_launch/launch/ex-ur10-1.launch  
+rviz:             fmauch_universal_robot/ur10e_moveit_config/launch/moveit_planning_execution_4_arm_world.launch
 
 
 
